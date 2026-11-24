@@ -92,6 +92,46 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 
+    /**
+     * A row of cards that scrolls sideways, with buttons for the previous and the
+     * next card. The buttons know when the row is at either end.
+     */
+    Alpine.data('cardRow', () => ({
+        atStart: true,
+        atEnd: false,
+
+        init() {
+            this.update();
+        },
+
+        update() {
+            const row = this.$refs.row;
+
+            this.atStart = row.scrollLeft <= 1;
+            this.atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 1;
+        },
+
+        step(direction) {
+            const row = this.$refs.row;
+            const card = row.firstElementChild;
+            const gap = Number.parseFloat(getComputedStyle(row).columnGap) || 0;
+            const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            row.scrollBy({
+                left: direction * (card ? card.getBoundingClientRect().width + gap : row.clientWidth),
+                behavior: calm ? 'auto' : 'smooth',
+            });
+        },
+
+        previous() {
+            this.step(-1);
+        },
+
+        next() {
+            this.step(1);
+        },
+    }));
+
     /** The bar that reports the chosen motif and lets the visitor remove it. */
     Alpine.data('motifStatus', () => ({
         get active() {
@@ -116,29 +156,6 @@ document.addEventListener('alpine:init', () => {
 
         clear() {
             this.$store.motif.clear();
-        },
-    }));
-
-    /** The moving card wall only animates while it is on screen. */
-    Alpine.data('cardWall', () => ({
-        running: false,
-
-        init() {
-            if (!('IntersectionObserver' in window)) {
-                this.running = true;
-
-                return;
-            }
-
-            const observer = new IntersectionObserver((entries) => {
-                this.running = entries.some((entry) => entry.isIntersecting);
-            });
-
-            observer.observe(this.$el);
-        },
-
-        get paused() {
-            return !this.running;
         },
     }));
 });

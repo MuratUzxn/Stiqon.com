@@ -1,7 +1,9 @@
 <?php
 /**
- * The home page: one action (choose a motif), the two areas, how it works, a
- * look at the assortment, questions and a closing banner.
+ * The home page. Its composition follows the landing page of mobbin.com: a
+ * centred headline with small product views set between the words, a grey
+ * showcase panel, a two-tone statement over a row of large cards, labelled
+ * tiles, three cards on a grey band, questions and a closing call.
  */
 
 defined('ABSPATH') || exit;
@@ -9,16 +11,46 @@ defined('ABSPATH') || exit;
 $sticker = home_url('/sticker/');
 $flyer = home_url('/flyer/');
 
-// Fixed example cards for this stage of the build; the catalogue replaces them.
-$assortment = [
-    ['title' => 'Runde Sticker', 'meta' => 'Weißes Vinyl', 'url' => $sticker, 'tone' => 'mist', 'sticker' => ['shape' => 'circle', 'material' => 'vinyl', 'motif' => 'aktion']],
-    ['title' => 'Quadratische Sticker', 'meta' => 'Holografische Folie', 'url' => $sticker, 'tone' => 'mist', 'sticker' => ['shape' => 'square', 'material' => 'holo', 'motif' => 'raster']],
-    ['title' => 'Sticker mit Konturschnitt', 'meta' => 'Weißes Vinyl', 'url' => $sticker, 'tone' => 'sage', 'sticker' => ['shape' => 'contour', 'material' => 'vinyl', 'motif' => 'stern']],
-    ['title' => 'Runde Sticker', 'meta' => 'Kraftpapier', 'url' => $sticker, 'tone' => 'sand', 'sticker' => ['shape' => 'circle', 'material' => 'kraft', 'finish' => 'matte', 'motif' => 'siegel']],
-    ['title' => 'Flyer DIN A6', 'meta' => 'Einzelblatt', 'url' => $flyer, 'tone' => 'mist', 'flyer' => ['format' => 'a6', 'motif' => 'fest']],
-    ['title' => 'Flyer DIN A5', 'meta' => 'Auflage im Stapel', 'url' => $flyer, 'tone' => 'sand', 'flyer' => ['format' => 'a5', 'motif' => 'eroeffnung', 'stack' => true]],
-    ['title' => 'Flyer DIN lang', 'meta' => 'Glänzend', 'url' => $flyer, 'tone' => 'mist', 'flyer' => ['format' => 'lang', 'motif' => 'prozent', 'gloss' => true]],
-    ['title' => 'Flyer Quadrat', 'meta' => 'Auflage im Stapel', 'url' => $flyer, 'tone' => 'sky', 'flyer' => ['format' => 'quadrat', 'motif' => 'kursplan', 'stack' => true]],
+/**
+ * A product view set into a line of headline type. Decorative: the words carry
+ * the meaning. Without the plugin there is no view, and no gap in the line either.
+ */
+$inline = static function (array $spec): string {
+    $view = stiqon_sticker($spec);
+
+    return $view === '' ? '' : '<span class="inline-mockup" aria-hidden="true">'.$view.'</span>';
+};
+
+// What the shop will offer, as shown in the showcase panel.
+$lists = [
+    'Formen' => ['Rund', 'Quadratisch', 'Rechteckig', 'Oval', 'Konturschnitt'],
+    'Materialien' => ['Weißes Vinyl', 'Transparente Folie', 'Holografische Folie', 'Kraftpapier'],
+    'Flyer-Formate' => ['DIN A6', 'DIN A5', 'DIN A4', 'DIN lang', 'Quadrat'],
+];
+
+$showcase = [
+    ['sticker' => ['shape' => 'circle', 'motif' => 'siegel']],
+    ['flyer' => ['format' => 'a5', 'motif' => 'eroeffnung', 'stack' => true]],
+    ['sticker' => ['shape' => 'contour', 'motif' => 'sprechblase']],
+];
+
+$row = [
+    ['sticker' => ['shape' => 'rect', 'motif' => 'wellen']],
+    ['flyer' => ['format' => 'a6', 'motif' => 'fest']],
+    ['sticker' => ['shape' => 'circle', 'material' => 'kraft', 'finish' => 'matte', 'motif' => 'blatt']],
+    ['sticker' => ['shape' => 'oval', 'motif' => 'danke']],
+    ['flyer' => ['format' => 'a4', 'motif' => 'karte', 'heavy' => true]],
+    ['sticker' => ['shape' => 'circle', 'material' => 'clear', 'motif' => 'monogramm']],
+];
+
+// Fixed example tiles for this stage of the build; the catalogue replaces them.
+$tiles = [
+    ['label' => 'Runde Sticker', 'url' => $sticker, 'sticker' => ['shape' => 'circle', 'motif' => 'aktion']],
+    ['label' => 'Quadratische Sticker', 'url' => $sticker, 'sticker' => ['shape' => 'square', 'material' => 'holo', 'motif' => 'raster']],
+    ['label' => 'Sticker mit Konturschnitt', 'url' => $sticker, 'sticker' => ['shape' => 'contour', 'motif' => 'stern']],
+    ['label' => 'Flyer DIN A6', 'url' => $flyer, 'flyer' => ['format' => 'a6', 'motif' => 'fest']],
+    ['label' => 'Flyer DIN lang', 'url' => $flyer, 'flyer' => ['format' => 'lang', 'motif' => 'prozent', 'gloss' => true]],
+    ['label' => 'Flyer Quadrat', 'url' => $flyer, 'flyer' => ['format' => 'quadrat', 'motif' => 'kursplan', 'stack' => true]],
 ];
 
 $steps = [
@@ -35,154 +67,154 @@ $questions = [
     ['question' => 'Kann ich schon bestellen?', 'answer' => 'Noch nicht. Der Shop wird gerade aufgebaut; die Bestellung folgt.'],
 ];
 
-$lift = 'transition-transform duration-300 ease-soft group-hover:-translate-y-1.5';
+$mockup = static fn (array $card, string $class = ''): string => isset($card['sticker'])
+    ? stiqon_sticker($card['sticker'], $class)
+    : stiqon_flyer($card['flyer'], $class);
 
 get_header();
 ?>
-<?php // Hero: one action, the wall of mockups as a calm backdrop ?>
-<section class="wrap pt-10 pb-16 lg:pt-16 lg:pb-24">
-    <div class="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
-        <div>
-            <p class="text-overline text-muted">Sticker und Flyer</p>
-            <h1 class="text-display mt-5">Werbemittel, die <span class="accent text-[1.06em]">haften bleiben.</span></h1>
-            <p class="text-lead mt-6 max-w-xl text-ink-soft">
-                Wählen Sie Ihr Motiv und sehen Sie es sofort auf Stickern und Flyern – in jeder Form, auf jedem Material.
+<?php // Hero: the headline, one action ?>
+<section class="wrap pt-12 pb-14 text-center lg:pt-24 lg:pb-20">
+    <?php // Two lines on wide screens, three on a phone – with the views between the words either way. ?>
+    <h1 class="text-display">
+        Werbemittel,<br class="sm:hidden">
+        <?php echo $inline(['shape' => 'circle', 'motif' => 'monogramm']); ?> die<br class="max-sm:hidden">
+        haften <?php echo $inline(['shape' => 'contour', 'motif' => 'sprechblase']); ?><br class="sm:hidden">
+        bleiben.
+    </h1>
+    <p class="text-lead mx-auto mt-7 max-w-md text-muted lg:mt-9">
+        Wählen Sie Ihr Motiv und sehen Sie es sofort auf Stickern und Flyern.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center justify-center gap-2 lg:mt-11">
+        <?php echo stiqon_motif_button('Motiv wählen'); ?>
+        <?php echo stiqon_button('Sticker ansehen', ['variant' => 'secondary', 'href' => $sticker]); ?>
+        <?php echo stiqon_button('Flyer ansehen', ['variant' => 'secondary', 'href' => $flyer]); ?>
+    </div>
+    <p class="text-label mt-5 text-muted">Ihr Bild bleibt in Ihrem Browser – es wird nichts hochgeladen.</p>
+</section>
+
+<?php // Showcase: what the shop holds, on a grey panel that the cards run out of ?>
+<section class="wrap pb-16 lg:pb-24" aria-labelledby="schaufenster">
+    <h2 id="schaufenster" class="sr-only">Das Sortiment im Überblick</h2>
+    <div class="overflow-hidden rounded-tile bg-mist px-3 pt-3 sm:px-6 sm:pt-6 lg:px-10 lg:pt-10">
+        <div class="-mb-10 rounded-t-card bg-paper px-5 pt-5 sm:px-7 sm:pt-7 lg:-mb-16">
+            <div class="flex items-center gap-1">
+                <a href="<?php echo esc_url($sticker); ?>" class="text-action inline-flex h-11 items-center rounded-full px-3 transition-opacity hover:opacity-60">Sticker</a>
+                <a href="<?php echo esc_url($flyer); ?>" class="text-action inline-flex h-11 items-center rounded-full px-3 text-muted transition-opacity hover:opacity-60">Flyer</a>
+            </div>
+
+            <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-7 px-3 sm:grid-cols-3">
+                <?php foreach ($lists as $title => $items) : ?>
+                    <?php // The list with the longest entries gets a full row on a phone. ?>
+                    <div class="<?php echo esc_attr($title === 'Materialien' ? 'max-sm:order-last max-sm:col-span-2' : ''); ?>">
+                        <h3 class="text-label text-muted"><?php echo esc_html($title); ?></h3>
+                        <ul class="mt-2 font-semibold leading-snug">
+                            <?php foreach ($items as $item) : ?>
+                                <li><?php echo esc_html($item); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-10 lg:grid-cols-3">
+                <?php foreach ($showcase as $index => $card) : ?>
+                    <?php echo stiqon_stage($mockup($card), 'mist', $index === 2 ? 'max-lg:hidden' : '', 'portrait'); ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+</section>
+
+<?php // The promise, in two tones, over a row of large cards ?>
+<section class="pb-16 lg:pb-28" aria-labelledby="versprechen" x-data="cardRow">
+    <div class="wrap flex items-end justify-between gap-8">
+        <div class="max-w-3xl">
+            <h2 id="versprechen" class="text-title">Erst ansehen, dann bestellen.</h2>
+            <p class="text-title text-muted">
+                Ein Bild genügt. Es erscheint auf jedem Sticker und jedem Flyer – in jeder Form, auf jedem Material.
             </p>
-            <div class="mt-9 flex flex-wrap items-center gap-3">
-                <?php echo stiqon_motif_button('Motiv wählen', ['size' => 'lg']); ?>
-                <?php echo stiqon_button('Sticker ansehen', ['variant' => 'secondary', 'size' => 'lg', 'href' => $sticker]); ?>
-                <?php echo stiqon_button('Flyer ansehen', ['variant' => 'secondary', 'size' => 'lg', 'href' => $flyer]); ?>
-            </div>
-            <p class="mt-5 text-sm text-muted">Ihr Bild bleibt in Ihrem Browser – es wird nichts hochgeladen.</p>
         </div>
-
-        <?php get_template_part('template-parts/card-wall', null, ['class' => 'hidden lg:grid']); ?>
-
-        <?php // Small screens: four cards, standing still ?>
-        <div class="grid grid-cols-2 gap-3 lg:hidden">
-            <?php echo stiqon_stage(stiqon_sticker(['shape' => 'circle', 'motif' => 'siegel']), 'mist'); ?>
-            <?php echo stiqon_stage(stiqon_flyer(['format' => 'a5', 'motif' => 'eroeffnung', 'stack' => true]), 'sand'); ?>
-            <?php echo stiqon_stage(stiqon_sticker(['shape' => 'contour', 'motif' => 'sprechblase']), 'sage'); ?>
-            <?php echo stiqon_stage(stiqon_sticker(['shape' => 'rect', 'motif' => 'wellen']), 'sky'); ?>
+        <?php // Shown once the script runs; without it the row still scrolls by touch, wheel and keyboard. ?>
+        <div class="flex shrink-0 gap-2 max-md:hidden" x-cloak>
+            <?php echo stiqon_button(stiqon_icon('arrow-left'), ['variant' => 'secondary', 'class' => 'w-11 !px-0', 'attributes' => ['aria-label' => 'Vorherige Beispiele', 'x-on:click' => 'previous', 'x-bind:disabled' => 'atStart']]); ?>
+            <?php echo stiqon_button(stiqon_icon('arrow-right'), ['variant' => 'secondary', 'class' => 'w-11 !px-0', 'attributes' => ['aria-label' => 'Weitere Beispiele', 'x-on:click' => 'next', 'x-bind:disabled' => 'atEnd']]); ?>
         </div>
     </div>
-</section>
-
-<?php // The two areas. Text and mockups each have their own column, so they never overlap. ?>
-<section class="wrap pb-16 lg:pb-24" aria-labelledby="bereiche">
-    <h2 id="bereiche" class="sr-only">Bereiche</h2>
-    <div class="grid gap-4 md:grid-cols-2">
-        <div class="group relative grid overflow-hidden rounded-tile bg-mist md:min-h-[22rem] md:grid-cols-2">
-            <div class="flex flex-col justify-between gap-8 p-7 lg:p-10">
-                <div>
-                    <h3 class="text-title">
-                        <a href="<?php echo esc_url($sticker); ?>" class="after:absolute after:inset-0 after:rounded-tile">Sticker</a>
-                    </h3>
-                    <p class="mt-3 text-ink-soft">Rund, eckig, oval oder mit Konturschnitt – auf Vinyl, Folie oder Kraftpapier.</p>
-                </div>
-                <span class="inline-flex items-center gap-2 font-medium">
-                    Sticker ansehen <?php echo stiqon_icon('arrow-right', 'transition-transform duration-200 ease-soft group-hover:translate-x-1'); ?>
-                </span>
-            </div>
-            <div class="pointer-events-none relative h-52 transition-transform duration-500 ease-soft group-hover:-translate-y-1.5 md:h-auto" aria-hidden="true">
-                <?php echo stiqon_sticker(['shape' => 'square', 'motif' => 'sonne'], 'absolute top-[2%] left-[2%] w-[48%] -rotate-12 md:top-[12%]'); ?>
-                <?php echo stiqon_sticker(['shape' => 'circle', 'motif' => 'monogramm'], 'absolute -right-[8%] -bottom-[30%] w-[66%] md:-bottom-[10%] md:w-[78%]'); ?>
-            </div>
-        </div>
-
-        <div class="group relative grid overflow-hidden rounded-tile bg-stage-sand md:min-h-[22rem] md:grid-cols-2">
-            <div class="flex flex-col justify-between gap-8 p-7 lg:p-10">
-                <div>
-                    <h3 class="text-title">
-                        <a href="<?php echo esc_url($flyer); ?>" class="after:absolute after:inset-0 after:rounded-tile">Flyer</a>
-                    </h3>
-                    <p class="mt-3 text-ink-soft">Von DIN A6 bis DIN A4, DIN lang und quadratisch – einzeln gezeigt oder im Stapel.</p>
-                </div>
-                <span class="inline-flex items-center gap-2 font-medium">
-                    Flyer ansehen <?php echo stiqon_icon('arrow-right', 'transition-transform duration-200 ease-soft group-hover:translate-x-1'); ?>
-                </span>
-            </div>
-            <div class="pointer-events-none relative h-52 transition-transform duration-500 ease-soft group-hover:-translate-y-1.5 md:h-auto" aria-hidden="true">
-                <?php echo stiqon_flyer(['format' => 'lang', 'motif' => 'prozent'], 'absolute -bottom-[30%] -left-[2%] w-[42%] -rotate-6 md:-bottom-[14%] md:-left-[16%] md:w-[56%]'); ?>
-                <?php echo stiqon_flyer(['format' => 'a5', 'motif' => 'fest', 'stack' => true], 'absolute right-[8%] -bottom-[24%] w-[54%] rotate-2 md:right-[6%] md:-bottom-[22%] md:w-[64%]'); ?>
-            </div>
-        </div>
-    </div>
-</section>
-
-<?php // How it works ?>
-<section class="wrap pb-16 lg:pb-24" aria-labelledby="ablauf">
-    <?php echo stiqon_section_heading(['id' => 'ablauf', 'overline' => 'So funktioniert\'s', 'title' => 'In drei Schritten zum fertigen Werbemittel']); ?>
-    <ol class="mt-10 grid gap-4 md:grid-cols-3">
-        <?php foreach ($steps as $index => $step) : ?>
-            <li class="rounded-card border border-line p-7">
-                <span class="accent block text-5xl leading-none text-muted" aria-hidden="true"><?php echo esc_html((string) ($index + 1)); ?></span>
-                <h3 class="text-heading mt-6"><?php echo esc_html($step['title']); ?></h3>
-                <p class="mt-2 text-ink-soft"><?php echo esc_html($step['text']); ?></p>
-            </li>
+    <div
+        class="bleed-row mt-10 gap-3 sm:gap-4 lg:mt-14"
+        role="region" aria-label="Beispiele: Motive auf Stickern und Flyern" tabindex="0"
+        x-ref="row" x-on:scroll.passive="update"
+    >
+        <?php foreach ($row as $card) : ?>
+            <?php echo stiqon_stage($mockup($card), 'mist', 'w-[70vw] max-w-[22rem] shrink-0 snap-start'); ?>
         <?php endforeach; ?>
-    </ol>
+    </div>
 </section>
 
 <?php // A look at the assortment ?>
-<section class="wrap pb-16 lg:pb-24" aria-labelledby="sortiment">
-    <?php echo stiqon_section_heading([
-        'id' => 'sortiment',
-        'overline' => 'Aus dem Sortiment',
-        'title' => 'Formen, Materialien und Formate',
-        'lead' => 'Jede Karte zeigt ein Beispielmotiv. Mit Ihrem eigenen Bild sehen Sie hier Ihr Werbemittel.',
-    ]); ?>
-    <ul class="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 xl:grid-cols-4">
-        <?php foreach ($assortment as $item) : ?>
-            <li class="group relative">
-                <?php
-                $mockup = isset($item['sticker']) ? stiqon_sticker($item['sticker'], $lift) : stiqon_flyer($item['flyer'], $lift);
-
-                echo stiqon_stage($mockup, $item['tone']);
-                ?>
-                <h3 class="mt-4 font-medium">
-                    <a href="<?php echo esc_url($item['url']); ?>" class="after:absolute after:inset-0 after:rounded-card"><?php echo esc_html($item['title']); ?></a>
-                </h3>
-                <p class="mt-0.5 text-sm text-muted"><?php echo esc_html($item['meta']); ?></p>
+<section class="wrap pb-16 lg:pb-28" aria-labelledby="sortiment">
+    <?php echo stiqon_section_heading(['id' => 'sortiment', 'title' => 'Formen, Materialien und Formate']); ?>
+    <ul class="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-14 lg:grid-cols-3">
+        <?php foreach ($tiles as $tile) : ?>
+            <li>
+                <a
+                    href="<?php echo esc_url($tile['url']); ?>"
+                    class="group flex aspect-[4/5] flex-col items-center overflow-hidden rounded-tile bg-mist px-4 pt-6 text-center transition-colors hover:bg-mist-deep sm:aspect-square sm:pt-8"
+                >
+                    <span class="text-heading"><?php echo esc_html($tile['label']); ?></span>
+                    <span class="<?php echo esc_attr(isset($tile['sticker']) ? 'w-[92%]' : 'w-[74%]'); ?> mt-auto translate-y-[14%] transition-transform duration-300 ease-soft group-hover:translate-y-[9%]" aria-hidden="true">
+                        <?php echo $mockup($tile); ?>
+                    </span>
+                </a>
             </li>
         <?php endforeach; ?>
     </ul>
 </section>
 
-<?php // Questions ?>
-<section class="wrap pb-16 lg:pb-24" aria-labelledby="fragen">
-    <div class="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-        <?php echo stiqon_section_heading(['id' => 'fragen', 'overline' => 'Häufige Fragen', 'title' => 'Gut zu wissen']); ?>
-        <div class="divide-y divide-line border-y border-line">
-            <?php foreach ($questions as $item) : ?>
-                <details class="group">
-                    <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-lg font-medium [&::-webkit-details-marker]:hidden">
-                        <?php echo esc_html($item['question']); ?>
-                        <?php echo stiqon_icon('plus', 'text-muted transition-transform duration-200 ease-soft group-open:rotate-45'); ?>
-                    </summary>
-                    <p class="max-w-2xl pb-6 text-ink-soft"><?php echo esc_html($item['answer']); ?></p>
-                </details>
+<?php // How it works ?>
+<section class="bg-mist py-16 lg:py-28" aria-labelledby="ablauf">
+    <div class="wrap">
+        <?php echo stiqon_section_heading(['id' => 'ablauf', 'title' => 'In drei Schritten zum fertigen Werbemittel']); ?>
+        <ol class="mt-10 grid gap-3 sm:gap-4 md:grid-cols-3 lg:mt-14">
+            <?php foreach ($steps as $index => $step) : ?>
+                <li class="flex flex-col justify-between gap-8 rounded-card bg-paper p-7 md:min-h-56">
+                    <span class="text-action flex size-9 items-center justify-center rounded-full bg-ink text-sm text-paper" aria-hidden="true"><?php echo esc_html((string) ($index + 1)); ?></span>
+                    <div>
+                        <h3 class="text-heading"><?php echo esc_html($step['title']); ?></h3>
+                        <p class="mt-2 text-muted"><?php echo esc_html($step['text']); ?></p>
+                    </div>
+                </li>
             <?php endforeach; ?>
-        </div>
+        </ol>
     </div>
 </section>
 
-<?php // Closing call to action ?>
-<section class="wrap pb-16 lg:pb-24">
-    <div class="on-night relative overflow-hidden rounded-tile bg-night px-7 py-14 text-on-night lg:px-16 lg:py-20">
-        <div class="relative z-10 max-w-xl">
-            <h2 class="text-title">Zeigen Sie uns <span class="accent text-[1.06em] text-gold">Ihr Motiv.</span></h2>
-            <p class="text-lead mt-4 text-on-night-muted">
-                Ein Bild genügt, um zu sehen, wie es als Sticker und als Flyer wirkt.
-            </p>
-            <div class="mt-8">
-                <?php echo stiqon_motif_button('Motiv wählen', ['variant' => 'on-night', 'size' => 'lg']); ?>
-            </div>
-        </div>
-        <div class="pointer-events-none absolute right-[3%] -bottom-[34%] hidden w-[21rem] md:block lg:w-[24rem]" aria-hidden="true">
-            <?php echo stiqon_sticker(['shape' => 'circle', 'motif' => 'aktion'], 'absolute top-[4%] -left-[42%] w-[58%] -rotate-6'); ?>
-            <?php echo stiqon_sticker(['shape' => 'square', 'motif' => 'wellen'], 'rotate-6'); ?>
-        </div>
+<?php // Questions ?>
+<section class="wrap py-16 lg:py-28" aria-labelledby="fragen">
+    <?php echo stiqon_section_heading(['id' => 'fragen', 'title' => 'Gut zu wissen']); ?>
+    <div class="mx-auto mt-10 grid max-w-3xl gap-2 lg:mt-14">
+        <?php foreach ($questions as $item) : ?>
+            <details class="group rounded-card bg-mist">
+                <summary class="text-heading flex cursor-pointer list-none items-center justify-between gap-6 rounded-card px-6 py-5 [&::-webkit-details-marker]:hidden">
+                    <?php echo esc_html($item['question']); ?>
+                    <?php echo stiqon_icon('plus', 'transition-transform duration-200 ease-soft group-open:rotate-45'); ?>
+                </summary>
+                <p class="max-w-2xl px-6 pb-6 text-muted"><?php echo esc_html($item['answer']); ?></p>
+            </details>
+        <?php endforeach; ?>
+    </div>
+</section>
+
+<?php // Closing call ?>
+<section class="wrap pt-6 pb-20 text-center lg:pt-10 lg:pb-32" aria-labelledby="abschluss">
+    <h2 id="abschluss" class="text-cta">Zeigen Sie uns<br>Ihr Motiv.</h2>
+    <p class="mx-auto mt-6 max-w-sm text-muted">
+        Ein Bild genügt, um zu sehen, wie es als Sticker und als Flyer wirkt.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center justify-center gap-2">
+        <?php echo stiqon_motif_button('Motiv wählen'); ?>
+        <?php echo stiqon_button('Sticker ansehen '.stiqon_icon('arrow-right'), ['variant' => 'secondary', 'href' => $sticker]); ?>
     </div>
 </section>
 <?php

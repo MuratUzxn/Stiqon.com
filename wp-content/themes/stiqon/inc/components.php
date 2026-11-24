@@ -61,6 +61,7 @@ function stiqon_icon(string $name, string $class = '', array $attributes = []): 
 {
     $paths = [
         'arrow-right' => 'M5 12h14M13 6l6 6-6 6',
+        'arrow-left' => 'M19 12H5M11 6l-6 6 6 6',
         'arrow-up-right' => 'M7 17 17 7M8 7h9v9',
         'upload' => 'M12 16V4M7 9l5-5 5 5M5 20h14',
         'image' => 'M4 5h16v14H4zM4 16l4.5-4.5 3.5 3.5 3-3 5 5M9 9.5h.01',
@@ -84,26 +85,25 @@ function stiqon_icon(string $name, string $class = '', array $attributes = []): 
  * A pill button, or a link that looks like one when "href" is given.
  *
  * @param  string  $content  inner markup: escaped text, optionally with an icon
- * @param  array{variant?: string, size?: string, href?: ?string, type?: string, class?: string, attributes?: array<string, string|int|bool|null>}  $options
+ * @param  array{variant?: string, size?: string, href?: ?string, type?: string, class?: string, attributes?: array<string, string|int|bool|null>}  $options  variant: primary, secondary, quiet, on-night, on-night-secondary; size: md (44 px) or sm (36 px)
  */
 function stiqon_button(string $content, array $options = []): string
 {
-    $base = 'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium '
-        .'transition-[background-color,border-color,color,transform] duration-200 ease-soft active:scale-[0.98] '
-        .'disabled:pointer-events-none disabled:opacity-50';
+    $base = 'text-action inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full '
+        .'transition-colors duration-200 ease-soft disabled:pointer-events-none disabled:opacity-50';
 
     $sizes = [
-        'sm' => 'h-10 px-4 text-sm',
-        'md' => 'h-11 px-5 text-[0.9375rem]',
-        'lg' => 'h-13 px-7 text-base',
+        'sm' => 'h-9 px-3.5 text-sm',
+        'md' => 'h-11 px-4 text-base',
     ];
 
+    // "secondary" is a translucent grey, so it reads as a button on white and on grey surfaces alike.
     $variants = [
         'primary' => 'bg-ink text-paper hover:bg-ink-soft',
-        'secondary' => 'border border-control bg-paper text-ink hover:bg-mist',
-        'quiet' => 'text-ink hover:bg-mist',
-        'on-night' => 'bg-on-night text-night hover:bg-white',
-        'on-night-outline' => 'border border-on-night/45 text-on-night hover:bg-on-night/10',
+        'secondary' => 'bg-ink/8 text-ink hover:bg-ink/14',
+        'quiet' => 'text-ink hover:bg-ink/8',
+        'on-night' => 'bg-paper text-ink hover:bg-mist-deep',
+        'on-night-secondary' => 'bg-white/14 text-on-night hover:bg-white/22',
     ];
 
     $classes = stiqon_classes([
@@ -132,9 +132,9 @@ function stiqon_chip(string $label, array $options = []): string
     $active = ! empty($options['active']);
 
     $classes = stiqon_classes([
-        'inline-flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-sm font-medium transition-colors duration-200 ease-soft',
-        'border-ink bg-ink text-paper' => $active,
-        'border-control bg-paper text-ink hover:bg-mist' => ! $active,
+        'text-action inline-flex h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-3.5 text-sm transition-colors duration-200 ease-soft',
+        'bg-ink text-paper' => $active,
+        'bg-ink/8 text-ink hover:bg-ink/14' => ! $active,
         $options['class'] ?? '',
     ]);
 
@@ -146,27 +146,29 @@ function stiqon_chip(string $label, array $options = []): string
 }
 
 /**
- * Overline, title and an optional lead paragraph for a page section.
+ * Title of a page section with an optional small label above and lead paragraph
+ * below. Centred by default, as section titles are throughout the site.
  *
- * @param  array{title: string, overline?: ?string, id?: ?string, level?: int, lead?: ?string, class?: string}  $options
+ * @param  array{title: string, label?: ?string, id?: ?string, level?: int, lead?: ?string, align?: string, class?: string}  $options
  */
 function stiqon_section_heading(array $options): string
 {
     $level = max(1, min(6, (int) ($options['level'] ?? 2)));
-    $overline = $options['overline'] ?? null;
+    $label = $options['label'] ?? null;
+    $centred = ($options['align'] ?? 'center') === 'center';
 
-    $html = '<div class="'.esc_attr(stiqon_classes(['max-w-3xl', $options['class'] ?? ''])).'">';
+    $html = '<div class="'.esc_attr(stiqon_classes(['max-w-2xl', 'mx-auto text-center' => $centred, $options['class'] ?? ''])).'">';
 
-    if ($overline !== null && $overline !== '') {
-        $html .= '<p class="text-overline text-muted">'.esc_html($overline).'</p>';
+    if ($label !== null && $label !== '') {
+        $html .= '<p class="text-label text-muted">'.esc_html($label).'</p>';
     }
 
     $html .= '<h'.$level.(empty($options['id']) ? '' : ' id="'.esc_attr($options['id']).'"')
-        .' class="'.esc_attr(stiqon_classes(['text-title', 'mt-3' => $overline !== null && $overline !== ''])).'">'
+        .' class="'.esc_attr(stiqon_classes(['text-title', 'mt-3' => $label !== null && $label !== ''])).'">'
         .esc_html($options['title']).'</h'.$level.'>';
 
     if (! empty($options['lead'])) {
-        $html .= '<p class="text-lead mt-4 text-ink-soft">'.esc_html($options['lead']).'</p>';
+        $html .= '<p class="text-lead mt-4 text-muted">'.esc_html($options['lead']).'</p>';
     }
 
     return $html.'</div>';

@@ -1,169 +1,166 @@
 <?php
 /**
- * Sample sheet ("Musterbogen"): colours, type, logo versions and mockups on one
- * page, for reviewing the look. It belongs to the page with the address
- * /musterbogen/, which is kept private – only people who are logged in to the
- * administration can open it.
+ * Sample sheet ("Musterbogen"): logo versions, type, colours, controls and
+ * mockups on one page, for reviewing the look. It belongs to the page with the
+ * address /musterbogen/, which is kept private – only people who are logged in
+ * to the administration can open it.
  */
 
 defined('ABSPATH') || exit;
 
-$colours = [
-    ['name' => 'Tinte', 'hex' => '#0A0A0A', 'class' => 'bg-ink', 'note' => 'Text, Hauptbuttons'],
-    ['name' => 'Tinte weich', 'hex' => '#3D3D3A', 'class' => 'bg-ink-soft', 'note' => 'Fließtext zweiter Ordnung'],
-    ['name' => 'Gedämpft', 'hex' => '#6F6F6A', 'class' => 'bg-muted', 'note' => 'Kleinster Textton (5,0:1)'],
-    ['name' => 'Kontur', 'hex' => '#8A8A85', 'class' => 'bg-control', 'note' => 'Ränder von Chips und Feldern (3,5:1)'],
-    ['name' => 'Haarlinie', 'hex' => '#E4E4DF', 'class' => 'bg-line', 'note' => 'Trennlinien ruhiger Flächen'],
-    ['name' => 'Kartenfläche', 'hex' => '#F5F5F3', 'class' => 'bg-mist', 'note' => 'Bühne hinter den Mockups'],
-    ['name' => 'Papier', 'hex' => '#FFFFFF', 'class' => 'border border-line bg-paper', 'note' => 'Seitenhintergrund'],
-    ['name' => 'Gold', 'hex' => '#D6B92C', 'class' => 'bg-gold', 'note' => 'Nur auf dunklen Flächen'],
+$type = [
+    ['name' => 'Titelzeile', 'note' => 'bis 80 px, Stärke 650', 'class' => 'text-display', 'sample' => 'Werbemittel, die haften bleiben.'],
+    ['name' => 'Abschluss', 'note' => 'bis 60 px', 'class' => 'text-cta', 'sample' => 'Zeigen Sie uns Ihr Motiv.'],
+    ['name' => 'Abschnitt', 'note' => 'bis 44 px', 'class' => 'text-title', 'sample' => 'Formen, Materialien und Formate'],
+    ['name' => 'Überschrift', 'note' => 'bis 21 px', 'class' => 'text-heading', 'sample' => 'Runde Sticker'],
+    ['name' => 'Einleitung', 'note' => 'bis 20 px, gedämpft', 'class' => 'text-lead text-muted', 'sample' => 'Wählen Sie Ihr Motiv und sehen Sie es sofort auf Stickern und Flyern.'],
+    ['name' => 'Fließtext', 'note' => '16 px', 'class' => '', 'sample' => 'Zahlen wie 1.250 Stück oder 105 × 148 mm bleiben gut lesbar.'],
+    ['name' => 'Beschriftung', 'note' => '14 px, Stärke 500', 'class' => 'text-label text-muted', 'sample' => 'Ihr Bild bleibt in Ihrem Browser – es wird nichts hochgeladen.'],
 ];
 
-$accents = [
-    ['key' => 'A', 'name' => 'Instrument Serif', 'note' => 'leicht und elegant – aktuell eingestellt', 'style' => "font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-0.02em;font-size:1.06em"],
-    ['key' => 'B', 'name' => 'Playfair Display', 'note' => 'kräftiger, näher am Gewicht des Logos', 'style' => "font-family:'Playfair Display Variable',serif;font-style:italic;font-weight:700;letter-spacing:-0.03em"],
-    ['key' => 'C', 'name' => 'Ohne Serife', 'note' => 'durchgehend Instrument Sans', 'style' => ''],
+$colours = [
+    ['name' => 'Tinte', 'hex' => '#141414', 'class' => 'bg-ink', 'note' => 'Text, Hauptbuttons, Fuß'],
+    ['name' => 'Tinte weich', 'hex' => '#404040', 'class' => 'bg-ink-soft', 'note' => 'Hauptbutton unter dem Mauszeiger'],
+    ['name' => 'Gedämpft', 'hex' => '#6B6B6B', 'class' => 'bg-muted', 'note' => 'Zweiter Textton (5,3:1 auf Weiß)'],
+    ['name' => 'Kontur', 'hex' => '#8A8A8A', 'class' => 'bg-control', 'note' => 'Ränder von Eingabefeldern (3,5:1)'],
+    ['name' => 'Haarlinie', 'hex' => '#E8E8E8', 'class' => 'bg-line', 'note' => 'Trennlinien'],
+    ['name' => 'Fläche', 'hex' => '#F3F3F3', 'class' => 'bg-mist', 'note' => 'Karten, Kacheln, Bänder'],
+    ['name' => 'Papier', 'hex' => '#FFFFFF', 'class' => 'bg-paper ring-1 ring-line ring-inset', 'note' => 'Seitenhintergrund'],
+    ['name' => 'Gold', 'hex' => '#D6B92C', 'class' => 'bg-gold', 'note' => 'Linie im Logo; sonst nur Tastaturfokus auf Dunkel'],
 ];
 
 $mockups = [
-    ['tone' => 'mist', 'sticker' => ['shape' => 'circle', 'motif' => 'siegel']],
-    ['tone' => 'sand', 'sticker' => ['shape' => 'square', 'motif' => 'sonne', 'peel' => true]],
-    ['tone' => 'sage', 'sticker' => ['shape' => 'circle', 'motif' => 'monogramm', 'finish' => 'matte']],
-    ['tone' => 'sky', 'sticker' => ['shape' => 'rect', 'motif' => 'wellen']],
-    ['tone' => 'mist', 'sticker' => ['shape' => 'square', 'motif' => 'neu']],
-    ['tone' => 'blush', 'sticker' => ['shape' => 'oval', 'motif' => 'danke']],
-    ['tone' => 'mist', 'sticker' => ['shape' => 'circle', 'motif' => 'aktion']],
-    ['tone' => 'sand', 'sticker' => ['shape' => 'circle', 'material' => 'kraft', 'motif' => 'blatt', 'finish' => 'matte']],
-    ['tone' => 'mist', 'sticker' => ['shape' => 'square', 'material' => 'holo', 'motif' => 'raster']],
-    ['tone' => 'sky', 'sticker' => ['shape' => 'circle', 'material' => 'clear', 'motif' => 'monogramm']],
-    ['tone' => 'mist', 'sticker' => ['shape' => 'contour', 'motif' => 'sprechblase']],
-    ['tone' => 'sage', 'sticker' => ['shape' => 'contour', 'motif' => 'stern']],
-    ['tone' => 'mist', 'sticker' => ['shape' => 'circle', 'material' => 'holo', 'motif' => 'siegel']],
-    ['tone' => 'blush', 'sticker' => ['shape' => 'rect', 'motif' => 'punkt', 'peel' => true]],
-    ['tone' => 'mist', 'sticker' => ['shape' => 'circle', 'material' => 'kraft', 'motif' => 'siegel', 'finish' => 'matte']],
-    ['tone' => 'mist', 'flyer' => ['format' => 'a6', 'motif' => 'fest']],
-    ['tone' => 'sand', 'flyer' => ['format' => 'a5', 'motif' => 'eroeffnung', 'stack' => true]],
-    ['tone' => 'sage', 'flyer' => ['format' => 'a4', 'motif' => 'karte', 'heavy' => true]],
-    ['tone' => 'mist', 'flyer' => ['format' => 'lang', 'motif' => 'prozent', 'gloss' => true]],
-    ['tone' => 'sky', 'flyer' => ['format' => 'quadrat', 'motif' => 'kursplan', 'stack' => true]],
+    ['sticker' => ['shape' => 'circle', 'motif' => 'siegel']],
+    ['sticker' => ['shape' => 'square', 'motif' => 'sonne', 'peel' => true]],
+    ['sticker' => ['shape' => 'circle', 'motif' => 'monogramm', 'finish' => 'matte']],
+    ['sticker' => ['shape' => 'rect', 'motif' => 'wellen']],
+    ['sticker' => ['shape' => 'square', 'motif' => 'neu']],
+    ['sticker' => ['shape' => 'oval', 'motif' => 'danke']],
+    ['sticker' => ['shape' => 'circle', 'motif' => 'aktion']],
+    ['sticker' => ['shape' => 'circle', 'material' => 'kraft', 'motif' => 'blatt', 'finish' => 'matte']],
+    ['sticker' => ['shape' => 'square', 'material' => 'holo', 'motif' => 'raster']],
+    ['sticker' => ['shape' => 'circle', 'material' => 'clear', 'motif' => 'monogramm']],
+    ['sticker' => ['shape' => 'contour', 'motif' => 'sprechblase']],
+    ['sticker' => ['shape' => 'contour', 'motif' => 'stern']],
+    ['sticker' => ['shape' => 'circle', 'material' => 'holo', 'motif' => 'siegel']],
+    ['sticker' => ['shape' => 'rect', 'motif' => 'punkt', 'peel' => true]],
+    ['sticker' => ['shape' => 'circle', 'material' => 'kraft', 'motif' => 'siegel', 'finish' => 'matte']],
+    ['flyer' => ['format' => 'a6', 'motif' => 'fest']],
+    ['flyer' => ['format' => 'a5', 'motif' => 'eroeffnung', 'stack' => true]],
+    ['flyer' => ['format' => 'a4', 'motif' => 'karte', 'heavy' => true]],
+    ['flyer' => ['format' => 'lang', 'motif' => 'prozent', 'gloss' => true]],
+    ['flyer' => ['format' => 'quadrat', 'motif' => 'kursplan', 'stack' => true]],
 ];
 
 $brand = static fn (string $file): string => esc_url(get_theme_file_uri('assets/brand/'.$file));
 
 get_header();
 ?>
-<div class="wrap py-12 lg:py-16">
-    <p class="text-overline text-muted">Intern – nicht Teil des Shops</p>
-    <h1 class="text-display mt-5">Musterbogen</h1>
-    <p class="text-lead mt-6 max-w-2xl text-ink-soft">
-        Farben, Schrift, Logo-Fassungen und Mockups auf einer Seite – zur Abstimmung des Looks.
+<section class="wrap pt-8 pb-12 text-center lg:pt-14 lg:pb-16">
+    <p class="text-label text-muted">Intern – nicht Teil des Shops</p>
+    <h1 class="text-display mt-4">Musterbogen</h1>
+    <p class="text-lead mx-auto mt-6 max-w-xl text-muted">
+        Logo, Schrift, Farben, Bedienelemente und Mockups auf einer Seite – zur Abstimmung des Looks.
+    </p>
+</section>
+
+<div class="wrap pb-16 lg:pb-28">
+    <p class="mx-auto max-w-2xl rounded-card bg-mist px-6 py-5 text-center text-muted">
+        Der Look folgt mobbin.com: weiße Seiten, eine einzige serifenlose Schrift, hellgraue Flächen mit großen Rundungen, schwarze und graue Pill-Buttons, schwarzer Fuß – ohne Rahmen und ohne Schatten an der Oberfläche.
     </p>
 
     <?php // Logo ?>
-    <section class="mt-16" aria-labelledby="logo">
+    <section class="mt-16 lg:mt-28" aria-labelledby="logo">
         <?php echo stiqon_section_heading([
             'id' => 'logo',
-            'overline' => '1',
             'title' => 'Logo',
-            'lead' => 'Links das gelieferte Original. Daneben die daraus abgeleiteten Fassungen: freigestellt für helle Flächen und mit hellen Buchstaben für dunkle Flächen. Die Buchstabenformen sind nicht neu gezeichnet.',
+            'lead' => 'Das gelieferte Original und die daraus abgeleiteten Fassungen. Die Buchstabenformen sind nicht neu gezeichnet.',
         ]); ?>
-        <div class="mt-8 grid gap-4 md:grid-cols-2">
+        <div class="mt-10 grid gap-3 sm:gap-4 md:grid-cols-2 lg:mt-14">
             <figure>
-                <div class="flex aspect-[2/1] items-center justify-center rounded-card border border-line bg-white p-8">
-                    <img src="<?php echo $brand('logo-original-800.webp'); ?>" width="800" height="400" alt="Stiqon – geliefertes Original" class="h-auto w-full max-w-md">
+                <div class="flex aspect-[2/1] items-center justify-center rounded-tile bg-mist p-8">
+                    <img src="<?php echo $brand('logo-original-800.webp'); ?>" width="800" height="400" alt="Stiqon – geliefertes Original" class="h-auto w-full max-w-sm rounded-control">
                 </div>
-                <figcaption class="mt-3 text-sm text-muted">Original (wie geliefert, mit weißem Hintergrund)</figcaption>
+                <figcaption class="text-label mt-3 text-muted">Original, wie geliefert – mit weißem Hintergrund</figcaption>
             </figure>
             <figure>
-                <div class="flex aspect-[2/1] items-center justify-center rounded-card bg-mist p-8">
-                    <?php echo stiqon_logo(['class' => 'h-auto w-full max-w-md', 'sizes' => '(min-width: 48rem) 448px, 80vw']); ?>
+                <div class="flex aspect-[2/1] items-center justify-center rounded-tile bg-mist p-8">
+                    <?php echo stiqon_logo(['class' => 'h-auto w-full max-w-sm', 'sizes' => '(min-width: 48rem) 384px, 80vw']); ?>
                 </div>
-                <figcaption class="mt-3 text-sm text-muted">Freigestellt, hier auf der Kartenfläche</figcaption>
+                <figcaption class="text-label mt-3 text-muted">Freigestellt, für helle Flächen</figcaption>
             </figure>
             <figure>
-                <div class="flex aspect-[2/1] items-center justify-center rounded-card bg-night p-8">
-                    <?php echo stiqon_logo(['variant' => 'light', 'class' => 'h-auto w-full max-w-md', 'sizes' => '(min-width: 48rem) 448px, 80vw']); ?>
+                <div class="flex aspect-[2/1] items-center justify-center rounded-tile bg-night p-8">
+                    <?php echo stiqon_logo(['variant' => 'light', 'class' => 'h-auto w-full max-w-sm', 'sizes' => '(min-width: 48rem) 384px, 80vw']); ?>
                 </div>
-                <figcaption class="mt-3 text-sm text-muted">Helle Fassung für dunkle Flächen (Buchstaben hell, Goldlinie bleibt)</figcaption>
+                <figcaption class="text-label mt-3 text-muted">Helle Fassung für dunkle Flächen – die Goldlinie bleibt</figcaption>
             </figure>
             <figure>
-                <div class="flex aspect-[2/1] items-center justify-center gap-6 rounded-card bg-mist p-8">
-                    <img src="<?php echo $brand('icon-192.png'); ?>" width="192" height="192" alt="Symbol 192 px" class="size-32">
-                    <img src="<?php echo $brand('icon-180.png'); ?>" width="180" height="180" alt="Symbol 64 px" class="size-16">
-                    <img src="<?php echo $brand('icon-32.png'); ?>" width="32" height="32" alt="Symbol 32 px" class="size-8">
+                <div class="flex aspect-[2/1] items-center justify-center gap-6 rounded-tile bg-mist p-8">
+                    <img src="<?php echo $brand('icon-192.png'); ?>" width="192" height="192" alt="Symbol in 128 px" class="size-32">
+                    <img src="<?php echo $brand('icon-180.png'); ?>" width="180" height="180" alt="Symbol in 64 px" class="size-16">
+                    <img src="<?php echo $brand('icon-32.png'); ?>" width="32" height="32" alt="Symbol in 32 px" class="size-8">
                 </div>
-                <figcaption class="mt-3 text-sm text-muted">Symbol aus dem „S“ für Browser-Tab und Startbildschirm</figcaption>
+                <figcaption class="text-label mt-3 text-muted">Symbol aus dem „S“ für Browser-Tab und Startbildschirm</figcaption>
             </figure>
         </div>
-        <p class="mt-6 max-w-2xl text-ink-soft">
+        <p class="mx-auto mt-8 max-w-2xl text-center text-muted">
             Ausweichlösung, falls die abgeleiteten Fassungen nicht gefallen: das unveränderte Logo auf einer weißen Fläche. Eine Vektordatei des Logos würde alle Fassungen schärfer machen.
         </p>
     </section>
 
     <?php // Type ?>
-    <section class="mt-20" aria-labelledby="schrift">
+    <section class="mt-16 lg:mt-28" aria-labelledby="schrift">
         <?php echo stiqon_section_heading([
             'id' => 'schrift',
-            'overline' => '2',
             'title' => 'Schrift',
-            'lead' => 'Die Oberfläche ist in Instrument Sans gesetzt. Zur Wahl steht, ob ein einzelnes Wort in großen Überschriften kursiv in einer Serife erscheint – als Anklang an das Logo.',
+            'lead' => 'Eine Schrift für alles: Instrument Sans, frei lizenziert und vom eigenen Server geladen. Größen und Stärken sind am Vorbild gemessen.',
         ]); ?>
-        <div class="mt-8 grid gap-4">
-            <?php foreach ($accents as $accent) : ?>
-                <div class="rounded-card border border-line p-7 lg:p-10">
-                    <p class="text-overline text-muted">Variante <?php echo esc_html($accent['key'].' · '.$accent['name'].' – '.$accent['note']); ?></p>
-                    <p class="text-display mt-5">Werbemittel, die <span<?php echo $accent['style'] !== '' ? ' style="'.esc_attr($accent['style']).'"' : ''; ?>>haften bleiben.</span></p>
+        <dl class="mt-10 grid gap-3 sm:gap-4 lg:mt-14">
+            <?php foreach ($type as $style) : ?>
+                <div class="grid items-baseline gap-x-8 gap-y-3 rounded-card bg-mist p-6 md:grid-cols-[11rem_1fr] lg:p-8">
+                    <dt>
+                        <span class="block font-semibold"><?php echo esc_html($style['name']); ?></span>
+                        <span class="text-label block text-muted"><?php echo esc_html($style['note']); ?></span>
+                    </dt>
+                    <dd class="<?php echo esc_attr($style['class']); ?>"><?php echo esc_html($style['sample']); ?></dd>
                 </div>
             <?php endforeach; ?>
-        </div>
-        <div class="mt-4 grid gap-4 md:grid-cols-2">
-            <div class="rounded-card border border-line p-7">
-                <p class="text-overline text-muted">Überschrift</p>
-                <p class="text-title mt-3">Formen, Materialien und Formate</p>
-                <p class="text-lead mt-4 text-ink-soft">Einleitender Absatz in etwas größerer Schrift, der einen Abschnitt eröffnet.</p>
-            </div>
-            <div class="rounded-card border border-line p-7">
-                <p class="text-overline text-muted">Fließtext</p>
-                <p class="text-heading mt-3">Runde Sticker</p>
-                <p class="mt-2 text-ink-soft">Fließtext in normaler Größe. Zahlen wie 1.250 Stück oder 105 × 148 mm bleiben gut lesbar.</p>
-                <p class="mt-2 text-sm text-muted">Kleiner Hinweistext im gedämpften Ton.</p>
-            </div>
-        </div>
+        </dl>
     </section>
 
     <?php // Colour ?>
-    <section class="mt-20" aria-labelledby="farben">
+    <section class="mt-16 lg:mt-28" aria-labelledby="farben">
         <?php echo stiqon_section_heading([
             'id' => 'farben',
-            'overline' => '3',
             'title' => 'Farben',
-            'lead' => 'Aus dem Logo gemessen: Schwarz und Weiß tragen die Seite. Gold erscheint sparsam und nur auf dunklen Flächen, weil es auf Weiß zu wenig Kontrast hat.',
+            'lead' => 'Fast-Schwarz, Weiß und ein neutrales Grau tragen die Seite. Farbe bringen die Motive mit.',
         ]); ?>
-        <ul class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <ul class="mt-10 grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 md:grid-cols-4 lg:mt-14">
             <?php foreach ($colours as $colour) : ?>
                 <li>
                     <div class="aspect-[3/2] rounded-card <?php echo esc_attr($colour['class']); ?>"></div>
-                    <p class="mt-3 font-medium"><?php echo esc_html($colour['name']); ?> <span class="font-normal text-muted"><?php echo esc_html($colour['hex']); ?></span></p>
-                    <p class="text-sm text-muted"><?php echo esc_html($colour['note']); ?></p>
+                    <p class="mt-3 font-semibold"><?php echo esc_html($colour['name']); ?> <span class="font-normal text-muted"><?php echo esc_html($colour['hex']); ?></span></p>
+                    <p class="text-label text-muted"><?php echo esc_html($colour['note']); ?></p>
                 </li>
             <?php endforeach; ?>
         </ul>
     </section>
 
     <?php // Controls ?>
-    <section class="mt-20" aria-labelledby="bedienelemente">
-        <?php echo stiqon_section_heading(['id' => 'bedienelemente', 'overline' => '4', 'title' => 'Bedienelemente']); ?>
-        <div class="mt-8 grid gap-4 md:grid-cols-2">
-            <div class="flex flex-wrap items-center gap-3 rounded-card border border-line p-7">
+    <section class="mt-16 lg:mt-28" aria-labelledby="bedienelemente">
+        <?php echo stiqon_section_heading(['id' => 'bedienelemente', 'title' => 'Bedienelemente']); ?>
+        <div class="mt-10 grid gap-3 sm:gap-4 md:grid-cols-2 lg:mt-14">
+            <div class="flex flex-wrap items-center justify-center gap-2 rounded-tile bg-mist p-8">
                 <?php echo stiqon_button('Hauptaktion'); ?>
                 <?php echo stiqon_button('Zweite Aktion', ['variant' => 'secondary']); ?>
                 <?php echo stiqon_button('Leise Aktion', ['variant' => 'quiet']); ?>
             </div>
-            <div class="on-night flex flex-wrap items-center gap-3 rounded-card bg-night p-7">
+            <div class="on-night flex flex-wrap items-center justify-center gap-2 rounded-tile bg-night p-8">
                 <?php echo stiqon_button('Hauptaktion', ['variant' => 'on-night']); ?>
-                <?php echo stiqon_button('Zweite Aktion', ['variant' => 'on-night-outline']); ?>
+                <?php echo stiqon_button('Zweite Aktion', ['variant' => 'on-night-secondary']); ?>
             </div>
-            <div class="flex flex-wrap items-center gap-2 rounded-card border border-line p-7 md:col-span-2">
+            <div class="flex flex-wrap items-center justify-center gap-2 rounded-tile bg-mist p-8 md:col-span-2">
                 <?php echo stiqon_chip('Alle', ['active' => true]); ?>
                 <?php foreach (['Rund', 'Quadratisch', 'Konturschnitt', 'Transparent', 'Holografisch'] as $label) : ?>
                     <?php echo stiqon_chip($label); ?>
@@ -173,23 +170,18 @@ get_header();
     </section>
 
     <?php // Mockups ?>
-    <section class="mt-20" aria-labelledby="mockups">
+    <section class="mt-16 lg:mt-28" aria-labelledby="mockups">
         <?php echo stiqon_section_heading([
             'id' => 'mockups',
-            'overline' => '5',
             'title' => 'Mockups',
             'lead' => 'Alle Produktbilder sind gezeichnet, nicht fotografiert – dieselbe Darstellung zeigt später das Motiv der Kundschaft. Die Motive hier sind eigene Beispiele.',
         ]); ?>
-        <div class="mt-8">
+        <div class="mt-8 flex justify-center">
             <?php echo stiqon_motif_button('Eigenes Motiv auf allen Karten zeigen', ['variant' => 'secondary']); ?>
         </div>
-        <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+        <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:mt-12 lg:grid-cols-4">
             <?php foreach ($mockups as $card) : ?>
-                <?php
-                $mockup = isset($card['sticker']) ? stiqon_sticker($card['sticker']) : stiqon_flyer($card['flyer']);
-
-                echo stiqon_stage($mockup, $card['tone']);
-                ?>
+                <?php echo stiqon_stage(isset($card['sticker']) ? stiqon_sticker($card['sticker']) : stiqon_flyer($card['flyer'])); ?>
             <?php endforeach; ?>
         </div>
     </section>

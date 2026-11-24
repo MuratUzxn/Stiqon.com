@@ -4,20 +4,31 @@ test.describe('home page', () => {
     test('leads with one action and offers both areas', async ({ page }) => {
         await page.goto('/');
 
-        await expect(page.getByRole('heading', { level: 1 })).toContainText('Werbemittel, die haften bleiben.');
-        await expect(page.getByRole('main').getByRole('button', { name: 'Motiv wählen' }).first()).toBeVisible();
+        // The headline carries two product views between its words. They are decoration:
+        // the heading's name is the sentence alone.
+        const headline = page.getByRole('heading', { level: 1, name: 'Werbemittel, die haften bleiben.', exact: true });
 
-        for (const title of ['In drei Schritten zum fertigen Werbemittel', 'Formen, Materialien und Formate', 'Gut zu wissen']) {
+        await expect(headline).toBeVisible();
+        await expect(headline.locator('[data-mockup]')).toHaveCount(2);
+
+        const main = page.getByRole('main');
+
+        await expect(main.getByRole('button', { name: 'Motiv wählen' }).first()).toBeVisible();
+        await expect(main.getByRole('link', { name: 'Sticker ansehen' }).first()).toHaveAttribute('href', /\/sticker\/$/);
+        await expect(main.getByRole('link', { name: 'Flyer ansehen' }).first()).toHaveAttribute('href', /\/flyer\/$/);
+
+        for (const title of ['Erst ansehen, dann bestellen.', 'Formen, Materialien und Formate', 'In drei Schritten zum fertigen Werbemittel', 'Gut zu wissen']) {
             await expect(page.getByRole('heading', { level: 2, name: title })).toBeVisible();
         }
     });
 
-    test('an area tile opens the area and the navigation marks it', async ({ page, isMobile }) => {
+    test('a tile opens its area and the navigation marks it', async ({ page, isMobile }) => {
         await page.goto('/');
-        await page.getByRole('heading', { level: 3, name: 'Sticker', exact: true }).getByRole('link').click();
+        await page.getByRole('link', { name: 'Runde Sticker', exact: true }).click();
 
         await expect(page).toHaveURL(/\/sticker\/$/);
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Sticker');
+        await expect(page.getByRole('navigation', { name: 'Pfad' }).getByRole('link', { name: 'Start' })).toBeVisible();
 
         if (isMobile) {
             await page.locator('header summary').click();
@@ -55,18 +66,51 @@ test.describe('home page', () => {
         await expect(page).toHaveURL(/#inhalt$/);
     });
 
-    test('the card wall stands still for visitors who prefer reduced motion', async ({ page, isMobile }) => {
-        test.skip(isMobile, 'The moving wall only exists on wide screens.');
-
-        await page.emulateMedia({ reducedMotion: 'reduce' });
+    test('the row of examples starts on the line of the page column', async ({ page }) => {
         await page.goto('/');
 
-        const column = page.locator('[x-data="cardWall"] > div').first();
-        const before = await column.boundingBox();
-        await page.waitForTimeout(600);
-        const after = await column.boundingBox();
+        // Scroll snapping once pulled the first card out to the window's edge.
+        const row = page.getByRole('region', { name: 'Beispiele: Motive auf Stickern und Flyern' });
+        const heading = await page.getByRole('heading', { level: 2, name: 'Erst ansehen, dann bestellen.' }).boundingBox();
+        const first = await row.locator('> *').first().boundingBox();
 
-        expect(after.y).toBe(before.y);
+        expect(await row.evaluate((element) => element.scrollLeft)).toBe(0);
+        expect(Math.round(first.x)).toBe(Math.round(heading.x));
+    });
+
+    test('the row of examples moves with its buttons', async ({ page, isMobile }) => {
+        test.skip(isMobile, 'The buttons only exist on wide screens; a phone swipes.');
+
+        await page.goto('/');
+
+        const row = page.getByRole('region', { name: 'Beispiele: Motive auf Stickern und Flyern' });
+        const previous = page.getByRole('button', { name: 'Vorherige Beispiele' });
+        const next = page.getByRole('button', { name: 'Weitere Beispiele' });
+        const position = () => row.evaluate((element) => element.scrollLeft);
+
+        await expect(previous).toBeDisabled();
+        await expect(next).toBeEnabled();
+
+        await next.click();
+        await expect.poll(position).toBeGreaterThan(100);
+        await expect(previous).toBeEnabled();
+
+        await previous.click();
+        await expect.poll(position).toBe(0);
+        await expect(previous).toBeDisabled();
+    });
+
+    test('the row of examples can be reached and moved with the keyboard', async ({ page, isMobile }) => {
+        test.skip(isMobile, 'Keyboard navigation is checked on the desktop viewport.');
+
+        await page.goto('/');
+
+        const row = page.getByRole('region', { name: 'Beispiele: Motive auf Stickern und Flyern' });
+
+        await row.focus();
+        await expect(row).toBeFocused();
+        await page.keyboard.press('ArrowRight');
+        await expect.poll(() => row.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
     });
 });
 
@@ -115,7 +159,11 @@ test.describe('mobile navigation', () => {
 
         await page.goto('/');
 
+        const link = page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Flyer' });
+
         await expect(page.locator('header summary')).toBeHidden();
-        await expect(page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Flyer' })).toBeVisible();
+        await expect(link).toBeVisible();
+        // Links are set in the text colour. (A type style once shared its name with a colour and greyed them.)
+        await expect(link).toHaveCSS('color', await page.evaluate(() => getComputedStyle(document.body).color));
     });
 });

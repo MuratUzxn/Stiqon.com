@@ -10,14 +10,11 @@ use Stiqon\Shop\Html;
  */
 final class Stage
 {
+    /** Cards are one neutral grey; the mockups bring the colour. */
     public const TONES = [
         'mist' => 'bg-mist',
-        'sand' => 'bg-stage-sand',
-        'sky' => 'bg-stage-sky',
-        'sage' => 'bg-stage-sage',
-        'blush' => 'bg-stage-blush',
+        'paper' => 'bg-paper',
         'night' => 'bg-night',
-        'paper' => 'border border-line bg-paper',
     ];
 
     public const RATIOS = [

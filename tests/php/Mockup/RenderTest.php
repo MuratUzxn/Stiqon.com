@@ -140,10 +140,10 @@ final class RenderTest extends TestCase
 
     public function test_the_stage_wraps_its_content(): void
     {
-        $html = stiqon_stage('<svg></svg>', 'sand', 'shrink-0');
+        $html = stiqon_stage('<svg></svg>', 'paper', 'shrink-0');
 
         $this->assertStringStartsWith('<div class="', $html);
-        $this->assertStringContainsString('bg-stage-sand', $html);
+        $this->assertStringContainsString('bg-paper', $html);
         $this->assertStringContainsString('shrink-0', $html);
         $this->assertStringContainsString('<svg></svg>', $html);
     }

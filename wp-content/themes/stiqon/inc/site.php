@@ -27,19 +27,12 @@ function stiqon_areas(): array
 }
 
 /**
- * The first screen's fonts are fetched right away instead of after the stylesheet,
- * so headlines do not jump from a fallback face. Pages that open with the serif
- * accent ask for that face as well.
+ * The interface face is fetched right away instead of after the stylesheet, so
+ * headlines do not jump from a fallback face.
  */
 add_action('wp_head', function (): void {
-    $fonts = ['instrument-sans-latin-wght-normal.woff2'];
-
-    if (is_front_page()) {
-        $fonts[] = 'instrument-serif-latin-400-italic.woff2';
-    }
-
     foreach (stiqon_build_manifest() as $source => $entry) {
-        if (in_array(basename($source), $fonts, true) && isset($entry['file'])) {
+        if (basename($source) === 'instrument-sans-latin-wght-normal.woff2' && isset($entry['file'])) {
             printf(
                 '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>'."\n",
                 esc_url(get_theme_file_uri('assets/build/'.$entry['file'])),

@@ -106,9 +106,17 @@ keine Nutzungsdaten an WooCommerce.
 
 ## Gestaltung
 
+- Der Look folgt [mobbin.com](https://mobbin.com) (Stand 24.11.2026): weiße Seiten, zentrierte
+  große Überschriften, eine einzige serifenlose Schrift, hellgraue Flächen mit großen Rundungen,
+  schwarze und graue Pill-Buttons, schwarzer Fuß – ohne Rahmen und ohne Schatten an der
+  Oberfläche. Größen, Stärken und Farben sind dort gemessen. Abweichungen: Instrument Sans statt
+  der kostenpflichtigen Schrift des Vorbilds, und ein etwas dunkleres Grau für Nebentexte, damit
+  der Kontrast auch auf grauen Flächen reicht.
 - Farben, Schrift, Radien und Typo-Stile stehen als Tokens in
   `wp-content/themes/stiqon/assets/src/css/app.css`. Schriften sind gebündelt; weder der Build noch
   der Browser fragt ein Schrift-CDN.
+- Eigene Typo-Klassen (`text-display`, `text-title`, `text-action` …) dürfen nicht wie eine Farbe
+  heißen: `text-control` wäre zugleich die Textfarbe des Tokens `control`.
 - Die Texte der Oberfläche stehen auf Deutsch direkt in den Vorlagen. Für eine zweite Sprache
   müssten sie durch Übersetzungsfunktionen ersetzt werden.
 - Verhalten im Browser liegt in `assets/src/js/app.js` als benannte Alpine-Komponenten; Vorlagen
