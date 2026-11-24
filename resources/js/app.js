@@ -28,13 +28,13 @@ document.addEventListener('alpine:init', () => {
             }
 
             if (!MOTIF_TYPES.includes(file.type)) {
-                this.error = 'Bitte ein Bild im Format PNG, JPEG oder WebP wählen.';
+                this.fail('Bitte ein Bild im Format PNG, JPEG oder WebP wählen.');
 
                 return;
             }
 
             if (file.size > MOTIF_MAX_BYTES) {
-                this.error = 'Das Bild ist größer als 25 MB.';
+                this.fail('Das Bild ist größer als 25 MB.');
 
                 return;
             }
@@ -52,6 +52,16 @@ document.addEventListener('alpine:init', () => {
             this.url = null;
             this.name = '';
             this.error = '';
+        },
+
+        /** Shows a message for a few seconds; the current motif stays as it is. */
+        fail(message) {
+            this.error = message;
+            window.setTimeout(() => {
+                if (this.error === message) {
+                    this.error = '';
+                }
+            }, 6000);
         },
     });
 
@@ -112,6 +122,10 @@ document.addEventListener('alpine:init', () => {
     /** Mobile navigation. */
     Alpine.data('siteHeader', () => ({
         open: false,
+
+        get closed() {
+            return !this.open;
+        },
 
         toggle() {
             this.open = !this.open;

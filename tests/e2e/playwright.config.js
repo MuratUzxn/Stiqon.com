@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = 'http://127.0.0.1:8123';
+// E2E_PORT lets a second checkout run its own server next to a running preview.
+const baseURL = `http://127.0.0.1:${process.env.E2E_PORT ?? '8123'}`;
 
 /**
  * End-to-end tests run against the PHP built-in server with a fresh SQLite

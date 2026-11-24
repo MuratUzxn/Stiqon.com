@@ -7,6 +7,7 @@ no transparency). This script produces, from that one file:
   public/img/brand/logo-{400,800}.webp        the wordmark with a transparent background
   public/img/brand/logo-light-{400,800}.webp  letters in off-white for dark surfaces, gold line kept
   public/img/brand/icon-{32,180,192,512}.png  the "S" on an ink tile (favicon, touch icon)
+  public/img/brand/logo-original-800.webp     the source as supplied, reduced, for side-by-side review
   public/favicon.ico
 
 How it works: every pixel of the source is treated as a mix of three things –
@@ -166,7 +167,12 @@ def icon(letter: Image.Image, size: int) -> Image.Image:
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
 
-    rgb = np.asarray(Image.open(SOURCE).convert("RGB"), dtype=np.float32)
+    source = Image.open(SOURCE).convert("RGB")
+    source.resize((800, round(source.height * 800 / source.width)), Image.LANCZOS).save(
+        OUT / "logo-original-800.webp", quality=92, method=6
+    )
+
+    rgb = np.asarray(source, dtype=np.float32)
     alpha, gold, keeps_source = matte(rgb)
 
     dark_colour = blend(np.broadcast_to(INK, rgb.shape).copy(), gold)

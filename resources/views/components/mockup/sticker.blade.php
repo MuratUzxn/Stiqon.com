@@ -1,4 +1,6 @@
 @php
+    // A width class from the caller (w-…, md:w-…) replaces the full-width default.
+    $sized = (bool) preg_match('/(^|[\s:])w-/', (string) $attributes->get('class'));
     $box = $printBox;
     $corner = $peelCorner();
     $blend = in_array($material, ['holo', 'kraft'], true) ? 'mix-blend-mode:multiply' : null;
@@ -14,7 +16,7 @@
     role="img"
     aria-label="{{ $describe() }}"
     data-mockup="sticker"
-    {{ $attributes->class(['block h-auto w-full overflow-visible', $material === 'clear' ? 'lift-faint' : 'lift']) }}
+    {{ $attributes->class(['block h-auto overflow-visible', 'w-full' => ! $sized, $material === 'clear' ? 'lift-faint' : 'lift']) }}
 >
     <defs>
         <clipPath id="{{ $uid }}-print">

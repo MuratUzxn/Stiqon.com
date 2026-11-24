@@ -1,4 +1,6 @@
 @php
+    // A width class from the caller (w-…, md:w-…) replaces the full-width default.
+    $sized = (bool) preg_match('/(^|[\s:])w-/', (string) $attributes->get('class'));
     $x = $sheet['x'];
     $y = $sheet['y'];
     $w = $sheet['width'];
@@ -9,7 +11,7 @@
     role="img"
     aria-label="{{ $describe() }}"
     data-mockup="flyer"
-    {{ $attributes->class(['lift block h-auto w-full overflow-visible']) }}
+    {{ $attributes->class(['lift block h-auto overflow-visible', 'w-full' => ! $sized]) }}
 >
     <defs>
         <linearGradient id="{{ $uid }}-gloss" x1="0.05" y1="0" x2="0.95" y2="1">
