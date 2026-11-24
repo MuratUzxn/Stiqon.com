@@ -1,41 +1,17 @@
-*.log
-.DS_Store
-.env
-.env.backup
-.env.production
-.phpactor.json
-.phpunit.result.cache
-/.codex
-/.cursor/
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
+# Dependencies and build output
 /node_modules
-/public/build
-/public/css/filament
-/public/fonts-manifest.dev.json
-/public/fonts/filament
-/public/hot
-/public/js/filament
-/public/storage
-/public/vendor
-/storage/*.key
-/storage/pail
 /vendor
-_ide_helper.php
-Homestead.json
-Homestead.yaml
-Thumbs.db
+/wp-content/themes/stiqon/assets/build
 
-# Project
-/public/media/*
-!/public/media/.gitkeep
-!/public/media/.htaccess
+# Test output
 /test-results
 /playwright-report
-/tests/e2e/.auth
-/storage/app/e2e
-/database/*.sqlite
+/.phpunit.cache
+.phpunit.result.cache
+
+# Local machine
+.DS_Store
+Thumbs.db
+*.log
+/.idea
+/.vscode

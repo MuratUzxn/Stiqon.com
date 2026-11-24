@@ -3,13 +3,15 @@
  *
  *   node tests/e2e/tools/shots.mjs <output-dir> [--scale=2] [--full] <path> [<path> ...]
  *
- * Expects the server on http://127.0.0.1:8123 (see tests/e2e/serve.sh). Each
- * path is captured at a desktop (1440 px) and a phone (390 px) width.
+ * Expects the site at STIQON_URL (default http://127.0.0.1:8200, the "dev" site
+ * served by tools/dev/serve.sh). Each path is captured at a desktop (1440 px)
+ * and a phone (390 px) width.
  */
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { chromium } from '@playwright/test';
 
+const base = process.env.STIQON_URL ?? 'http://127.0.0.1:8200';
 const args = process.argv.slice(2);
 const outDir = args.shift();
 const scale = Number((args.find((a) => a.startsWith('--scale=')) ?? '--scale=1').split('=')[1]);
@@ -42,7 +44,8 @@ for (const viewport of viewports) {
     const page = await context.newPage();
 
     for (const path of paths) {
-        await page.goto(`http://127.0.0.1:8123${path}`, { waitUntil: 'networkidle' });
+        // WooCommerce pages never reach "networkidle"; wait for the load event instead.
+        await page.goto(`${base}${path}`, { waitUntil: 'load' });
         await page.evaluate(() => document.fonts.ready);
         const slug = path.replace(/^\//, '').replace(/[^a-z0-9]+/gi, '-') || 'home';
         const file = join(outDir, `${slug}-${viewport.name}.png`);

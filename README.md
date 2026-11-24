@@ -1,90 +1,98 @@
 # Stiqon.com
 
-Onlineshop für Werbemittel (Sticker und Flyer) – im Aufbau.
+Onlineshop für Werbemittel (Sticker und Flyer) auf WordPress und WooCommerce – im Aufbau.
 
-Der Shop ist eine Laravel-Anwendung (PHP ≥ 8.3) und läuft auf klassischem Webspace mit
-MariaDB/MySQL ebenso wie auf einem eigenen Server. Node.js wird nur zum Bauen der Oberfläche
-gebraucht, nicht im Betrieb.
+Dieses Repository enthält, was den Shop von einer Standard-Installation unterscheidet:
 
-| Bereich | Technik |
+| Verzeichnis | Inhalt |
 |---|---|
-| Shop-Oberfläche | Blade, Livewire 4, Alpine.js, Tailwind CSS 4 |
-| Verwaltung (`/admin`) | Filament 5, eigene Admin-Konten mit Pflicht-2FA |
-| Kundenkonten | Laravel Fortify |
-| Zahlung | Stripe Checkout und Vorkasse |
-| Datenbank | MariaDB/MySQL im Betrieb, SQLite für Entwicklung und Tests |
+| `wp-content/themes/stiqon` | das Theme: Aussehen aller Seiten, Vorlagen für die Shop-Seiten |
+| `wp-content/plugins/stiqon-shop` | das Plugin „Stiqon Shop-Funktionen“: Sticker- und Flyer-Ansichten, Motiv-Vorschau und weitere Funktionen |
+| `tools/dev` | Skripte, die eine lokale WordPress-Umgebung aufbauen |
+| `tools/brand` | Logo-Original und das Skript, das daraus die Logo-Dateien des Themes erzeugt |
+| `tests` | Browser-Tests (`e2e`), Unit-Tests des Plugins (`php`), Prüfungen in der Installation (`integration`) |
+
+WordPress selbst, WooCommerce und Germanized gehören nicht ins Repository. Welche Versionen
+verwendet und getestet werden, steht in `tools/dev/versions.env`.
+
+Die frühere Fassung des Shops als eigene Laravel-Anwendung liegt in der Git-Historie (bis Commit
+`3cde78a`).
 
 ## Entwicklung
 
-Voraussetzungen: PHP ≥ 8.3 (intl, gd, zip, pdo_sqlite), Composer, Node.js 22.
+Voraussetzungen: PHP ≥ 8.1 mit `mysqli`, ein laufender MariaDB- oder MySQL-Server, Node.js 22,
+Composer, `curl` und `unzip`.
 
 ```bash
-composer install
 npm ci
-cp .env.example .env
-php artisan key:generate
-touch database/database.sqlite
-php artisan migrate
+```
+
+```bash
 npm run build
 ```
 
-Lokaler Server (der eingebaute PHP-Server wird direkt gestartet):
+```bash
+tools/dev/setup-wordpress.sh
+```
 
 ```bash
-cd public && php -S 127.0.0.1:8123 ../vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php
+tools/dev/serve.sh
 ```
+
+Das Einrichtungsskript baut unter `~/.stiqon-wp` (als root: `/srv/stiqon-wp`) eine vollständige
+Installation auf: WordPress, WooCommerce und Germanized in den festgelegten Versionen, auf Deutsch,
+mit Theme und Plugin aus diesem Repository als Verknüpfung. Der Shop läuft danach unter
+`http://127.0.0.1:8200`. Benutzer und Passwort der lokalen Verwaltung stehen in
+`sites/dev.env` neben der Installation – nie im Repository.
+
+Gut zu wissen:
+
+- Heruntergeladene Pakete werden gegen die Prüfsummen in `tools/dev/versions.env` geprüft, WP-CLI
+  gegen seine veröffentlichte Prüfsumme.
+- WP-CLI läuft nie als root. Wo das Skript als root gestartet wird (Container), legt es dafür den
+  Benutzer `wpdev` an.
+- Die lokale Installation ruft nichts von außen ab (`WP_HTTP_BLOCK_EXTERNAL`) und aktualisiert
+  sich nicht selbst.
+- `tools/dev/wp.sh` führt WP-CLI in der lokalen Installation aus, zum Beispiel
+  `tools/dev/wp.sh plugin list`.
+- Nach Änderungen an Styles oder Skripten: `npm run build` (oder `npm run watch`).
+- Die Datenbank liegt standardmäßig auf `127.0.0.1` mit dem Verwalter `root` über den lokalen
+  Socket; anderes über `STIQON_DB_HOST`, `STIQON_DB_ADMIN_USER`, `STIQON_DB_ADMIN_PASSWORD`.
 
 ## Tests
 
 ```bash
-php artisan test
+composer install
+```
+
+```bash
+composer test
 ```
 
 ```bash
 npm run e2e
 ```
 
-Die End-to-End-Tests (Playwright) starten den Server selbst mit einer frischen SQLite-Datenbank.
-Jeder Test schlägt fehl, wenn eine Seite Konsolenfehler meldet oder Anfragen an fremde Server
-stellt – der Shop kommt ohne Schrift-CDN, Tracker und externe Skripte aus. Dazu gehören eine
-Barrierefreiheitsprüfung (axe, WCAG 2.2 AA) und ein Gewichtsbudget für den ersten Seitenaufruf auf
-dem Handy (`tests/e2e/budget.spec.js`).
+```bash
+STIQON_SITE=e2e tests/integration/run.sh
+```
 
-## Sicherheits-Header
-
-`App\Http\Middleware\SecurityHeaders` setzt die Header für jede Antwort.
-
-- **Shop:** strenge Content Security Policy. Skripte laufen nur von der eigenen Adresse und nur
-  mit der Nonce der jeweiligen Anfrage; `unsafe-eval` ist nicht erlaubt. Dafür nutzt der Shop die
-  CSP-sichere Fassung von Livewire und Alpine. Folge für die Entwicklung: Alpine-Ausdrücke in
-  Shop-Ansichten bleiben einfach (Eigenschaft oder Methode einer in `resources/js/app.js`
-  registrierten Komponente) – keine Inline-Logik in `x-`-Attributen.
-- **Verwaltung:** Filament braucht die normale Alpine-Fassung und Inline-Skripte. `/admin` erhält
-  deshalb nur die Regeln, die Skripte nicht betreffen.
-
-Beide Livewire-Fassungen werden von `composer install` nach `public/vendor/livewire` kopiert
-(Skript `post-autoload-dump`). Fehlen die Dateien, fällt der Shop auf die normale Fassung zurück
-und erlaubt `unsafe-eval` – die Seite funktioniert dann weiter, die Richtlinie ist aber schwächer.
-Der End-to-End-Test „security headers“ stellt sicher, dass das im geprüften Stand nicht der Fall ist.
+- **Unit-Tests** (`tests/php`) prüfen die Logik des Plugins ohne WordPress.
+- **Browser-Tests** (`tests/e2e`, Playwright) bauen für jeden Lauf eine frische Installation
+  („e2e“, Port 8123) und prüfen sie am Desktop und am Handy. Jeder Test schlägt fehl, wenn eine
+  Seite Konsolenfehler meldet oder Anfragen an fremde Server stellt.
+- **Prüfungen in der Installation** (`tests/integration`) laufen über WP-CLI und sehen danach im
+  Fehlerprotokoll nach, ob Theme oder Plugin Warnungen hinterlassen haben.
 
 ## Gestaltung
 
-- Farben, Schrift, Radien und Typo-Stile stehen als Tokens in `resources/css/app.css`.
-- Sticker und Flyer zeichnet ein eigener Renderer als Inline-SVG
-  (`app/View/Components/Mockup`, Beispielmotive in `resources/views/components/motif`). Ein vom
-  Besucher gewähltes Bild ersetzt das Beispielmotiv auf allen Karten; es bleibt im Browser.
-- `/musterbogen` zeigt Logo-Fassungen, Schriftvarianten, Farben, Bedienelemente und Mockups auf
-  einer Seite. Die Seite existiert nur in der Entwicklung, nicht im Betrieb.
-- Die Logo-Dateien unter `public/img/brand` entstehen aus `resources/brand/logo-original.webp`
-  mit `python3 bin/brand/make-logo-assets.py` (nur nach einem Logo-Wechsel nötig).
-
-## Aufbau
-
-- `app/` – Anwendungscode; die Verwaltung liegt unter `app/Filament`
-- `resources/views` – Blade-Ansichten des Shops, `resources/css` und `resources/js` – Oberfläche
-- `lang/de` – deutsche Meldungen des Frameworks
-- `database/` – Migrationen, Seeder, Factories
-- `tests/Feature`, `tests/Unit` – PHPUnit; `tests/e2e` – Playwright
-- `.github/workflows` – CI
-
-Installations- und Go-Live-Anleitung folgen mit dem ersten Auslieferungspaket.
+- Farben, Schrift, Radien und Typo-Stile stehen als Tokens in
+  `wp-content/themes/stiqon/assets/src/css/app.css`. Schriften sind gebündelt; weder der Build noch
+  der Browser fragt ein Schrift-CDN.
+- Die Texte der Oberfläche stehen auf Deutsch direkt in den Vorlagen. Für eine zweite Sprache
+  müssten sie durch Übersetzungsfunktionen ersetzt werden.
+- Verhalten im Browser liegt in `assets/src/js/app.js` als benannte Alpine-Komponenten; Vorlagen
+  verweisen nur auf deren Eigenschaften und Methoden.
+- Die Logo-Dateien unter `wp-content/themes/stiqon/assets/brand` entstehen aus
+  `tools/brand/logo-original.webp` mit `python3 tools/brand/make-logo-assets.py` (nur nach einem
+  Logo-Wechsel nötig).

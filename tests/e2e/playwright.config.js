@@ -4,8 +4,10 @@ import { defineConfig, devices } from '@playwright/test';
 const baseURL = `http://127.0.0.1:${process.env.E2E_PORT ?? '8123'}`;
 
 /**
- * End-to-end tests run against the PHP built-in server with a fresh SQLite
- * database (see serve.sh). Two projects: a desktop and a phone viewport.
+ * Browser tests run against a WordPress site that is built from scratch for
+ * each run (see server.sh): WordPress, WooCommerce and Germanized in the pinned
+ * versions, with this repository's theme and plugin. Two projects: a desktop
+ * and a phone viewport.
  */
 export default defineConfig({
     testDir: '.',
@@ -39,12 +41,13 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: 'bash tests/e2e/serve.sh',
+        command: 'bash tests/e2e/server.sh',
         cwd: '../..',
-        url: `${baseURL}/up`,
+        url: `${baseURL}/`,
         reuseExistingServer: !process.env.CI,
-        timeout: 60_000,
-        stdout: 'ignore',
-        stderr: 'ignore',
+        // The first run downloads WordPress and the plugins.
+        timeout: 300_000,
+        stdout: 'pipe',
+        stderr: 'pipe',
     },
 });

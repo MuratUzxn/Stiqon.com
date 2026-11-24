@@ -1,28 +1,41 @@
 import { test, expect } from './fixtures.js';
 
 test.describe('smoke', () => {
-    test('the home page renders', async ({ page }) => {
+    test('the front page renders in the theme, in German', async ({ page }) => {
         const response = await page.goto('/');
 
         expect(response.status()).toBe(200);
-        await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+        await expect(page.locator('html')).toHaveAttribute('lang', /^de/);
+        await expect(page.getByRole('link', { name: 'Zum Inhalt springen' })).toBeAttached();
+        await expect(page.locator('main#inhalt')).toBeVisible();
 
-        // The stylesheet is built and applied (Instrument Sans is self-hosted).
+        // The built stylesheet is applied (Instrument Sans is bundled with the theme) …
         const fontFamily = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
         expect(fontFamily).toContain('Instrument Sans');
+
+        // … and the built script is running.
+        await expect.poll(() => page.evaluate(() => typeof window.Alpine?.version)).toBe('string');
     });
 
-    test('the admin login renders', async ({ page }) => {
-        const response = await page.goto('/admin/login');
+    test('shop pages are served by WooCommerce inside the theme', async ({ page }) => {
+        const response = await page.goto('/shop/');
 
         expect(response.status()).toBe(200);
-        await expect(page.locator('input[type="email"]')).toBeVisible();
-        await expect(page.locator('input[type="password"]')).toBeVisible();
+        await expect(page.locator('main#inhalt')).toBeVisible();
+        await expect(page.locator('body')).toHaveClass(/woocommerce/);
     });
 
-    test('the admin area redirects guests to the login', async ({ page }) => {
-        await page.goto('/admin');
+    test('the login page renders', async ({ page }) => {
+        const response = await page.goto('/wp-login.php');
 
-        await expect(page).toHaveURL(/\/admin\/login$/);
+        expect(response.status()).toBe(200);
+        await expect(page.locator('#user_login')).toBeVisible();
+        await expect(page.locator('#user_pass')).toBeVisible();
+    });
+
+    test('the admin area sends guests to the login', async ({ page }) => {
+        await page.goto('/wp-admin/');
+
+        await expect(page).toHaveURL(/\/wp-login\.php/);
     });
 });

@@ -1,0 +1,195 @@
+@import 'tailwindcss' source(none);
+
+/* Self-hosted fonts (bundled by Vite; no font CDN at build time or in the browser).
+   The two serif faces only load where they are used. Playfair is here for the
+   type comparison on the internal sample sheet and goes once a face is chosen. */
+@import '@fontsource-variable/instrument-sans/wght.css';
+@import '@fontsource/instrument-serif/400-italic.css';
+@import '@fontsource-variable/playfair-display/wght-italic.css';
+
+/* Only this theme's and the plugin's own templates and scripts are scanned for classes. */
+@source '../../../';
+@source '../../../../../plugins/stiqon-shop';
+
+@plugin '@tailwindcss/typography';
+
+/*
+ | Design tokens
+ |
+ | Colours are measured from the logo: ink and paper carry everything, gold is a
+ | sparse accent on dark surfaces only (it fails contrast on white).
+ |   muted  on paper 5.0:1, on mist 4.6:1  – smallest text colour allowed
+ |   control on paper 3.5:1, on mist 3.2:1 – borders of chips and form fields
+ */
+@theme {
+    --color-*: initial;
+    --color-transparent: transparent;
+    --color-current: currentColor;
+    --color-white: #ffffff;
+    --color-black: #000000;
+
+    --color-ink: #0a0a0a;
+    --color-ink-soft: #3d3d3a;
+    --color-muted: #6f6f6a;
+    --color-control: #8a8a85;
+    --color-line: #e4e4df;
+    --color-mist: #f5f5f3;
+    --color-mist-deep: #ededea;
+    --color-paper: #ffffff;
+
+    --color-night: #0a0a0a;
+    --color-night-raised: #1b1b19;
+    --color-on-night: #fafaf7;
+    --color-on-night-muted: #a8a8a2;
+    --color-gold: #d6b92c;
+
+    /* Stage tones behind mockups */
+    --color-stage-sand: #efe9df;
+    --color-stage-sky: #e3e9ee;
+    --color-stage-sage: #e4eae2;
+    --color-stage-blush: #f1e6e3;
+
+    --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-accent: 'Instrument Serif', ui-serif, Georgia, serif;
+
+    --radius-control: 0.875rem;
+    --radius-card: 1.5rem;
+    --radius-tile: 1.75rem;
+
+    --ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+    --animate-wall-up: wall-up 60s linear infinite;
+    --animate-wall-down: wall-down 72s linear infinite;
+
+    @keyframes wall-up {
+        from {
+            transform: translateY(0);
+        }
+        to {
+            transform: translateY(-50%);
+        }
+    }
+
+    @keyframes wall-down {
+        from {
+            transform: translateY(-50%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+}
+
+@layer base {
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        scroll-padding-top: 5rem;
+    }
+
+    body {
+        background-color: var(--color-paper);
+        color: var(--color-ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* One focus style everywhere: ink ring on light surfaces, gold on dark ones. */
+    :focus-visible {
+        outline: 2px solid var(--color-ink);
+        outline-offset: 3px;
+    }
+
+    .on-night :focus-visible {
+        outline-color: var(--color-gold);
+    }
+
+    ::selection {
+        background-color: var(--color-ink);
+        color: var(--color-paper);
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+/* Type styles used across pages. Sizes are fluid between phone and desktop. */
+@utility text-display {
+    font-size: clamp(2.5rem, 1.4rem + 5.2vw, 5.25rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-wrap: balance;
+}
+
+@utility text-title {
+    font-size: clamp(1.75rem, 1.3rem + 2.2vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.06;
+    text-wrap: balance;
+}
+
+@utility text-heading {
+    font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+@utility text-lead {
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+    line-height: 1.5;
+    text-wrap: pretty;
+}
+
+@utility text-overline {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+/* The serif accent: an italic word inside a sans headline. */
+@utility accent {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+}
+
+/* Page gutter and maximum width. */
+@utility page {
+    margin-inline: auto;
+    max-width: 90rem;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
+
+/* Depth for mockups: a tight contact shadow plus a soft, wider one. */
+@utility lift {
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.1)) drop-shadow(0 12px 16px rgb(0 0 0 / 0.13));
+}
+
+@utility lift-faint {
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.06)) drop-shadow(0 8px 12px rgb(0 0 0 / 0.07));
+}
+
+/* The moving card wall in the hero fades out at top and bottom. */
+@utility wall-fade {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+}

@@ -1,94 +1,21 @@
 {
-    "$schema": "https://getcomposer.org/schema.json",
     "name": "stiqon/shop",
+    "description": "Stiqon: WordPress theme and plugin for the sticker and flyer shop. Composer only provides the tools for the unit tests; nothing here is needed to run the shop.",
     "type": "project",
-    "description": "Stiqon online shop for promotional print products (stickers and flyers).",
     "license": "proprietary",
     "require": {
-        "php": "^8.3",
-        "chillerlan/php-qrcode": "^5.0",
-        "filament/filament": "^5.12",
-        "laravel/fortify": "^1.43",
-        "laravel/framework": "^13.43",
-        "laravel/tinker": "^3.0",
-        "league/csv": "^9.29",
-        "livewire/livewire": "^4.4.9",
-        "stripe/stripe-php": "^23.1",
-        "symfony/html-sanitizer": "^7.4"
+        "php": "^8.1"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.23",
-        "laravel/pao": "^1.0.6",
-        "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^12.5.12"
-    },
-    "autoload": {
-        "psr-4": {
-            "App\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
+        "phpunit/phpunit": "^10.5"
     },
     "scripts": {
-        "setup": [
-            "composer install",
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@php artisan key:generate",
-            "@php artisan migrate --force",
-            "npm install --ignore-scripts",
-            "npm run build"
-        ],
-        "dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "@php artisan dev"
-        ],
-        "test": [
-            "@php artisan config:clear --ansi @no_additional_args",
-            "@php artisan test"
-        ],
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi",
-            "@php artisan filament:upgrade",
-            "@php artisan vendor:publish --tag=livewire:assets --force --ansi"
-        ],
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-        ],
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi"
-        ],
-        "pre-package-uninstall": [
-            "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
-        ]
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        }
+        "test": "phpunit -c tests/php/phpunit.xml"
     },
     "config": {
-        "optimize-autoloader": true,
         "platform": {
-            "php": "8.3.0"
+            "php": "8.1.0"
         },
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "php-http/discovery": true
-        }
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+        "sort-packages": true
+    }
 }
