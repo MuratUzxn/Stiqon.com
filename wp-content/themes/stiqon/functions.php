@@ -11,3 +11,7 @@ defined('ABSPATH') || exit;
 
 require __DIR__.'/inc/setup.php';
 require __DIR__.'/inc/assets.php';
+require __DIR__.'/inc/components.php';
+require __DIR__.'/inc/site.php';
+require __DIR__.'/inc/cleanup.php';
+require __DIR__.'/inc/plugin-missing.php';

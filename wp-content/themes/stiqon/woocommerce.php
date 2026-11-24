@@ -7,7 +7,7 @@ defined('ABSPATH') || exit;
 
 get_header();
 ?>
-<div class="page py-12 lg:py-16">
+<div class="wrap py-12 lg:py-16">
     <?php woocommerce_content(); ?>
 </div>
 <?php

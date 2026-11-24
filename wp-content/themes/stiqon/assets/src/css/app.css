@@ -172,8 +172,9 @@
     letter-spacing: -0.02em;
 }
 
-/* Page gutter and maximum width. */
-@utility page {
+/* Page gutter and maximum width. Not called "page": WordPress puts that class on
+   the body of every page, which would indent the whole document a second time. */
+@utility wrap {
     margin-inline: auto;
     max-width: 90rem;
     padding-inline: clamp(1rem, 4vw, 2.5rem);

@@ -47,6 +47,19 @@ for (const viewport of viewports) {
         // WooCommerce pages never reach "networkidle"; wait for the load event instead.
         await page.goto(`${base}${path}`, { waitUntil: 'load' });
         await page.evaluate(() => document.fonts.ready);
+
+        if (fullPage) {
+            // Walk down the page once so that lazily loaded images are in the picture.
+            await page.evaluate(async () => {
+                for (let y = 0; y < document.body.scrollHeight; y += 600) {
+                    window.scrollTo(0, y);
+                    await new Promise((resolve) => setTimeout(resolve, 40));
+                }
+                window.scrollTo(0, 0);
+            });
+            await page.waitForLoadState('load');
+            await page.waitForTimeout(300);
+        }
         const slug = path.replace(/^\//, '').replace(/[^a-z0-9]+/gi, '-') || 'home';
         const file = join(outDir, `${slug}-${viewport.name}.png`);
         await page.screenshot({ path: file, fullPage });

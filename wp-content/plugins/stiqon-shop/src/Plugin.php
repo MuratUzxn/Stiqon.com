@@ -14,6 +14,8 @@ final class Plugin
     public static function boot(string $file): void
     {
         self::$file = $file;
+
+        register_activation_hook($file, [Setup\Defaults::class, 'apply']);
     }
 
     /**

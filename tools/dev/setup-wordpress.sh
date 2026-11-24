@@ -51,7 +51,17 @@ for tool in php curl unzip sha256sum sha512sum; do
 done
 
 command -v mariadb >/dev/null || command -v mysql >/dev/null || fail "No MariaDB/MySQL client found."
-db_admin -e 'SELECT 1' >/dev/null 2>&1 || fail "Cannot reach the database server as $DB_ADMIN_USER. Is it running?"
+
+if ! db_admin -e 'SELECT 1' >/dev/null 2>&1; then
+    # On a machine of our own (root, local server) the server may simply not be started yet.
+    if [ "$(id -u)" = "0" ] && [ -z "${STIQON_DB_ADMIN_PASSWORD:-}" ] && command -v service >/dev/null; then
+        say "Starting the local database server"
+        service mariadb start >/dev/null 2>&1 || service mysql start >/dev/null 2>&1 || true
+        sleep 3
+    fi
+
+    db_admin -e 'SELECT 1' >/dev/null 2>&1 || fail "Cannot reach the database server as $DB_ADMIN_USER. Is it running?"
+fi
 
 # --- Directories and the user that owns WordPress --------------------------------
 
@@ -244,8 +254,8 @@ as_site_user ln -sfn "$REPO/wp-content/plugins/stiqon-shop" "$SITE_DIR/wp-conten
 
 [ -f "$REPO/wp-content/themes/stiqon/assets/build/manifest.json" ] || fail "The theme is not built yet. Run: npm ci && npm run build"
 
-wp theme activate stiqon --quiet
 wp plugin is-active stiqon-shop || wp plugin activate stiqon-shop --quiet
+wp theme activate stiqon --quiet
 
 # --- Shop settings ----------------------------------------------------------------
 
@@ -256,6 +266,23 @@ wp option update woocommerce_prices_include_tax yes --quiet
 wp option update woocommerce_coming_soon no --quiet
 wp rewrite structure '/%postname%/' --quiet
 wp wc tool run install_pages --user="$ADMIN_USER" --quiet
+
+# Not for search engines: this is a development installation.
+wp option update blog_public 0 --quiet
+
+# --- Pages the theme has templates for ----------------------------------------------
+
+ensure_page() { # slug title status
+    if [ -z "$(wp post list --post_type=page --name="$1" --post_status=any --field=ID)" ]; then
+        wp post create --post_type=page --post_name="$1" --post_title="$2" --post_status="$3" --quiet
+    fi
+}
+
+ensure_page sticker Sticker publish
+ensure_page flyer Flyer publish
+# The sample sheet is a working document: private, so only logged-in administrators see it.
+ensure_page musterbogen Musterbogen private
+
 wp rewrite flush --quiet
 
 say ""

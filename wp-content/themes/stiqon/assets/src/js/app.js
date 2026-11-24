@@ -119,23 +119,6 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 
-    /** Mobile navigation. */
-    Alpine.data('siteHeader', () => ({
-        open: false,
-
-        get closed() {
-            return !this.open;
-        },
-
-        toggle() {
-            this.open = !this.open;
-        },
-
-        close() {
-            this.open = false;
-        },
-    }));
-
     /** The moving card wall only animates while it is on screen. */
     Alpine.data('cardWall', () => ({
         running: false,

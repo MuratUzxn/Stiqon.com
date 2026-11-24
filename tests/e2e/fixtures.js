@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import AxeBuilder from '@axe-core/playwright';
 import { test as base, expect } from '@playwright/test';
@@ -5,6 +7,28 @@ import { test as base, expect } from '@playwright/test';
 /** Absolute path of a file in tests/fixtures. */
 export function fixture(name) {
     return fileURLToPath(new URL(`../fixtures/${name}`, import.meta.url));
+}
+
+/**
+ * Settings of the site the tests run against, as written by
+ * tools/dev/setup-wordpress.sh (address, generated administrator password).
+ */
+export function siteSettings() {
+    const root = process.env.STIQON_WP_ROOT ?? (process.getuid?.() === 0 ? '/srv/stiqon-wp' : `${homedir()}/.stiqon-wp`);
+    const lines = readFileSync(`${root}/sites/e2e.env`, 'utf8').split('\n').filter((line) => line.includes('='));
+
+    return Object.fromEntries(lines.map((line) => [line.slice(0, line.indexOf('=')), line.slice(line.indexOf('=') + 1)]));
+}
+
+/** Logs the page's browser in as the site's administrator. */
+export async function logInAsAdministrator(page) {
+    const { ADMIN_USER, ADMIN_PASSWORD } = siteSettings();
+
+    await page.goto('/wp-login.php');
+    await page.locator('#user_login').fill(ADMIN_USER);
+    await page.locator('#user_pass').fill(ADMIN_PASSWORD);
+    await page.locator('#wp-submit').click();
+    await page.waitForURL(/\/wp-admin\//);
 }
 
 /**

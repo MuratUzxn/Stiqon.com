@@ -84,6 +84,26 @@ STIQON_SITE=e2e tests/integration/run.sh
 - **Prüfungen in der Installation** (`tests/integration`) laufen über WP-CLI und sehen danach im
   Fehlerprotokoll nach, ob Theme oder Plugin Warnungen hinterlassen haben.
 
+## Seiten
+
+Das Theme bringt Vorlagen für Seiten mit festen Adressen mit. Das Einrichtungsskript legt die
+Seiten an; auf einer echten Installation legt man sie in WordPress unter „Seiten“ mit genau dieser
+Adresse an.
+
+| Adresse | Vorlage | Hinweis |
+|---|---|---|
+| `/` | `front-page.php` | Startseite |
+| `/sticker/`, `/flyer/` | `page-sticker.php`, `page-flyer.php` | Bereiche; die Produktgalerie folgt |
+| `/musterbogen/` | `page-musterbogen.php` | Logo, Schrift, Farben und Mockups auf einer Seite. Die Seite ist „privat“: nur angemeldete Verwalter sehen sie |
+
+Die Sticker- und Flyer-Ansichten zeichnet das Plugin (`src/Mockup`, Vorlagen unter `templates`).
+Ist es abgeschaltet, erscheinen die Seiten ohne Ansichten, und die Verwaltung weist darauf hin.
+Theme und Plugin lassen sich in beliebiger Reihenfolge aktivieren.
+
+Beim Aktivieren setzt das Plugin Datenschutz-Voreinstellungen (`src/Setup/Defaults.php`): keine
+Profilbilder von Gravatar, keine Kommentare, keine Herkunftsmessung von Bestellungen per Cookie,
+keine Nutzungsdaten an WooCommerce.
+
 ## Gestaltung
 
 - Farben, Schrift, Radien und Typo-Stile stehen als Tokens in
@@ -92,7 +112,10 @@ STIQON_SITE=e2e tests/integration/run.sh
 - Die Texte der Oberfläche stehen auf Deutsch direkt in den Vorlagen. Für eine zweite Sprache
   müssten sie durch Übersetzungsfunktionen ersetzt werden.
 - Verhalten im Browser liegt in `assets/src/js/app.js` als benannte Alpine-Komponenten; Vorlagen
-  verweisen nur auf deren Eigenschaften und Methoden.
+  verweisen nur auf deren Eigenschaften und Methoden. Das Menü für kleine Bildschirme kommt ohne
+  Skript aus.
+- Die Hilfsklasse für den Seitenrand heißt `wrap`, nicht `page`: WordPress setzt die Klasse `page`
+  auf den `body` jeder Seite.
 - Die Logo-Dateien unter `wp-content/themes/stiqon/assets/brand` entstehen aus
   `tools/brand/logo-original.webp` mit `python3 tools/brand/make-logo-assets.py` (nur nach einem
   Logo-Wechsel nötig).

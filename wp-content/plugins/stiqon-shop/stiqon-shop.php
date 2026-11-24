@@ -12,5 +12,6 @@
 defined('ABSPATH') || exit;
 
 require __DIR__.'/src/autoload.php';
+require __DIR__.'/src/helpers.php';
 
 Stiqon\Shop\Plugin::boot(__FILE__);

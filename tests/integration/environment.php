@@ -27,6 +27,11 @@ $expect(get_option('permalink_structure') === '/%postname%/', 'Pretty permalinks
 $expect(defined('WP_HTTP_BLOCK_EXTERNAL') && WP_HTTP_BLOCK_EXTERNAL, 'Calls to the outside are not blocked in this installation.');
 $expect(stiqon_built_asset('assets/src/css/app.css') !== null, 'The theme\'s stylesheet is not built.');
 
+// What the plugin switches off when it is activated.
+foreach (\Stiqon\Shop\Setup\Defaults::PRIVACY as $option => $value) {
+    $expect((string) get_option($option) === $value, "The privacy default {$option} = {$value} is not in place.");
+}
+
 if ($problems !== []) {
     WP_CLI::error_multi_line($problems);
     WP_CLI::halt(1);
