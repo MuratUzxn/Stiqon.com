@@ -15,8 +15,11 @@
 /auth.json
 /node_modules
 /public/build
+/public/css/filament
 /public/fonts-manifest.dev.json
+/public/fonts/filament
 /public/hot
+/public/js/filament
 /public/storage
 /storage/*.key
 /storage/pail
@@ -25,3 +28,13 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Project
+/public/media/*
+!/public/media/.gitkeep
+!/public/media/.htaccess
+/test-results
+/playwright-report
+/tests/e2e/.auth
+/storage/app/e2e
+/database/*.sqlite
