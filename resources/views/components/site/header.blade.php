@@ -11,7 +11,7 @@
             <x-site.logo class="h-7 lg:h-8" />
         </a>
 
-        <nav aria-label="Bereiche" class="hidden items-center gap-1 md:flex">
+        <nav aria-label="Hauptnavigation" class="hidden items-center gap-1 md:flex">
             @foreach ($areas as $area)
                 <a
                     href="{{ $area['url'] }}" @if ($area['current']) aria-current="page" @endif
@@ -35,7 +35,7 @@
     </div>
 
     <div id="mobile-navigation" x-show="open" x-cloak class="border-t border-line md:hidden">
-        <nav aria-label="Bereiche (mobil)" class="page flex flex-col gap-1 py-4">
+        <nav aria-label="Hauptnavigation" class="page flex flex-col gap-1 py-4">
             @foreach ($areas as $area)
                 <a
                     href="{{ $area['url'] }}" @if ($area['current']) aria-current="page" @endif

@@ -25,7 +25,7 @@
         ['question' => 'Kann ich schon bestellen?', 'answer' => 'Noch nicht. Der Shop wird gerade aufgebaut; die Bestellung folgt.'],
     ];
 @endphp
-<x-layouts.storefront description="Sticker und Flyer mit Ihrem Motiv: Bild wählen, Vorschau auf allen Formen und Formaten ansehen.">
+<x-layouts.storefront :accent-font="true" description="Sticker und Flyer mit Ihrem Motiv: Bild wählen, Vorschau auf allen Formen und Formaten ansehen.">
     {{-- Hero: one action, the wall of mockups as a calm backdrop --}}
     <section class="page pt-10 pb-16 lg:pt-16 lg:pb-24">
         <div class="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-16">

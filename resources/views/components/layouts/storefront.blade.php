@@ -1,4 +1,15 @@
-@props(['title' => null, 'description' => null])
+@props(['title' => null, 'description' => null, 'accentFont' => false])
+@php
+    // Fonts the first screen needs are fetched right away instead of after the stylesheet,
+    // so headlines do not jump from a fallback face. $accentFont: the page opens with the serif accent.
+    $fonts = ['node_modules/@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2'];
+
+    if ($accentFont) {
+        $fonts[] = 'node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2';
+    }
+
+    $fonts = array_filter(array_map(fn (string $font) => \Illuminate\Support\Facades\Vite::asset($font), $fonts));
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -14,6 +25,9 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/brand/icon-32.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('img/brand/icon-180.png') }}">
+    @foreach ($fonts as $font)
+        <link rel="preload" href="{{ $font }}" as="font" type="font/woff2" crossorigin>
+    @endforeach
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- Explicit on purpose: Livewire only auto-injects its assets on pages that render a
          component, but the storefront uses the bundled Alpine everywhere. --}}

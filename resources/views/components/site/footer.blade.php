@@ -3,7 +3,7 @@
         <div class="grid gap-12 md:grid-cols-[1.6fr_1fr]">
             <div>
                 <a href="{{ route('home') }}" class="inline-block rounded-sm" aria-label="Stiqon – zur Startseite">
-                    <x-site.logo variant="light" class="h-10 lg:h-12" />
+                    <x-site.logo variant="light" class="h-10 lg:h-12" sizes="(min-width: 64rem) 156px, 130px" loading="lazy" />
                 </a>
                 <p class="mt-6 max-w-sm text-on-night-muted">
                     Sticker und Flyer mit Ihrem Motiv – erst ansehen, dann bestellen.
