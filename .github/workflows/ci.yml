@@ -16,6 +16,7 @@ jobs:
   php:
     name: PHP ${{ matrix.php }} (syntax, unit tests)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -50,6 +51,10 @@ jobs:
   shop:
     name: Shop on PHP ${{ matrix.php }} (WordPress, browser tests)
     runs-on: ubuntu-latest
+    # A run takes about eight minutes. One that hangs must end by itself, and in a
+    # way that still hands over its logs: the steps below have limits of their
+    # own, so that "Collect logs" and "Upload test results" get their turn.
+    timeout-minutes: 50
     strategy:
       fail-fast: false
       matrix:
@@ -101,13 +106,16 @@ jobs:
 
       # Builds a fresh WordPress site (tests/e2e/server.sh) and tests it in the browser.
       - name: Run browser tests
+        timeout-minutes: 30
         run: npm run e2e
 
       # The setup script promises that a second run keeps the site and repairs it.
       - name: Run the setup a second time
+        timeout-minutes: 5
         run: bash tools/dev/setup-wordpress.sh --site e2e --port 8123
 
       - name: Check the installation and its error log
+        timeout-minutes: 10
         run: bash tests/integration/run.sh
 
       - name: Collect logs
@@ -116,6 +124,14 @@ jobs:
           mkdir -p test-results/logs
           cp "$HOME"/.stiqon-wp/sites/e2e.server.log test-results/logs/ 2>/dev/null || true
           cp "$HOME"/.stiqon-wp/sites/e2e/wp-content/debug.log test-results/logs/ 2>/dev/null || true
+
+          # Into this log as well: it can be read where an artifact cannot be fetched.
+          echo "::group::PHP error log of the site (last 150 lines)"
+          tail -n 150 "$HOME"/.stiqon-wp/sites/e2e/wp-content/debug.log 2>/dev/null || echo "There is none."
+          echo "::endgroup::"
+          echo "::group::Web server log (last 60 lines that are not plain requests)"
+          grep -v -E '\] (127\.0\.0\.1|\[::1\]):[0-9]+ (Accepted|Closing|\[(200|301|302|304)\])|Failed to poll event' "$HOME"/.stiqon-wp/sites/e2e.server.log 2>/dev/null | tail -n 60 || echo "There is none."
+          echo "::endgroup::"
 
       - name: Upload test results
         if: failure()

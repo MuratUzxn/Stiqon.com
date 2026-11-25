@@ -327,6 +327,30 @@ window.addEventListener('popstate', () => {
 });
 
 /**
+ * The header says how many articles are in the cart – a number the server
+ * writes with every page. On the cart page WooCommerce's script takes articles
+ * out and puts them back without loading a new page; it announces that with an
+ * event of jQuery's own. The number then follows what the page shows.
+ */
+const cartLink = document.querySelector('[data-cart-count]');
+
+if (cartLink && window.jQuery && document.body.classList.contains('woocommerce-cart')) {
+    window.jQuery(document.body).on('updated_wc_div wc_cart_emptied', () => {
+        const numbers = [...document.querySelectorAll('.woocommerce-cart-form .cart_item .qty')];
+        const count = numbers.reduce((sum, field) => sum + (Number(field.value) || 0), 0);
+        const badge = cartLink.querySelector('span');
+
+        cartLink.dataset.cartCount = String(count);
+        cartLink.setAttribute('aria-label', count === 0 ? 'Warenkorb, leer' : `Warenkorb, ${count} Artikel`);
+
+        if (badge) {
+            badge.textContent = String(count);
+            badge.hidden = count === 0;
+        }
+    });
+}
+
+/**
  * Behaviour that belongs to one kind of page lives in a file of its own and is
  * fetched only where the page asks for it: an element with x-data="…" names
  * the component it needs. The home page does not pay for the product page.

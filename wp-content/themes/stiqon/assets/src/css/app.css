@@ -29,7 +29,9 @@
  | Gold is the colour of the line inside the logo. In the interface it only
  | marks keyboard focus on dark surfaces.
  */
-@theme {
+/* "static": every token becomes a variable, used in this file or not – shop.css
+   is built on its own and relies on them. */
+@theme static {
     --color-*: initial;
     --color-transparent: transparent;
     --color-current: currentColor;
@@ -49,6 +51,8 @@
     --color-on-night: #ffffff;
     --color-on-night-muted: #a3a3a3;
     --color-gold: #d6b92c;
+    /* A field that needs another look, and the sentence that says why: 6.5:1 on paper, 5.9:1 on mist. */
+    --color-alert: #b3261e;
 
     --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
     /* Used by sample motifs only. */
@@ -361,6 +365,11 @@
         margin-top: 0.5rem;
     }
 
+    /* How long delivery takes, below the product's short description. */
+    .summary .delivery-time-info {
+        margin-top: 0.75rem;
+    }
+
     /* --- Product page: what WooCommerce says about the chosen variation --------- */
     /* Its price is the one shown above; the copy here stays for screen readers,
        which hear this block when the choice changes. */
@@ -416,9 +425,35 @@
         outline-offset: -2px;
     }
 
-    /* WooCommerce puts the link to the cart before the sentence; it belongs after it. */
+    /* Several messages in one card (what went wrong at the checkout): a line each. */
+    .shop-notice--list {
+        display: grid;
+        justify-content: stretch;
+        gap: 0.5rem;
+    }
+
+    /* A line with a button is laid out like a card of its own. The others are
+       running text: WooCommerce's checkout script wraps each in a link to its
+       field, which falls into pieces where the message has links itself. */
+    .shop-notice--list > li:has(> .button) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem 1.5rem;
+    }
+
+    .shop-notice--list > li > a:not(.button) {
+        font-weight: 500;
+    }
+
+    .shop-notice a:not(.button) {
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    /* The button that belongs to a message stands after its sentence (inc/shop.php). */
     .shop-notice .button {
-        order: 2;
         display: inline-flex;
         height: 2.75rem;
         flex-shrink: 0;

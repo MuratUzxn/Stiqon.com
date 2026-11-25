@@ -16,6 +16,12 @@ export default defineConfig({
     fullyParallel: false,
     workers: 1,
     retries: 0,
+    // A run takes six to eight minutes. On CI one that takes three times as long
+    // is stuck: it ends, and says how far it got, instead of running for hours.
+    globalTimeout: process.env.CI ? 25 * 60_000 : 0,
+    // Where the site itself is broken, every test fails, many of them by waiting
+    // half a minute. Ten failures say as much as three hundred, and say it sooner.
+    maxFailures: process.env.CI ? 10 : 0,
     forbidOnly: !!process.env.CI,
     reporter: [['list']],
     use: {

@@ -61,6 +61,13 @@ Gut zu wissen:
   Shops erneut.
 - Die lokale Installation ruft nichts von außen ab (`WP_HTTP_BLOCK_EXTERNAL`) und aktualisiert
   sich nicht selbst.
+- Sie verschickt auch keine E-Mails: Was WordPress senden würde, liegt als je eine JSON-Datei in
+  `sites/<name>.mails` neben der Installation (`tools/dev/mu-plugins/stiqon-dev-mail.php`). Dort
+  lesen die Tests – und wer sehen will, was eine Kundin bekäme.
+- `tools/dev/shop-settings.php` richtet den Shop zum Kaufen ein: Lieferung innerhalb Deutschlands
+  zu einem Preis, Vorkasse, Kundenkonto auf Wunsch, die klassischen Seiten für Warenkorb und
+  Kasse, Rechtsseiten. Beträge, Bankverbindung, Adresse und Rechtstexte darin sind Beispiele und
+  als solche beschriftet. Auf dem echten Shop sind das Einstellungen des Inhabers.
 - `tools/dev/wp.sh` führt WP-CLI in der lokalen Installation aus, zum Beispiel
   `tools/dev/wp.sh plugin list`.
 - Nach Änderungen an Styles oder Skripten: `npm run build` (oder `npm run watch`).
@@ -108,6 +115,8 @@ Adresse an.
 | `/sticker/`, `/flyer/` | `page-sticker.php`, `page-flyer.php` | Bereiche mit Galerie: je Produkt und Material bzw. Papier eine Karte. Die Filter sind Links und funktionieren ohne Skript; am Desktop öffnet eine Karte groß über der Galerie |
 | `/produkt/…` | `woocommerce/…` | Produktseite auf den Vorlagen von WooCommerce, damit sich Germanized und weitere Plugins einhängen können |
 | `/?s=…` | `search.php` | Ergebnisseite der Suche |
+| `/warenkorb/`, `/kasse/`, `/mein-konto/` | `page.php` | Die Seiten, die WooCommerce zeichnet – siehe „Kaufen“ |
+| `/agb/`, `/impressum/` … | `page.php` | Geschriebene Seiten aus dem Editor. Welche davon AGB, Widerruf, Versand, Datenschutz und Impressum sind, steht in den Einstellungen von WooCommerce und Germanized; der Fuß verlinkt sie von dort |
 | `/referenzen/` | `archive-stiqon_referenz.php` | Referenzen: gelieferte Arbeiten mit Foto, Name und ein, zwei Sätzen (Inhaltstyp des Plugins, in der Verwaltung unter „Referenzen“). Die Seite und alle Links darauf gibt es erst, wenn eine Referenz veröffentlicht ist und ein Foto hat |
 | `/musterbogen/` | `page-musterbogen.php` | Logo, Schrift, Farben und Mockups auf einer Seite. Nur wer das Erscheinungsbild der Website verwalten darf, sieht sie; alle anderen bekommen „nicht gefunden“ – auch wenn die Seite versehentlich veröffentlicht wurde |
 
@@ -143,6 +152,43 @@ Beim ersten Aktivieren setzt das Plugin Datenschutz-Voreinstellungen (`src/Setup
 keine Profilbilder von Gravatar, neue Inhalte ohne Kommentare, keine Herkunftsmessung von
 Bestellungen per Cookie, keine Nutzungsdaten an WooCommerce. Jede davon wird genau einmal gesetzt;
 was die Inhaberin oder der Inhaber später ändert, bleibt auch nach erneutem Aktivieren bestehen.
+
+## Kaufen
+
+Warenkorb, Kasse, Bestellbestätigung und Kundenkonto sind die klassischen Seiten von WooCommerce
+(Kurzbefehle `[woocommerce_cart]`, `[woocommerce_checkout]`, `[woocommerce_my_account]`), nicht
+die aus Blöcken: Die wogen je rund 1,5 MB und bringen ihr eigenes Aussehen mit. Nutzt eine der
+Seiten doch den Block, weist die Verwaltung darauf hin.
+
+- **Markup bleibt, Aussehen kommt vom Theme.** Das Theme überschreibt hier keine Vorlagen:
+  Zahlungs-Plugins und das Plugin des Lieferanten erwarten WooCommerces Markup und seine Skripte.
+  Die Vorlage `page.php` ruft für diese Seiten `stiqon_declare_shop_page()` auf – WooCommerces
+  Skripte bleiben, seine Stylesheets und die von Germanized entfallen, und
+  `assets/src/css/shop.css` gestaltet das Markup über dessen Klassennamen.
+- **Zeichnung statt Produktfoto:** Im Warenkorb und in der Übersicht der Kasse steht die Zeichnung
+  genau der gewählten Variante. In der Kasse druckt WooCommerce den Produktnamen durch einen
+  Filter, der Zeichnungen zerlegt; dort hängt sie deshalb an der Stelle der Anzahl
+  (`inc/shop.php`).
+- **Meldungen:** Die Fehlerliste bleibt die Liste, die WooCommerce druckt
+  (`woocommerce/notices/error.php`) – sein Skript macht aus jeder Zeile einen Link zum Feld und
+  wiederholt die Meldung dort.
+- **Recht:** Bestellknopf, Pflichtangaben, Checkboxen, Widerruf und die Rechtstexte in E-Mails
+  kommen von Germanized. Der Fuß jeder Seite verlinkt die Rechtsseiten und trägt den Knopf
+  „Vertrag widerrufen“; den zweiten, den Germanized selbst anhängen würde, lässt das Theme weg.
+  Die Rechtsseiten der lokalen Installation sind Platzhalter – die echten Texte liefert der
+  Inhaber, geprüft von Anwältin, Anwalt oder Rechtstext-Dienst.
+- **E-Mails** nutzen WooCommerces Gestaltung mit dem Logo des Themes im Kopf
+  (`assets/brand/logo-mail-320.png`), solange unter WooCommerce › Einstellungen › E-Mails kein
+  eigenes Kopfbild gewählt ist. Produktbilder zeigen sie nicht: Eine Zeichnung lässt sich nicht
+  verschicken, und übrig bliebe WooCommerces grauer Platzhalter.
+- **Vor der Eröffnung** kündigt WooCommerce den Shop an („Demnächst verfügbar“), auf der ganzen
+  Website oder nur auf den Seiten des Shops. Wer die Ankündigung sieht, entscheidet WooCommerce;
+  wie sie aussieht, das Theme (`inc/announcement.php`): im eigenen Look statt mit WooCommerces
+  Platzhalter-Seite. Zu den Seiten des Shops zählen hier auch die Bereichsseiten. Impressum und
+  Datenschutzerklärung bleiben immer erreichbar.
+- **Vorlagen aktuell halten:** Jede Vorlage unter `woocommerce/` nennt im Kopf (`@version`) die
+  Fassung von WooCommerces Vorlage, aus der sie entstand. `tests/integration/templates.php`
+  meldet, wenn WooCommerce eine davon geändert hat.
 
 ## Suche
 
@@ -207,9 +253,12 @@ Produktfamilie braucht dort einen Eintrag; ein Unit-Test schlägt sonst fehl.
   vor dem Kopf `stiqon_declare_lean_page()` auf. Nur solche Seiten lassen die Stylesheets für
   Editor-Inhalte und die Skripte von WooCommerce weg. Die Entscheidung hängt bewusst an der Vorlage
   und nicht an der Adresse: WooCommerce zeigt im Modus „Demnächst verfügbar“ unter denselben
-  Adressen eine Seite aus Blöcken.
+  Adressen seine Ankündigung. Die Seiten, die WooCommerce zeichnet, erklären sich mit
+  `stiqon_declare_shop_page()` (siehe „Kaufen“).
 - Links in Karten und Kacheln umschließen nur den Titel und sind über die ganze Fläche gespannt.
   Um die Zeichnung herumgelegt, würde die Beschriftung des Beispielmotivs zum Linktext.
 - Die Logo-Dateien unter `wp-content/themes/stiqon/assets/brand` entstehen aus
   `tools/brand/logo-original.webp` mit `python3 tools/brand/make-logo-assets.py` (nur nach einem
-  Logo-Wechsel nötig).
+  Logo-Wechsel nötig). Darunter ist eine Fassung für E-Mails: als PNG und auf Weiß, weil nicht
+  jedes Mailprogramm WebP zeigt und ein freigestelltes schwarzes Logo auf dunklem Grund
+  verschwindet.

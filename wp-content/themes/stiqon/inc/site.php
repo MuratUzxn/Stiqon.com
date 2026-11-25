@@ -70,6 +70,99 @@ function stiqon_navigation(): array
 }
 
 /**
+ * The cart, for the header: where it is and how much is in it. Null without
+ * WooCommerce.
+ *
+ * @return array{url: string, count: int, label: string}|null
+ */
+function stiqon_cart_link(): ?array
+{
+    if (! function_exists('WC') || ! function_exists('wc_get_cart_url')) {
+        return null;
+    }
+
+    $count = WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
+
+    return [
+        'url' => wc_get_cart_url(),
+        'count' => $count,
+        'label' => match ($count) {
+            0 => 'Warenkorb, leer',
+            1 => 'Warenkorb, 1 Artikel',
+            default => "Warenkorb, {$count} Artikel",
+        },
+    ];
+}
+
+/**
+ * The legal pages the shop has, for the footer: terms, the right to withdraw,
+ * shipping and payment, privacy, imprint – whichever of them are set in
+ * WooCommerce and Germanized and published. A page that serves two purposes
+ * is listed once.
+ *
+ * @param  list<string>  $purposes  which of them; see stiqon_legal_pages()
+ * @return list<array{label: string, url: string}>
+ */
+function stiqon_legal_links(array $purposes = ['terms', 'revocation', 'shipping_costs', 'payment_methods', 'data_security', 'imprint']): array
+{
+    $links = [];
+
+    foreach (stiqon_legal_pages($purposes) as $id) {
+        $links[] = ['label' => get_the_title($id), 'url' => (string) get_permalink($id)];
+    }
+
+    return $links;
+}
+
+/**
+ * The published pages set in WooCommerce and Germanized for the given
+ * purposes, each once, in the order asked for.
+ *
+ * @param  list<string>  $purposes  "terms", "revocation", "shipping_costs", "payment_methods", "data_security", "imprint"
+ * @return list<int>
+ */
+function stiqon_legal_pages(array $purposes): array
+{
+    if (! function_exists('wc_get_page_id')) {
+        return [];
+    }
+
+    $pages = [];
+
+    foreach ($purposes as $purpose) {
+        $id = (int) wc_get_page_id($purpose);
+
+        if ($id <= 0 && $purpose === 'data_security') {
+            $id = (int) get_option('wp_page_for_privacy_policy');
+        }
+
+        if ($id > 0 && get_post_status($id) === 'publish') {
+            $pages[$id] = $id;
+        }
+    }
+
+    return array_values($pages);
+}
+
+/**
+ * The way to withdraw from a contract online, which a shop has to offer on
+ * every page. Germanized provides the page and its form; null while there is
+ * no such page.
+ *
+ * @return array{label: string, url: string}|null
+ */
+function stiqon_withdrawal_link(): ?array
+{
+    if (! function_exists('eu_owb_has_public_withdrawal_page') || ! eu_owb_has_public_withdrawal_page()) {
+        return null;
+    }
+
+    $url = (string) eu_owb_get_withdrawal_page_permalink();
+
+    return $url === '' ? null : ['label' => (string) eu_owb_get_withdrawal_button_text(), 'url' => $url];
+}
+
+/**
  * A visitor's motif is kept in the browser and appears on the next page a moment
  * after it loads – without this, the sample motifs would flash up first. This
  * runs before anything is painted: if a motif is stored, the samples are held

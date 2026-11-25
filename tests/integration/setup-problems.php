@@ -38,9 +38,30 @@ if (stiqon_page_url('flyer') !== get_permalink($page->ID)) {
     $problems[] = 'The link to the page is not its own address.';
 }
 
+// WooCommerce makes cart and checkout as pages of blocks; the theme draws the
+// classic ones. A page that is (still, or again) built from the block is reported.
+$cart = wc_get_page_id('cart');
+$content = (string) get_post_field('post_content', $cart);
+
+try {
+    wp_update_post(['ID' => $cart, 'post_content' => '<!-- wp:woocommerce/cart --><div class="wp-block-woocommerce-cart alignwide is-loading"></div><!-- /wp:woocommerce/cart -->']);
+
+    $reported = stiqon_setup_problems();
+
+    if (count($reported) !== 1 || ! str_contains($reported[0], '[woocommerce_cart]')) {
+        $problems[] = 'With the cart page built from the block, the theme reports: '.($reported === [] ? 'nothing' : implode(' | ', $reported));
+    }
+} finally {
+    wp_update_post(['ID' => $cart, 'post_content' => wp_slash($content)]);
+}
+
+if (stiqon_setup_problems() !== []) {
+    $problems[] = 'With the classic cart page back, the theme still reports: '.implode(' | ', stiqon_setup_problems());
+}
+
 if ($problems !== []) {
     WP_CLI::error_multi_line($problems);
     WP_CLI::halt(1);
 }
 
-WP_CLI::success('A missing page is reported, and reported only while it is missing.');
+WP_CLI::success('A missing page and a cart or checkout built from blocks are reported, and only while that is so.');

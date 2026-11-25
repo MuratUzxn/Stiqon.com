@@ -30,6 +30,22 @@ function stiqon_setup_problems(): array
         }
     }
 
+    // WooCommerce creates cart and checkout as pages of blocks. Those bring their
+    // own look and about seven times the weight; the theme draws the classic ones.
+    if (function_exists('wc_get_page_id')) {
+        foreach (['cart' => ['Warenkorb', 'woocommerce_cart', 'woocommerce/cart'], 'checkout' => ['Kasse', 'woocommerce_checkout', 'woocommerce/checkout']] as $page => [$title, $shortcode, $block]) {
+            $content = (string) get_post_field('post_content', wc_get_page_id($page));
+
+            if (has_block($block, $content) || ($content !== '' && ! has_shortcode($content, $shortcode))) {
+                $problems[] = sprintf(
+                    'Die Seite „%1$s“ nutzt nicht den Kurzbefehl [%2$s], den das Theme „Stiqon“ gestaltet. Bitte unter „Seiten“ den Inhalt der Seite „%1$s“ durch einen Block „Kurzbefehl“ mit [%2$s] ersetzen.',
+                    $title,
+                    $shortcode,
+                );
+            }
+        }
+    }
+
     return $problems;
 }
 

@@ -1,10 +1,15 @@
 <?php
 /**
- * Closes every page: the dark footer, the bar that reports the visitor's motif,
- * and the search that opens over the page.
+ * Closes every page: the dark footer with the shop's areas and its legal pages,
+ * the bar that reports the visitor's motif, and the search that opens over the
+ * page.
  */
 
 defined('ABSPATH') || exit;
+
+$links = stiqon_legal_links();
+$withdrawal = stiqon_withdrawal_link();
+$legal = $links !== [] || $withdrawal !== null;
 ?>
 </main>
 
@@ -13,7 +18,7 @@ defined('ABSPATH') || exit;
     <div class="h-8 rounded-b-tile bg-paper" aria-hidden="true"></div>
 
     <div class="wrap py-14 lg:py-20">
-        <div class="grid gap-12 md:grid-cols-[1.6fr_1fr]">
+        <div class="<?php echo esc_attr(stiqon_classes(['grid gap-12', 'md:grid-cols-[1.6fr_1fr]' => ! $legal, 'md:grid-cols-[1.6fr_1fr_1fr]' => $legal])); ?>">
             <div>
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="inline-block rounded-sm" aria-label="Stiqon – zur Startseite">
                     <?php echo stiqon_logo([
@@ -36,6 +41,21 @@ defined('ABSPATH') || exit;
                     <?php endforeach; ?>
                 </ul>
             </nav>
+
+            <?php if ($legal) : ?>
+                <nav aria-labelledby="footer-legal">
+                    <h2 id="footer-legal" class="text-label text-on-night-muted">Rechtliches</h2>
+                    <ul class="mt-3">
+                        <?php foreach ($links as $link) : ?>
+                            <li><a href="<?php echo esc_url($link['url']); ?>" class="text-action inline-flex h-11 items-center rounded-sm transition-opacity hover:opacity-60"><?php echo esc_html($link['label']); ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <?php // By law a button of its own, on every page: withdrawing must be as easy as ordering. ?>
+                    <?php if ($withdrawal !== null) : ?>
+                        <p class="mt-4"><?php echo stiqon_button(esc_html($withdrawal['label']), ['variant' => 'on-night-secondary', 'href' => $withdrawal['url']]); ?></p>
+                    <?php endif; ?>
+                </nav>
+            <?php endif; ?>
         </div>
 
         <div class="text-label mt-14 flex flex-col gap-2 border-t border-white/14 pt-6 text-on-night-muted sm:flex-row sm:justify-between">

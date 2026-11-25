@@ -13,10 +13,108 @@ defined('ABSPATH') || exit;
 
 /**
  * On product pages the theme styles everything itself; WooCommerce's
- * stylesheets would fight it rule by rule. Cart, checkout and account keep
- * them until they get templates of their own.
+ * stylesheets would fight it rule by rule. The same goes for cart, checkout
+ * and account, see stiqon_declare_shop_page().
  */
 add_filter('woocommerce_enqueue_styles', static fn ($styles) => function_exists('is_product') && is_product() ? [] : $styles);
+
+/**
+ * Whether the page being shown is one WooCommerce draws inside a page of the
+ * site: cart, checkout (with the order confirmation), account – and the page
+ * with Germanized's form for withdrawing from a contract, which is built from
+ * the same form markup.
+ */
+function stiqon_is_woocommerce_page(): bool
+{
+    if (! function_exists('is_cart')) {
+        return false;
+    }
+
+    return is_cart() || is_checkout() || is_account_page()
+        || (function_exists('eu_owb_get_withdrawal_page_id') && is_page() && get_queried_object_id() === (int) eu_owb_get_withdrawal_page_id());
+}
+
+/**
+ * The inside of a message from WooCommerce, laid out as the shop shows it: the
+ * sentence – as one piece, however many links and bold words it holds – and
+ * beside it the button that belongs to it ("Warenkorb anzeigen"), which
+ * WooCommerce prints behind its sentence, or in front of it.
+ */
+function stiqon_notice_content(string $html): string
+{
+    $button = '<a\b[^>]*\bclass="[^"]*\bbutton\b[^"]*"[^>]*>(?:(?!</a>).)*</a>';
+    $action = '';
+
+    if (preg_match('~^\s*('.$button.')(.*)$~s', $html, $parts)) {
+        [, $action, $html] = $parts;
+    } elseif (preg_match('~^(.*?)('.$button.')\s*$~s', $html, $parts)) {
+        [, $html, $action] = $parts;
+    }
+
+    return '<span class="min-w-0 flex-1">'.trim($html).'</span>'.$action;
+}
+
+/**
+ * "×" as the way to take something out of the cart is small and says little.
+ * The link keeps everything WooCommerce's script looks for and gets a word.
+ */
+add_filter('woocommerce_cart_item_remove_link', static function (mixed $link): mixed {
+    return is_string($link) ? str_replace('>&times;</a>', '>Entfernen</a>', $link) : $link;
+});
+
+/**
+ * The row of the sums that names the way of shipping. WooCommerce heads it
+ * "Sendung", thinking of an order that leaves in several parcels; for the one
+ * parcel an order of this shop is, the word customers look for is "Versand".
+ */
+add_filter('woocommerce_shipping_package_name', static function (mixed $name, mixed $index = 0): mixed {
+    return (int) $index === 0 && count(WC()->shipping()->get_packages()) < 2 ? 'Versand' : $name;
+}, 10, 2);
+
+/**
+ * Below the way of shipping the cart adds that the options "will be updated
+ * during checkout" – before an address is known, other countries may cost
+ * otherwise. A shop that delivers to one country has nothing to add there.
+ * The marker lets the stylesheet take the empty line away.
+ */
+add_filter('woocommerce_shipping_estimate_html', static function (mixed $html): mixed {
+    return count(WC()->countries->get_shipping_countries()) === 1 ? '<span class="stiqon-nothing-to-add"></span>' : $html;
+});
+
+/**
+ * The line at the checkout that opens the field for a voucher. WooCommerce
+ * gives its link one text to read ("Klicken Sie hier, um …") and another one
+ * for screen readers; whoever uses both – speaking to the computer, for
+ * instance – cannot name what they see. One text, which says what the link does.
+ */
+add_filter('woocommerce_checkout_coupon_message', static function (): string {
+    return 'Haben Sie einen Gutschein? <a href="#" role="button" aria-controls="woocommerce-checkout-form-coupon" aria-expanded="false" class="showcoupon">Gutscheincode eingeben</a>';
+});
+
+/**
+ * The account's menu. Nothing sold here is a download, and the first page is
+ * an overview, whatever software calls it.
+ */
+add_filter('woocommerce_account_menu_items', static function (mixed $items): mixed {
+    if (! is_array($items)) {
+        return $items;
+    }
+
+    unset($items['downloads']);
+
+    if (isset($items['dashboard'])) {
+        $items['dashboard'] = 'Übersicht';
+    }
+
+    return $items;
+});
+
+/**
+ * From an empty cart WooCommerce leads "back to the shop" – its list page,
+ * which this shop does not have. The way back is the home page with both areas.
+ */
+add_filter('woocommerce_return_to_shop_redirect', static fn (): string => home_url('/'));
+add_filter('woocommerce_return_to_shop_text', static fn (): string => 'Sticker und Flyer ansehen');
 
 add_action('init', function (): void {
     // The drawing takes the place of product photos.
@@ -298,3 +396,77 @@ function stiqon_product_option_groups(WC_Product $product, array $attributes): a
 
     return $groups;
 }
+
+/**
+ * In the cart, at the checkout and wherever else WooCommerce shows a small
+ * picture of what is being bought, the shop shows the drawing of exactly that
+ * variant. In the cart WooCommerce makes it a link to the product, which the
+ * drawing's own description names; at the checkout it is decoration beside
+ * the name.
+ */
+add_filter('woocommerce_cart_item_thumbnail', static function (mixed $thumbnail, mixed $item): mixed {
+    $product = is_array($item) ? ($item['data'] ?? null) : null;
+    $view = $product instanceof WC_Product ? stiqon_product_view($product) : '';
+
+    if ($view === '') {
+        return $thumbnail;
+    }
+
+    // At the checkout Germanized sets the picture beside the name, and WooCommerce
+    // prints both through the filter for editor content – which takes a drawing
+    // apart and leaves the lettering of its motif. A marker passes; the drawing
+    // itself follows where the number is printed, see below.
+    if (is_checkout()) {
+        return '<span class="stiqon-drawing-follows"></span>';
+    }
+
+    return '<span class="block w-20 rounded-control bg-mist p-2">'.$view.'</span>';
+}, 10, 2);
+
+/**
+ * The drawing of each row of the order at the checkout. Before Germanized closes
+ * the wrapper it puts around name and picture (priority 1), so that the drawing
+ * ends up inside it.
+ */
+add_filter('woocommerce_checkout_cart_item_quantity', static function (mixed $html, mixed $item): mixed {
+    $product = is_array($item) ? ($item['data'] ?? null) : null;
+    $view = $product instanceof WC_Product ? stiqon_product_view($product) : '';
+
+    return $view === '' || ! is_string($html) ? $html : $html.'<span class="stiqon-order-drawing" aria-hidden="true">'.$view.'</span>';
+}, 0, 2);
+
+/**
+ * E-mails carry the shop's logo in their head – unless the owner chose a
+ * picture of their own (WooCommerce › Einstellungen › E-Mails). The address is
+ * worked out for every mail, so it stays right when the shop moves.
+ */
+add_filter('option_woocommerce_email_header_image', 'stiqon_email_logo');
+add_filter('default_option_woocommerce_email_header_image', 'stiqon_email_logo');
+
+function stiqon_email_logo(mixed $image): mixed
+{
+    return is_string($image) && $image !== '' ? $image : get_theme_file_uri('assets/brand/logo-mail-320.png');
+}
+
+/**
+ * WooCommerce puts a small picture of each product into its e-mails. The
+ * products of this shop are drawn, not photographed, and a drawing cannot be
+ * sent in a mail – what would show is WooCommerce's grey stand-in. The rows
+ * do without.
+ */
+add_filter('woocommerce_email_order_items_args', static function (mixed $args): mixed {
+    if (is_array($args)) {
+        $args['show_image'] = false;
+    }
+
+    return $args;
+});
+
+/**
+ * Germanized prints the button for withdrawing from a contract after the
+ * footer, on shop pages. This theme has it inside the footer, on every page
+ * (footer.php), so the second one is taken away.
+ */
+add_action('wp_loaded', static function (): void {
+    remove_action('wp_footer', ['Vendidero\\OrderWithdrawalButton\\Package', 'print_button'], 5);
+});

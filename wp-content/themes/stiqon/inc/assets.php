@@ -45,6 +45,16 @@ add_action('wp_enqueue_scripts', function (): void {
 });
 
 /**
+ * Cart, checkout and account get a stylesheet of their own on top: the look of
+ * WooCommerce's markup, which no other page needs.
+ */
+add_action('wp_enqueue_scripts', function (): void {
+    if (stiqon_is_shop_page() && ($style = stiqon_built_asset('assets/src/css/shop.css'))) {
+        wp_enqueue_style('stiqon-shop', $style, ['stiqon'], null);
+    }
+}, 20);
+
+/**
  * The page's script fetches the behaviour of gallery and product pages on
  * demand (see assets/src/js/app.js). Told about it up front, the browser
  * fetches that file alongside the main script instead of after it.

@@ -75,6 +75,7 @@ function stiqon_icon(string $name, string $class = '', array $attributes = []): 
         'chevron-down' => 'M6 9l6 6 6-6',
         'plus' => 'M12 5v14M5 12h14',
         'search' => 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4.05-4.05',
+        'bag' => 'M6 8h12l1 12H5L6 8zM9 8V7a3 3 0 0 1 6 0v1',
     ];
 
     if (! isset($paths[$name])) {

@@ -7,6 +7,7 @@
 #   downloads/                WordPress, plugin and language packages
 #   sites/<name>/             one WordPress installation per site ("dev", "e2e", ...)
 #   sites/<name>.env          address, database name and generated passwords of that site
+#   sites/<name>.mails/       what the site would have sent as mail, one file per message
 #
 # The theme and the plugin of this repository are linked into each site.
 #
@@ -32,6 +33,7 @@ fi
 SITE_NAME="${STIQON_SITE:-dev}"
 SITE_DIR="$STIQON_WP_ROOT/sites/$SITE_NAME"
 SITE_ENV="$STIQON_WP_ROOT/sites/$SITE_NAME.env"
+SITE_MAILS="$STIQON_WP_ROOT/sites/$SITE_NAME.mails"
 DOWNLOADS="$STIQON_WP_ROOT/downloads"
 # In a directory of its own, beside the sites: WordPress' installer takes the
 # location of the running script for the web root when that is a directory above
