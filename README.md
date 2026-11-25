@@ -102,6 +102,13 @@ tests/integration/run.sh
   „e2e“, also nach den Browser-Tests. Danach wird ihr Fehlerprotokoll gelesen: Jede Zeile, die
   nicht in `tests/integration/log-noise.txt` als bekannte Meldung von WordPress, WooCommerce oder
   Germanized begründet ist, lässt den Lauf scheitern.
+- **PHP-Versionen:** Die CI prüft den Shop auf PHP 8.1 – der ältesten Version, die Theme und
+  Plugin zusagen – und auf PHP 8.3, jeweils so, wie PHP ausgeliefert wird: ohne den
+  JIT-Übersetzer (`opcache.jit_buffer_size=0`). Mit eingeschaltetem JIT stürzt PHP 8.1.34 ab,
+  während es den Shop ausliefert („Segmentation fault“ im übersetzten Code); das ist ein Fehler
+  in PHP 8.1, das keine Korrekturen mehr bekommt. Auf PHP 8.3 lief derselbe Testlauf im
+  November 2026 auch mit JIT durch. Für den Betrieb heißt das: den JIT ausgeschaltet lassen
+  (PHPs Voreinstellung und die der meisten Hoster) – und PHP 8.3 nehmen, wo es zur Wahl steht.
 
 ## Seiten
 
