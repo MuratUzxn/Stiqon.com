@@ -27,7 +27,9 @@ const pages = {
     '/': { document: 16.5, total: 134, elements: 1900 },
     // Twenty cards, each an inline drawing: about 800 elements. On top of what the
     // home page loads come the gallery's own script and the serif face of the samples.
-    '/sticker/': { document: 11.3, total: 137, elements: 900 },
+    // The drawings of the supplier categories on the home page sit in the shared
+    // stylesheet: about 0.4 kB on every page.
+    '/sticker/': { document: 11.3, total: 138, elements: 900 },
     // The pages WooCommerce draws, measured with a product in the cart. They bring
     // what its cart and checkout run on: jQuery (30 kB), the script behind the
     // select fields (21 kB), its own scripts and Germanized's. The classic pages,

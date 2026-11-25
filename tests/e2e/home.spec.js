@@ -172,10 +172,10 @@ test.describe('print suppliers', () => {
         await expect(section.locator('details')).toHaveCount(7);
 
         const stickers = section.locator('details').filter({ hasText: 'Aufkleber & Etiketten' });
-        await expect(stickers.getByRole('link', { name: 'Probo' })).toBeHidden();
+        await expect(stickers.getByRole('link', { name: 'Probo', exact: true })).toBeHidden();
 
         await stickers.locator('summary').click();
-        await expect(stickers.getByRole('link', { name: 'Probo' })).toBeVisible();
+        await expect(stickers.getByRole('link', { name: 'Probo', exact: true })).toBeVisible();
         await expect(stickers.getByRole('link', { name: 'Schnittstelle von Probo' })).toBeVisible();
         await expect(stickers.getByText('Aufkleber, Aufkleberbögen und Rollenetiketten')).toBeVisible();
     });
