@@ -27,6 +27,6 @@ test.describe('with the plugin back on', () => {
     test('the product views are there again', async ({ page }) => {
         await page.goto('/sticker/');
 
-        await expect(page.locator('[data-mockup]')).toHaveCount(8);
+        await expect(page.locator('[data-mockup]')).toHaveCount(20);
     });
 });

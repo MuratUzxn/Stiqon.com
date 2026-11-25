@@ -299,18 +299,12 @@ link_into_site "$REPO/wp-content/plugins/stiqon-shop" "$SITE_DIR/wp-content/plug
 wp plugin is-active stiqon-shop || wp plugin activate stiqon-shop --quiet
 wp theme activate stiqon --quiet
 
-# --- Shop settings ----------------------------------------------------------------
+# --- Shop settings and the example assortment --------------------------------------
 
-wp option update woocommerce_default_country DE --quiet
-wp option update woocommerce_currency EUR --quiet
-wp option update woocommerce_calc_taxes yes --quiet
-wp option update woocommerce_prices_include_tax yes --quiet
-wp option update woocommerce_coming_soon no --quiet
+wp eval-file "$REPO/tools/dev/shop-settings.php" --quiet
 wp rewrite structure '/%postname%/' --quiet
 wp wc tool run install_pages --user="$ADMIN_USER" --quiet
-
-# Not for search engines: this is a development installation.
-wp option update blog_public 0 --quiet
+wp eval-file "$REPO/tools/dev/example-catalogue.php" --quiet
 
 # --- Pages the theme has templates for ----------------------------------------------
 

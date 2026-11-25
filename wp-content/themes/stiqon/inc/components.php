@@ -128,26 +128,63 @@ function stiqon_button(string $content, array $options = []): string
 }
 
 /**
- * A filter chip: a link when "href" is given, otherwise a toggle button.
+ * A filter chip: a link when "href" is given, otherwise a toggle button. Whether
+ * it is the chosen one is said by aria-current (or aria-pressed) alone, and the
+ * look follows that attribute – so a script only has to change the attribute.
  *
- * @param  array{active?: bool, href?: ?string, class?: string}  $options
+ * @param  array{active?: bool, href?: ?string, class?: string, attributes?: array<string, string|int|bool|null>}  $options
  */
 function stiqon_chip(string $label, array $options = []): string
 {
     $active = ! empty($options['active']);
+    $link = ! empty($options['href']);
 
+    // Class names are written out in full: the stylesheet is built from the names
+    // found in these files, and a name put together at run time is not found.
     $classes = stiqon_classes([
         'text-action inline-flex h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-3.5 text-sm transition-colors duration-200 ease-soft',
-        'bg-ink text-paper' => $active,
-        'bg-ink/8 text-ink hover:bg-ink/14' => ! $active,
+        'bg-ink/8 text-ink hover:bg-ink/14',
+        'aria-[current=true]:bg-ink aria-[current=true]:text-paper' => $link,
+        'aria-pressed:bg-ink aria-pressed:text-paper' => ! $link,
         $options['class'] ?? '',
     ]);
 
-    if (! empty($options['href'])) {
-        return '<a href="'.esc_url($options['href']).'"'.($active ? ' aria-current="true"' : '').' class="'.esc_attr($classes).'">'.esc_html($label).'</a>';
+    $attributes = stiqon_attributes($options['attributes'] ?? []);
+
+    if ($link) {
+        return '<a href="'.esc_url($options['href']).'" aria-current="'.($active ? 'true' : 'false').'" class="'.esc_attr($classes).'"'.$attributes.'>'.esc_html($label).'</a>';
     }
 
-    return '<button type="button" aria-pressed="'.($active ? 'true' : 'false').'" class="'.esc_attr($classes).'">'.esc_html($label).'</button>';
+    return '<button type="button" aria-pressed="'.($active ? 'true' : 'false').'" class="'.esc_attr($classes).'"'.$attributes.'>'.esc_html($label).'</button>';
+}
+
+/**
+ * One card of a gallery: the product, drawn with one of its options, on a card
+ * surface, with title, option and lowest price. See stiqon_gallery().
+ *
+ * The link is the title alone, stretched over the whole card: wrapped around
+ * the drawing it would carry the lettering of the sample motif as its text.
+ *
+ * @param  array{key: string, product: WC_Product, slug: string, title: string, option: ?string, subtitle: ?string, chosen: array<string, string>, url: string, price: ?float}  $card
+ */
+function stiqon_product_card(array $card, bool $hidden = false): string
+{
+    $view = stiqon_product_view($card['product'], $card['chosen'], [
+        'label' => implode(', ', array_filter([$card['title'], $card['subtitle']])),
+    ]);
+
+    $details = array_filter([
+        $card['subtitle'] !== null ? esc_html($card['subtitle']) : null,
+        // wc_price() returns finished markup. The price stays on one line.
+        $card['price'] !== null ? '<span class="whitespace-nowrap">ab '.wc_price($card['price']).'</span>' : null,
+    ]);
+
+    return '<li class="group relative" data-card'.stiqon_attributes(['data-produkt' => $card['slug'], 'data-option' => $card['option'] ?? '', 'hidden' => $hidden]).'>'
+        .stiqon_stage($view, 'mist', 'transition-colors duration-200 ease-soft group-hover:bg-mist-deep')
+        .'<h3 class="mt-3 font-semibold"><a href="'.esc_url($card['url']).'" class="outline-none after:absolute after:inset-0 after:z-10 after:rounded-card focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-ink">'
+        .esc_html($card['title']).'</a></h3>'
+        .($details !== [] ? '<p class="text-label text-muted">'.implode(' · ', $details).'</p>' : '')
+        .'</li>';
 }
 
 /**

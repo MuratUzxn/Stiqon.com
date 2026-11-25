@@ -3,6 +3,8 @@
  * Functions the theme's templates call. They return markup that is ready to print.
  */
 
+use Stiqon\Shop\Catalog\Gallery;
+use Stiqon\Shop\Catalog\ProductView;
 use Stiqon\Shop\Mockup\Flyer;
 use Stiqon\Shop\Mockup\Stage;
 use Stiqon\Shop\Mockup\Sticker;
@@ -30,6 +32,44 @@ function stiqon_sticker(array $spec = [], string $class = ''): string
 function stiqon_flyer(array $spec = [], string $class = ''): string
 {
     return stiqon_shop_render(static fn (): string => Flyer::fromArray($spec)->render($class));
+}
+
+/**
+ * A product of the shop as inline SVG, with a choice of its options – a sticker
+ * or a flyer, whichever the product is. Empty when nothing says what kind of
+ * product it is.
+ *
+ * @param  array<string, string>  $chosen  attribute => chosen value, as in a request ("attribute_pa_material" => "kraftpapier")
+ * @param  array{class?: string, label?: string, peel?: bool, stack?: bool}  $options  "label" names the drawing for screen readers
+ */
+function stiqon_product_view(WC_Product $product, array $chosen = [], array $options = []): string
+{
+    $resolved = ProductView::resolve($product, $chosen);
+
+    if ($resolved === null) {
+        return '';
+    }
+
+    $spec = array_intersect_key($options, ['peel' => true, 'stack' => true]) + $resolved['spec'];
+    $spec['label'] = $options['label'] ?? implode(', ', array_filter([$product->get_name(), $resolved['options'][0] ?? null]));
+
+    return $resolved['type'] === 'sticker'
+        ? stiqon_sticker($spec, $options['class'] ?? '')
+        : stiqon_flyer($spec, $options['class'] ?? '');
+}
+
+/**
+ * The cards of an area of the shop ("sticker", "flyer"), with what its filters
+ * offer and which of them the current request asks for. See Catalog\Gallery.
+ *
+ * @return array{products: list<array{slug: string, name: string}>, axis: ?array, cards: list<array>, selection: array{produkt: ?string, option: ?string}}
+ */
+function stiqon_gallery(string $category): array
+{
+    $gallery = Gallery::of($category);
+
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- filters of a public page; values are only compared with known ones.
+    return $gallery + ['selection' => Gallery::selection($gallery, wp_unslash($_GET))];
 }
 
 /**

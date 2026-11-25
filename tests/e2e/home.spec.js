@@ -179,7 +179,7 @@ test.describe('without JavaScript', () => {
         // … the way into the shop does not.
         await page.getByRole('main').getByRole('link', { name: 'Sticker ansehen' }).first().click();
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Sticker');
-        await expect(page.locator('[data-mockup]')).toHaveCount(8);
+        await expect(page.locator('[data-mockup]')).toHaveCount(20);
 
         await context.close();
     });
