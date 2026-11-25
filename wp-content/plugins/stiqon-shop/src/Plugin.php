@@ -20,6 +20,7 @@ final class Plugin
 
         Catalog\AddToCart::register();
         Catalog\Names::register();
+        Catalog\SupplierCataloguePage::register();
         Search\Index::register();
         Content\References::register();
 

@@ -19,7 +19,7 @@ export STIQON_SITE="${STIQON_SITE:-e2e}"
 
 # The installation as the setup script left it comes first: the later checks
 # switch things off and on.
-for check in environment templates catalogue search setup-problems defaults activation-order; do
+for check in environment templates catalogue supplier-catalogue search setup-problems defaults activation-order; do
     wp eval-file "$REPO/tests/integration/$check.php" "$WORDPRESS_VERSION" "$WOOCOMMERCE_VERSION" "$GERMANIZED_VERSION"
 done
 
