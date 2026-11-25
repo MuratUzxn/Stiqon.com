@@ -82,6 +82,15 @@ test.describe('references', () => {
         await expect(cards(page)).toHaveCount(1);
     });
 
+    test('a reference that waits for its photo has no address', async ({ page }) => {
+        const response = await page.goto('/referenzen/yogastudio-lichtung/');
+
+        expect(response.status()).toBe(404);
+        await expect(page.getByRole('heading', { level: 1 })).toHaveText('Diese Seite gibt es nicht.');
+        await expect(page).not.toHaveTitle(/Yogastudio/);
+        expect(await page.content()).not.toContain('Yogastudio');
+    });
+
     test('the list passes the checks of the shop\'s own pages', async ({ page }) => {
         await page.goto('/referenzen/');
 
@@ -111,6 +120,9 @@ test.describe('references', () => {
 
             await page.goto('/');
             await expect(linksToTheList(page)).toHaveCount(0);
+
+            // Without a list there is nowhere a single reference could lead.
+            expect((await page.goto('/referenzen/yogastudio-lichtung/')).status()).toBe(404);
         } finally {
             cli('post', 'update', withPhoto, '--post_status=publish');
         }

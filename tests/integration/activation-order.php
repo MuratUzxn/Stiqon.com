@@ -63,6 +63,15 @@ if (trim((string) ($address['stdout'] ?? '')) !== 'known') {
     $problems[] = 'After the plugin was switched off and on, WordPress does not know the address of the references.';
 }
 
+// The plugin is loaded before WooCommerce (plugins load in the order of their
+// names). What it declares for its references must not take the picture away
+// from products, pages and posts.
+$pictures = $run('eval "echo implode(\',\', array_filter([\'product\', \'page\', \'post\', \'stiqon_referenz\'], fn (\$type) => ! current_theme_supports(\'post-thumbnails\', \$type)));"');
+
+if ($failed($pictures) || trim((string) ($pictures['stdout'] ?? '')) !== '') {
+    $problems[] = 'These have no "featured image": '.trim((string) ($pictures['stdout'] ?? '')).' '.$said($pictures);
+}
+
 if ($problems !== []) {
     WP_CLI::error_multi_line($problems);
     WP_CLI::halt(1);

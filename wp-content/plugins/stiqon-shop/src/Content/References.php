@@ -106,9 +106,15 @@ final class References
         delete_option(self::RULES_OPTION);
     }
 
+    /**
+     * A reference's photo is its "featured image", which a theme has to allow.
+     * Allowed for everything, as WooCommerce does for products: naming only the
+     * references here would – depending on which plugin is loaded first – take
+     * the picture away from products, pages and posts.
+     */
     public static function imageSize(): void
     {
-        add_theme_support('post-thumbnails', [self::TYPE]);
+        add_theme_support('post-thumbnails');
         add_image_size(self::IMAGE, 960, 720, true);
     }
 
@@ -176,13 +182,28 @@ final class References
 
     /**
      * A single reference has no page; whoever follows its address sees the list.
+     * A reference the list does not show – its photo is still missing – has no
+     * address at all, and neither has any while there is no list.
      */
     public static function toTheList(): void
     {
-        if (is_singular(self::TYPE) && ($url = self::url()) !== null) {
-            wp_safe_redirect($url.'#referenz-'.get_queried_object_id(), 301);
+        global $wp_query;
+
+        if (! is_singular(self::TYPE)) {
+            return;
+        }
+
+        $id = get_queried_object_id();
+        $url = get_post_status($id) === 'publish' && has_post_thumbnail($id) ? self::url() : null;
+
+        if ($url !== null) {
+            wp_safe_redirect($url.'#referenz-'.$id, 301);
             exit;
         }
+
+        $wp_query->set_404();
+        status_header(404);
+        nocache_headers();
     }
 
     /**

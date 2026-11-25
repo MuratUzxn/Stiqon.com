@@ -107,6 +107,51 @@ test.describe('quick view', () => {
         await expect(viewer(page)).toBeHidden();
     });
 
+    test('after filtering, the Back button still only closes the quick view', async ({ page }) => {
+        await page.goto('/sticker/');
+        await page.locator('a[data-filter]').getByText('Kraftpapier', { exact: true }).click();
+        await expect(page).toHaveURL(/\/sticker\/\?material=kraftpapier$/);
+
+        // Gone as soon as the page is loaded again.
+        await page.evaluate(() => {
+            window.sameDocument = true;
+        });
+
+        await shown(page).first().click();
+        await expect(viewer(page)).toBeVisible();
+
+        await page.goBack();
+        await expect(viewer(page)).toBeHidden();
+        await expect(page).toHaveURL(/\/sticker\/\?material=kraftpapier$/);
+        await expect(shown(page)).toHaveCount(5);
+        expect(await page.evaluate(() => window.sameDocument)).toBe(true);
+    });
+
+    test('where addresses differ in the query only, arriving at another page\'s address still loads that page', async ({ page }) => {
+        // A site without "pretty" addresses tells its pages apart by the query alone
+        // (/?page_id=12, /?product=runde-sticker). The same situation here: an entry
+        // of the browser's history that belongs to this page, as a quick view's does,
+        // but carries an address with this page's path and another query.
+        await page.goto('/sticker/?produkt=runde-sticker');
+        await expect(shown(page)).toHaveCount(4);
+
+        await page.evaluate(() => {
+            window.sameDocument = true;
+            window.history.pushState(null, '', '/sticker/');
+        });
+
+        // Back at its own address the page stays as it is …
+        await page.goBack();
+        await expect(page).toHaveURL(/\/sticker\/\?produkt=runde-sticker$/);
+        expect(await page.evaluate(() => window.sameDocument)).toBe(true);
+
+        // … at the other one it gives way to the page that belongs there.
+        await page.goForward();
+        await expect(page).toHaveURL(/\/sticker\/$/);
+        await expect(shown(page)).toHaveCount(20);
+        expect(await page.evaluate(() => window.sameDocument)).toBeUndefined();
+    });
+
     test('"Produkt ansehen" leads to the product with the option chosen', async ({ page }) => {
         await page.goto('/sticker/');
         await shown(page).filter({ hasText: 'Rechteckige Sticker' }).filter({ hasText: 'Transparente Folie' }).click();

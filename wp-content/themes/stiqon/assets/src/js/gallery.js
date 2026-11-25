@@ -45,6 +45,9 @@ export default function register(Alpine) {
 
             this.apply(chosen);
             window.history.replaceState(window.history.state, '', this.address(chosen));
+
+            // The filters are part of this page's own address, not another page (see app.js).
+            window.dispatchEvent(new Event('stiqon:address'));
         },
 
         /** What is chosen now, per filter; an empty value means "all". */

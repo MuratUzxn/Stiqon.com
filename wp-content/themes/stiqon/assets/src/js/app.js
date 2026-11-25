@@ -109,6 +109,9 @@ document.addEventListener('alpine:init', () => {
                 await write({ name: file.name, savedAt, blob });
                 hint(savedAt);
             } catch {
+                // Whatever was kept before is not what the visitor sees now. It must
+                // not come back on the next page or in another tab.
+                await remove().catch(() => {});
                 hint(null);
                 this.notice = 'Ihr Motiv ist auf dieser Seite zu sehen. Dieses Fenster erlaubt nicht, es für die nächste Seite zu behalten.';
                 this.announcement = `${this.announcement} ${this.notice}`;
@@ -303,11 +306,22 @@ document.addEventListener('alpine:init', () => {
  * address, the Back button changes the address to the gallery's – and leaves
  * the product page on screen. Whenever the Back or Forward button arrives at an
  * address that is not this page's and is not a quick view, the page is loaded.
+ *
+ * This page's address is its path and query, not the path alone: a site without
+ * "pretty" addresses tells its pages apart by the query (/?page_id=12,
+ * /?product=runde-sticker). An anchor within the page is still the page.
  */
-const loadedAt = window.location.pathname;
+const address = () => window.location.pathname + window.location.search;
+
+let ownAddress = address();
+
+// A gallery rewrites its own address for its filters, and says so.
+window.addEventListener('stiqon:address', () => {
+    ownAddress = address();
+});
 
 window.addEventListener('popstate', () => {
-    if (window.location.pathname !== loadedAt && !window.history.state?.quickView) {
+    if (address() !== ownAddress && !window.history.state?.quickView) {
         window.location.reload();
     }
 });

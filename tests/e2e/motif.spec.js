@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { test, expect, fixture } from './fixtures.js';
 
 /** hrefs of the visitor's motif on every mockup of the page. */
@@ -305,6 +306,29 @@ test.describe('own motif across pages', () => {
 
         await expect(page.getByRole('alert')).toHaveText('Dieses Bild lässt sich nicht lesen. Bitte eine andere Datei wählen.');
         await expect(bar(page)).toBeHidden();
+    });
+
+    test('when a new motif cannot be kept, the one kept before does not come back', async ({ page }) => {
+        await chooseOnHome(page);
+
+        // From here on the browser takes nothing more – a full disk looks like this to a page.
+        await page.evaluate(() => {
+            IDBObjectStore.prototype.put = () => {
+                throw new DOMException('full', 'QuotaExceededError');
+            };
+        });
+
+        await page.locator('input[type="file"]').first().setInputFiles({ name: 'zweites.png', mimeType: 'image/png', buffer: readFileSync(fixture('motif.png')) });
+
+        await expect(bar(page)).toContainText('zweites.png');
+        await expect(page.getByText('Dieses Fenster erlaubt nicht, es für die nächste Seite zu behalten.').last()).toBeVisible();
+        await expect.poll(() => page.evaluate(() => window.localStorage.getItem('stiqon:motif'))).toBeNull();
+
+        // The next page shows samples – not the first motif, which the visitor replaced.
+        await page.goto('/sticker/');
+        await expect(page.locator('[data-card]').first()).toBeVisible();
+        await expect(bar(page)).toBeHidden();
+        expect((await motifSources(page)).every((source) => !source)).toBe(true);
     });
 
     test('where the browser stores nothing, the motif shows on the page and the visitor is told', async ({ page }) => {
