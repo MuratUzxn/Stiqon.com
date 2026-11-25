@@ -118,7 +118,8 @@ $classes = Html::classes([
             >
                 <?php Template::output('motif/'.$motif, ['uid' => $uid, 'bare' => $mockup->bareMotif()]); ?>
             </svg>
-            <g x-show="active" x-cloak>
+            <?php // Hidden by its own markup, not by a stylesheet: the drawing also has to be right where no script and no theme is, as in the administration. ?>
+            <g x-show="active" style="display:none">
                 <?php if ($material === 'vinyl') : ?>
                     <rect x="<?php echo esc_attr($box['x']); ?>" y="<?php echo esc_attr($box['y']); ?>" width="<?php echo esc_attr($box['width']); ?>" height="<?php echo esc_attr($box['height']); ?>" fill="#fff" />
                 <?php endif; ?>

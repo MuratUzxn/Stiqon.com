@@ -64,7 +64,8 @@ $classes = Html::classes(['lift block h-auto overflow-visible', 'w-full' => ! $s
             >
                 <?php Template::output('motif/flyer/'.$motif, ['uid' => $uid]); ?>
             </svg>
-            <g x-show="active" x-cloak>
+            <?php // Hidden by its own markup, not by a stylesheet: the drawing also has to be right where no script and no theme is, as in the administration. ?>
+            <g x-show="active" style="display:none">
                 <image
                     x="<?php echo esc_attr($x); ?>" y="<?php echo esc_attr($y); ?>" width="<?php echo esc_attr($w); ?>" height="<?php echo esc_attr($h); ?>"
                     preserveAspectRatio="xMidYMid slice" x-bind:href="url" data-motif-image

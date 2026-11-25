@@ -114,6 +114,10 @@ Fehlt eine der beiden Bereichsseiten oder fehlen dem Theme seine gebauten Dateie
 Verwaltung darauf hin (`inc/checks.php`).
 
 Die Sticker- und Flyer-Ansichten zeichnet das Plugin (`src/Mockup`, Vorlagen unter `templates`).
+Ob ein Produkt ein Sticker oder ein Flyer ist, welche Form oder welches Format es hat und wie seine
+Materialien aussehen, liest das Plugin aus Namen und Kategorie (`src/Catalog`). In der Verwaltung
+zeigt der Reiter „Vorschau“ am Produkt, was dabei herauskommt, und lässt Art, Form bzw. Format und
+Beispielmotiv festlegen (`src/Admin/ProductPreview.php`).
 Ist es abgeschaltet, erscheinen die Seiten ohne Ansichten, und die Verwaltung weist darauf hin.
 Theme und Plugin lassen sich in beliebiger Reihenfolge aktivieren. Kennt das Plugin eine verlangte
 Form, ein Motiv oder eine Kartenfarbe nicht, bleibt in der Entwicklung die Seite stehen, damit der

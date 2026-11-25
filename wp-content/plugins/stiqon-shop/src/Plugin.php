@@ -19,6 +19,10 @@ final class Plugin
 
         Catalog\AddToCart::register();
         Search\Index::register();
+
+        if (is_admin()) {
+            Admin\ProductPreview::register();
+        }
     }
 
     /**

@@ -1,0 +1,261 @@
+<?php
+
+namespace Stiqon\Shop\Admin;
+
+use Stiqon\Shop\Catalog\Guess;
+use Stiqon\Shop\Catalog\ProductView;
+use Stiqon\Shop\Catalog\Spec;
+use Stiqon\Shop\Mockup\Flyer;
+use Stiqon\Shop\Mockup\Sticker;
+use WC_Product;
+
+/**
+ * The tab "Vorschau" of a product in the administration: how the shop draws
+ * the product, what it made out by itself, and fields to say otherwise.
+ *
+ * The shop draws its products instead of photographing them. What kind of
+ * product one is, its shape or format and the sample motif on it are read
+ * from its name and category; what is chosen here is stored on the product
+ * (meta "_stiqon_mockup", see Catalog\ProductView) and comes first.
+ * "Automatisch" stores nothing.
+ */
+final class ProductPreview
+{
+    public const FIELD = 'stiqon_mockup';
+
+    private const PANEL = 'stiqon_preview_product_data';
+
+    private const TYPES = ['sticker' => 'Sticker', 'flyer' => 'Flyer'];
+
+    private const SHAPES = ['circle' => 'Rund', 'square' => 'Quadratisch', 'rect' => 'Rechteckig', 'oval' => 'Oval', 'contour' => 'Konturschnitt'];
+
+    private const MATERIALS = ['vinyl' => 'weißes Vinyl', 'clear' => 'transparente Folie', 'holo' => 'holografische Folie', 'kraft' => 'Kraftpapier'];
+
+    /** What the fields of the tab decide; anything else stored for the drawing is left alone. */
+    private const DECIDED = ['type', 'shape', 'format', 'motif'];
+
+    public static function register(): void
+    {
+        add_filter('woocommerce_product_data_tabs', [self::class, 'tab']);
+        add_action('woocommerce_product_data_panels', [self::class, 'panel']);
+        // WooCommerce runs this while it saves the product form, after it has
+        // checked the form's token and the right to edit the product.
+        add_action('woocommerce_admin_process_product_object', [self::class, 'save']);
+    }
+
+    /**
+     * @param  array<string, array<string, mixed>>  $tabs
+     * @return array<string, array<string, mixed>>
+     */
+    public static function tab(array $tabs): array
+    {
+        $tabs['stiqon_preview'] = ['label' => 'Vorschau', 'target' => self::PANEL, 'class' => [], 'priority' => 65];
+
+        return $tabs;
+    }
+
+    /**
+     * What to store for a product, from what the fields of the tab sent. Only
+     * values the drawings know are kept; an empty value means "automatic".
+     *
+     * @param  array<string, string>  $sent  type, shape, format, sticker_motif, flyer_motif
+     * @param  list<string>  $categories  names of the product's categories
+     * @return array<string, string>
+     */
+    public static function chosen(array $sent, string $name, array $categories = []): array
+    {
+        $chosen = in_array($sent['type'] ?? '', Spec::TYPES, true) ? ['type' => $sent['type']] : [];
+        $type = $chosen['type'] ?? Guess::type($name, ...$categories);
+
+        if ($type === null) {
+            return $chosen;
+        }
+
+        $wanted = $type === 'sticker'
+            ? ['shape' => $sent['shape'] ?? '', 'motif' => $sent['sticker_motif'] ?? '']
+            : ['format' => $sent['format'] ?? '', 'motif' => $sent['flyer_motif'] ?? ''];
+
+        return $chosen + Spec::known($type, array_filter($wanted, 'strlen'));
+    }
+
+    public static function save(WC_Product $product): void
+    {
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- verified by WooCommerce, see register().
+        if (! isset($_POST[self::FIELD]) || ! is_array($_POST[self::FIELD])) {
+            return;
+        }
+
+        $sent = array_map('sanitize_key', array_filter(wp_unslash($_POST[self::FIELD]), 'is_string'));
+        // phpcs:enable
+
+        $stored = $product->get_meta(ProductView::META);
+        $kept = array_diff_key(is_array($stored) ? $stored : [], array_flip(self::DECIDED));
+        $chosen = self::chosen($sent, $product->get_name(), self::categories($product)) + $kept;
+
+        if ($chosen === []) {
+            $product->delete_meta_data(ProductView::META);
+        } else {
+            $product->update_meta_data(ProductView::META, $chosen);
+        }
+    }
+
+    public static function panel(): void
+    {
+        global $product_object;
+
+        $product = $product_object instanceof WC_Product ? $product_object : new WC_Product();
+        $name = $product->get_name('edit');
+        $stored = $product->get_meta(ProductView::META);
+        $stored = is_array($stored) ? $stored : [];
+
+        // What the names alone say – the meaning of "Automatisch" in each field.
+        $guessedType = Guess::type($name, ...self::categories($product));
+        $type = in_array($stored['type'] ?? null, Spec::TYPES, true) ? $stored['type'] : $guessedType;
+        $known = $type === null ? [] : Spec::known($type, $stored);
+        $guessedShape = Guess::product('sticker', $name)['shape'] ?? null;
+        $guessedFormat = Guess::product('flyer', $name)['format'] ?? null;
+
+        $automatic = static fn (?string $made, string $drawn = ''): string => $made !== null
+            ? 'Automatisch – erkannt: '.$made
+            : 'Automatisch – nichts erkannt'.($drawn !== '' ? ', gezeichnet wird: '.$drawn : '');
+
+        $views = $product->get_id() > 0 && $type !== null ? stiqon_product_views($product) : ['key' => null, 'views' => []];
+        ?>
+        <div id="<?php echo esc_attr(self::PANEL); ?>" class="panel woocommerce_options_panel hidden" data-type="<?php echo esc_attr((string) $guessedType); ?>">
+            <style>
+                #woocommerce-product-data ul.wc-tabs li.stiqon_preview_options a::before { content: "\f128"; }
+                #<?php echo esc_html(self::PANEL); ?> .stiqon-views { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; padding: 12px; }
+                #<?php echo esc_html(self::PANEL); ?> .stiqon-views figure { box-sizing: border-box; width: 150px; margin: 0; }
+                #<?php echo esc_html(self::PANEL); ?> .stiqon-views div { box-sizing: border-box; display: flex; align-items: center; justify-content: center; aspect-ratio: 1; padding: 9%; border-radius: 16px; background: #f3f3f3; }
+                #<?php echo esc_html(self::PANEL); ?> .stiqon-views svg { display: block; overflow: visible; width: 100%; height: auto; filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.1)) drop-shadow(0 8px 10px rgb(0 0 0 / 0.12)); }
+                #<?php echo esc_html(self::PANEL); ?> .stiqon-views figcaption { margin-top: 6px; color: #50575e; font-size: 12px; line-height: 1.4; }
+                #<?php echo esc_html(self::PANEL); ?> .stiqon-views figcaption strong { display: block; color: #1d2327; }
+            </style>
+
+            <div class="options_group">
+                <p class="form-field">
+                    Der Shop zeigt dieses Produkt als Zeichnung. Art, Form und Beispielmotiv liest er aus Name und Kategorie;
+                    hier lässt sich jede Angabe festlegen. Änderungen erscheinen nach dem Speichern.
+                </p>
+
+                <?php if ($views['views'] === []) : ?>
+                    <p class="form-field"><em><?php echo esc_html($product->get_id() > 0
+                        ? 'Aus Name und Kategorie geht nicht hervor, ob dies ein Sticker oder ein Flyer ist. Ohne Angabe unter „Art“ erscheint das Produkt ohne Zeichnung.'
+                        : 'Die Zeichnung erscheint, sobald das Produkt gespeichert ist.'); ?></em></p>
+                <?php else : ?>
+                    <div class="stiqon-views" role="group" aria-label="So wird das Produkt gezeichnet">
+                        <?php foreach ($views['views'] as $view) : ?>
+                            <figure>
+                                <?php // Markup from the plugin's own templates, escaped there. ?>
+                                <div><?php echo $view['html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+                                <?php if ($view['name'] !== '') : ?>
+                                    <figcaption><strong><?php echo esc_html($view['name']); ?></strong><?php echo esc_html(self::reading((string) $type, $view['name'])); ?></figcaption>
+                                <?php endif; ?>
+                            </figure>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="options_group">
+                <?php
+                woocommerce_wp_select([
+                    'id' => 'stiqon_mockup_type',
+                    'name' => self::FIELD.'[type]',
+                    'label' => 'Art',
+                    'value' => $stored['type'] ?? '',
+                    'options' => ['' => $automatic(self::TYPES[$guessedType] ?? null)] + self::TYPES,
+                ]);
+
+                woocommerce_wp_select([
+                    'id' => 'stiqon_mockup_shape',
+                    'name' => self::FIELD.'[shape]',
+                    'label' => 'Form',
+                    'wrapper_class' => 'stiqon-for-sticker',
+                    'value' => $type === 'sticker' ? ($known['shape'] ?? '') : '',
+                    'options' => ['' => $automatic(self::SHAPES[$guessedShape] ?? null, self::SHAPES['circle'])] + self::SHAPES,
+                ]);
+
+                woocommerce_wp_select([
+                    'id' => 'stiqon_mockup_format',
+                    'name' => self::FIELD.'[format]',
+                    'label' => 'Format',
+                    'wrapper_class' => 'stiqon-for-flyer',
+                    'value' => $type === 'flyer' ? ($known['format'] ?? '') : '',
+                    'options' => ['' => $automatic(Flyer::FORMATS[$guessedFormat]['label'] ?? null, Flyer::FORMATS['a6']['label'])] + array_map(static fn (array $format): string => $format['label'], Flyer::FORMATS),
+                ]);
+
+                foreach (['sticker' => Sticker::motifs(), 'flyer' => Flyer::motifs()] as $kind => $motifs) {
+                    woocommerce_wp_select([
+                        'id' => 'stiqon_mockup_'.$kind.'_motif',
+                        'name' => self::FIELD.'['.$kind.'_motif]',
+                        'label' => 'Beispielmotiv',
+                        'wrapper_class' => 'stiqon-for-'.$kind,
+                        'value' => $type === $kind ? ($known['motif'] ?? '') : '',
+                        'options' => ['' => 'Automatisch – nach dem Namen gewählt'] + array_combine($motifs, array_map([self::class, 'motifLabel'], $motifs)),
+                        'description' => 'Steht für das Motiv der Kundschaft, solange sie kein eigenes gewählt hat.',
+                        'desc_tip' => true,
+                    ]);
+                }
+                ?>
+            </div>
+
+            <script>
+                (function () {
+                    var panel = document.getElementById(<?php echo wp_json_encode(self::PANEL); ?>);
+                    var type = document.getElementById('stiqon_mockup_type');
+
+                    // Form belongs to stickers, Format to flyers: only the fields of the product's kind are shown.
+                    function show() {
+                        var kind = type.value || panel.getAttribute('data-type');
+
+                        ['sticker', 'flyer'].forEach(function (other) {
+                            panel.querySelectorAll('.stiqon-for-' + other).forEach(function (field) {
+                                field.hidden = other !== kind;
+                            });
+                        });
+                    }
+
+                    type.addEventListener('change', show);
+                    show();
+                })();
+            </script>
+        </div>
+        <?php
+    }
+
+    /**
+     * In a few words, what the drawing takes from the name of an option.
+     */
+    private static function reading(string $type, string $option): string
+    {
+        $says = Guess::option($type, $option);
+
+        if ($type === 'sticker') {
+            return isset($says['material'])
+                ? 'gezeichnet als '.self::MATERIALS[$says['material']].(($says['finish'] ?? null) === 'matte' ? ', matt' : '')
+                : 'Material nicht erkannt – gezeichnet als '.self::MATERIALS['vinyl'];
+        }
+
+        if (! isset($says['heavy'])) {
+            return 'Grammatur nicht erkannt – gezeichnet als leichtes Papier';
+        }
+
+        return $says['heavy'] ? 'gezeichnet als festes Papier' : 'gezeichnet als leichtes Papier';
+    }
+
+    private static function motifLabel(string $motif): string
+    {
+        return ['eroeffnung' => 'Eröffnung', 'sprechblase' => 'Sprechblase (Kontur)', 'stern' => 'Stern (Kontur)'][$motif] ?? ucfirst($motif);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function categories(WC_Product $product): array
+    {
+        $names = $product->get_id() > 0 ? wp_get_post_terms($product->get_id(), 'product_cat', ['fields' => 'names']) : [];
+
+        return is_array($names) ? array_values($names) : [];
+    }
+}
