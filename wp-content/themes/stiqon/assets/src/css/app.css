@@ -473,3 +473,54 @@
     }
 }
 
+
+@layer components {
+    /* --- Home page: drawings of the supplier categories -------------------------- */
+    /* Like the sample motifs, these are artwork: their colours belong to the
+       drawing, not to the interface, and so do the offset shadows. Sticker and
+       flyer use the shop's own product views instead. */
+    .supplier-art__shape {
+        width: 8rem;
+        scale: 0.8;
+        height: 4.75rem;
+        border-radius: 0.4rem;
+        background: #4658cb;
+        box-shadow: 0.5rem 0.5rem 0 #c3cbff;
+        transform: rotate(-9deg);
+    }
+
+    @media (width >= 40rem) {
+        .supplier-art__shape {
+            scale: 1;
+        }
+    }
+
+    .supplier-art--werbetechnik .supplier-art__shape {
+        background: repeating-linear-gradient(155deg, #252252 0 1.15rem, #5147ba 1.15rem 2.3rem);
+    }
+
+    .supplier-art--verpackungen .supplier-art__shape {
+        background: repeating-linear-gradient(90deg, #bd7e4c 0 3.6rem, #e9b68b 3.6rem 4.4rem, #bd7e4c 4.4rem 8rem);
+        box-shadow: 0.55rem 0.55rem 0 #9c5836;
+    }
+
+    .supplier-art--textilien .supplier-art__shape {
+        height: 6.5rem;
+        clip-path: polygon(25% 0, 38% 0, 50% 12%, 62% 0, 75% 0, 100% 24%, 82% 47%, 73% 38%, 73% 100%, 27% 100%, 27% 38%, 18% 47%, 0 24%);
+        background: #306752;
+    }
+
+    .supplier-art--werbeartikel .supplier-art__shape {
+        width: 5rem;
+        border-top: 0.55rem solid #efb5cc;
+        border-radius: 0.35rem 0.35rem 1.6rem 1.6rem;
+        background: #a83463;
+        box-shadow: 1rem 0.35rem 0 -0.15rem #a83463;
+    }
+
+    .supplier-art--wohnen .supplier-art__shape {
+        border: 0.45rem solid #6a4831;
+        background: linear-gradient(150deg, #b4d9ed 0 45%, #47896e 45% 63%, #246959 63%);
+        box-shadow: 0.5rem 0.5rem 0 #d7cbbb;
+    }
+}
