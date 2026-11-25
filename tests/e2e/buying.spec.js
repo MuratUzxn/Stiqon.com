@@ -123,6 +123,16 @@ test.describe('cart', () => {
         await expect(sticker.locator('.product-thumbnail svg[data-mockup="sticker"]')).toBeVisible();
         await expect(rows(page).filter({ hasText: 'Flyer DIN A5' }).locator('.product-thumbnail svg[data-mockup="flyer"]')).toBeVisible();
 
+        // A row is called what its product is called, and lists what was chosen – whether the
+        // product has three options or two (WooCommerce would write two into the name).
+        const flyer = rows(page).filter({ hasText: 'Flyer DIN A5' });
+
+        await expect(sticker.locator('.product-name > a')).toHaveText('Runde Sticker');
+        await expect(flyer.locator('.product-name > a')).toHaveText('Flyer DIN A5');
+        await expect(sticker.locator('.product-name dl.variation dt')).toHaveText(['Material:', 'Größe:', 'Auflage:']);
+        await expect(flyer.locator('.product-name dl.variation dt')).toHaveText(['Papier:', 'Auflage:']);
+        await expect(flyer.locator('.product-name dl.variation dd')).toHaveText(['135 g Bilderdruck', '100 Stück']);
+
         expect(await accessibilityViolations(page)).toEqual([]);
         expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
 

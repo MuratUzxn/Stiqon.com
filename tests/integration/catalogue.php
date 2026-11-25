@@ -44,6 +44,10 @@ foreach ($expected as $category => $shapes) {
         $expect(($view['spec'][$category === 'sticker' ? 'shape' : 'format'] ?? null) === ($shapes[$slug] ?? null), "{$slug} is drawn in the wrong shape or format.");
         $expect(str_contains(stiqon_product_view($product), 'data-mockup="'.$category.'"'), "{$slug} cannot be drawn.");
 
+        // A variation is called what its product is called; the choice is listed beside the name.
+        $named = array_unique(array_map(static fn (int $id): string => wc_get_product($id)->get_name(), $product->get_children()));
+        $expect($named === [$product->get_name()], "{$slug}: its variations are called ".implode(' / ', array_slice($named, 0, 3)).'.');
+
         // The cheapest variation is what the gallery will name as "ab …".
         $from = (float) $product->get_variation_price('min', true);
         $expect($from >= 19.9 && fmod(round($from * 100), 100) === 90.0, "{$slug} starts at {$from}.");

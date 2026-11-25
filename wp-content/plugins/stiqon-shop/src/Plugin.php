@@ -19,6 +19,7 @@ final class Plugin
         register_deactivation_hook($file, [Content\References::class, 'forgetAddresses']);
 
         Catalog\AddToCart::register();
+        Catalog\Names::register();
         Search\Index::register();
         Content\References::register();
 
