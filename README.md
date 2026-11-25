@@ -167,6 +167,15 @@ alle seine Varianten; eine Variante erscheint, wenn nach ihr gefragt ist („kra
 - Solange WooCommerce den Shop als „Demnächst verfügbar“ ankündigt, findet die Suche für Besucher
   nichts; wer den Shop verwaltet, sucht normal.
 
+## Druckanbieter
+
+Unter **Produkte → Druckanbieter** stehen die Produktfamilien von elf Lieferanten mit Links
+zum jeweiligen Anbieter und, soweit verfügbar, zur Schnittstelle. „Entwürfe anlegen“ legt
+je Familie einen ausgeblendeten WooCommerce-Entwurf an. Erneutes Anlegen überspringt bereits
+vorhandene Produkte. Lieferantenartikelnummern, Preise und Varianten werden beim Import nicht
+gesetzt. Der Import nutzt die im Plugin hinterlegte Übersicht der öffentlichen Sortimente.
+Ein Live-Abgleich und die Auftragsübergabe brauchen eine separate Anbindung.
+
 ## Gestaltung
 
 - Der Look folgt [mobbin.com](https://mobbin.com) (Stand 24.11.2026): weiße Seiten, zentrierte
