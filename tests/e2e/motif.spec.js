@@ -177,3 +177,154 @@ test.describe('own motif', () => {
         expect((await motifSources(page)).every((source) => source?.startsWith('blob:'))).toBe(true);
     });
 });
+
+test.describe('own motif across pages', () => {
+    const chooseOnHome = async (page) => {
+        await page.goto('/');
+        await page.locator('input[type="file"]').first().setInputFiles(fixture('motif.png'));
+        await expect(bar(page)).toContainText('motif.png');
+        // Stored, not just shown: the note for the next page is written last.
+        await expect.poll(() => page.evaluate(() => window.localStorage.getItem('stiqon:motif'))).not.toBeNull();
+    };
+
+    test('it is still there on the next page, on the product and after loading again', async ({ page }) => {
+        await chooseOnHome(page);
+
+        await page.goto('/sticker/');
+        await expect(bar(page)).toContainText('motif.png');
+        expect((await motifSources(page)).every((source) => source?.startsWith('blob:'))).toBe(true);
+        expect(await motifSources(page)).toHaveLength(20);
+
+        await page.locator('[data-card]').first().getByRole('link').click();
+        await expect(page.locator('[data-product-stage] [data-view]:not([hidden]) [data-motif-image]')).toHaveAttribute('href', /^blob:/);
+
+        await page.reload();
+        await expect(bar(page)).toContainText('motif.png');
+        await expect(page.locator('[data-product-stage] [data-view]:not([hidden]) [data-motif-image]')).toBeVisible();
+    });
+
+    test('the samples do not flash up before a stored motif appears', async ({ page }) => {
+        await chooseOnHome(page);
+
+        // Hold the page's script back, to look at the page before it has run.
+        let release;
+        const held = new Promise((resolve) => { release = resolve; });
+
+        await page.route('**/assets/build/assets/app-*.js', async (route) => {
+            await held;
+            await route.continue();
+        });
+
+        await page.goto('/flyer/', { waitUntil: 'commit' });
+
+        await expect(page.locator('html')).toHaveAttribute('data-motif', 'pending');
+        await expect(page.locator('[data-motif-sample]').first()).toHaveCSS('visibility', 'hidden');
+
+        // Once the script has run, the motif is in place and nothing is held back any more.
+        release();
+        await expect(bar(page)).toContainText('motif.png');
+        await expect(page.locator('html')).not.toHaveAttribute('data-motif', 'pending');
+    });
+
+    test('should the script never run, the samples come back by themselves', async ({ page }) => {
+        await chooseOnHome(page);
+
+        // The script arrives empty: nothing will ever put the motif in place.
+        await page.route('**/assets/build/assets/app-*.js', (route) => route.fulfill({ contentType: 'text/javascript', body: '' }));
+        await page.goto('/flyer/', { waitUntil: 'commit' });
+
+        await expect(page.locator('html')).toHaveAttribute('data-motif', 'pending');
+        await expect(page.locator('html')).not.toHaveAttribute('data-motif', 'pending', { timeout: 4000 });
+        await expect(page.locator('[data-motif-sample]').first()).toHaveCSS('visibility', 'visible');
+    });
+
+    test('a note without a stored motif does not hide the samples', async ({ page }) => {
+        // What is left when site data is cleared half-way, or a second tab removes the motif.
+        await page.addInitScript(() => window.localStorage.setItem('stiqon:motif', '1'));
+        await page.goto('/sticker/');
+
+        const sample = page.locator('[data-motif-sample]').first();
+
+        await expect(page.locator('html')).not.toHaveAttribute('data-motif', 'pending');
+        await expect(sample).toBeVisible();
+        await expect(sample).toHaveCSS('visibility', 'visible');
+        await expect(bar(page)).toBeHidden();
+    });
+
+    test('removing it removes it from the next page too', async ({ page }) => {
+        await chooseOnHome(page);
+
+        await bar(page).getByRole('button', { name: 'Entfernen' }).click();
+        await expect(bar(page)).toBeHidden();
+
+        await page.goto('/sticker/');
+        await expect(page.locator('[data-motif-sample]').first()).toBeVisible();
+        await expect(bar(page)).toBeHidden();
+        expect((await motifSources(page)).every((source) => source === null)).toBe(true);
+    });
+
+    test('another tab of the shop follows', async ({ page, context }) => {
+        const other = await context.newPage();
+
+        await other.goto('/flyer/');
+        await chooseOnHome(page);
+
+        await expect(bar(other)).toContainText('motif.png');
+        await expect(other.locator('[data-motif-image]').first()).toHaveAttribute('href', /^blob:/);
+
+        await bar(page).getByRole('button', { name: 'Entfernen' }).click();
+        await expect(bar(other)).toBeHidden();
+
+        await other.close();
+    });
+
+    test('a large image is kept as a copy no larger than the shop shows it', async ({ page }) => {
+        await page.goto('/');
+
+        // Drawn in the browser: 3000 × 2000 pixels.
+        await page.evaluate(async () => {
+            const canvas = Object.assign(document.createElement('canvas'), { width: 3000, height: 2000 });
+            const context = canvas.getContext('2d');
+
+            context.fillStyle = '#1f6f5c';
+            context.fillRect(0, 0, 3000, 2000);
+
+            const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+
+            await window.Alpine.store('motif').choose(new File([blob], 'gross.png', { type: 'image/png' }));
+        });
+
+        await expect(bar(page)).toContainText('gross.png');
+        await expect.poll(() => bar(page).locator('img').evaluate((image) => [image.naturalWidth, image.naturalHeight])).toEqual([1600, 1067]);
+    });
+
+    test('a file that only claims to be an image is refused', async ({ page }) => {
+        await page.goto('/sticker/');
+        await page.locator('input[type="file"]').first().setInputFiles(fixture('kein-bild.png'));
+
+        await expect(page.getByRole('alert')).toHaveText('Dieses Bild lässt sich nicht lesen. Bitte eine andere Datei wählen.');
+        await expect(bar(page)).toBeHidden();
+    });
+
+    test('where the browser stores nothing, the motif shows on the page and the visitor is told', async ({ page }) => {
+        // Private windows and blocked site data look like this to a page.
+        await page.addInitScript(() => {
+            Object.defineProperty(window, 'indexedDB', { value: { open() { throw new DOMException('denied', 'SecurityError'); } } });
+        });
+
+        await page.goto('/');
+        await page.locator('input[type="file"]').first().setInputFiles(fixture('motif.png'));
+
+        await expect(bar(page)).toContainText('motif.png');
+        expect((await motifSources(page)).every((source) => source?.startsWith('blob:'))).toBe(true);
+
+        const told = 'Ihr Motiv ist auf dieser Seite zu sehen. Dieses Fenster erlaubt nicht, es für die nächste Seite zu behalten.';
+
+        await expect(page.getByText(told).last()).toBeVisible();
+        await expect(page.getByRole('status')).toContainText(told);
+
+        await page.goto('/sticker/');
+        await expect(bar(page)).toBeHidden();
+    });
+});
+

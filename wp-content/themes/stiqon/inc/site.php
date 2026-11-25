@@ -52,6 +52,20 @@ function stiqon_areas(): array
 }
 
 /**
+ * A visitor's motif is kept in the browser and appears on the next page a moment
+ * after it loads – without this, the sample motifs would flash up first. This
+ * runs before anything is painted: if a motif is stored, the samples are held
+ * back (see app.css) until the page's script has put the motif in their place.
+ * Should that script never run, the samples come back by themselves.
+ */
+add_action('wp_head', function (): void {
+    wp_print_inline_script_tag(
+        "try{if(localStorage.getItem('stiqon:motif')){document.documentElement.setAttribute('data-motif','pending');"
+        ."setTimeout(function(){document.documentElement.removeAttribute('data-motif')},1500)}}catch(e){}",
+    );
+}, 0);
+
+/**
  * The interface face is fetched right away instead of after the stylesheet, so
  * headlines do not jump from a fallback face.
  */

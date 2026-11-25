@@ -7,6 +7,7 @@
  * home and can be read and tested in one place.
  */
 import Alpine from 'alpinejs';
+import { HINT, hint, preview, read, remove, write } from './motif-store.js';
 
 const MOTIF_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 const MOTIF_MAX_BYTES = 25 * 1024 * 1024;
@@ -14,19 +15,61 @@ const MOTIF_MAX_BYTES = 25 * 1024 * 1024;
 document.addEventListener('alpine:init', () => {
 
     /**
-     * The visitor's own motif. It stays in the browser: an object URL to the
-     * chosen file, shown on every mockup of the page. Nothing is uploaded.
+     * The visitor's own motif: an object URL to the chosen image, shown on every
+     * mockup of the page. It stays in the browser – in memory, and stored there
+     * so that the next page shows it too. Nothing is uploaded.
      */
     Alpine.store('motif', {
         url: null,
         name: '',
         error: '',
+        // Something the visitor should know that is not a mistake of theirs.
+        notice: '',
         // What just happened, in a sentence; read out by screen readers.
         announcement: '',
         // The button the visitor last opened the file dialog with.
         trigger: null,
 
-        choose(file) {
+        init() {
+            this.restore();
+
+            // Another tab chose or removed a motif.
+            window.addEventListener('storage', (event) => {
+                if (event.key === HINT) {
+                    this.restore();
+                }
+            });
+
+            // A page taken out of the browser's memory (the Back button) missed what happened since.
+            window.addEventListener('pageshow', (event) => {
+                if (event.persisted) {
+                    this.restore();
+                }
+            });
+        },
+
+        /** Shows what an earlier page or another tab stored – or nothing, if nothing is stored. */
+        async restore() {
+            let record = null;
+
+            try {
+                record = await read();
+            } catch {
+                // Nothing stored, or the browser does not let this page store anything.
+            }
+
+            if (record && record.blob instanceof Blob) {
+                await this.show(record.blob, record.name);
+            } else {
+                this.release();
+            }
+
+            // The head script hid the sample motifs while this was pending.
+            await Alpine.nextTick();
+            document.documentElement.removeAttribute('data-motif');
+        },
+
+        async choose(file) {
             if (!file) {
                 return;
             }
@@ -43,17 +86,61 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            this.release();
-            this.url = URL.createObjectURL(file);
-            this.name = file.name;
+            let blob;
+
+            try {
+                blob = await preview(file);
+            } catch {
+                this.fail('Dieses Bild lässt sich nicht lesen. Bitte eine andere Datei wählen.');
+
+                return;
+            }
+
+            await this.show(blob, file.name);
+
             this.error = '';
+            this.notice = '';
             this.announcement = `Ihr Motiv „${file.name}“ ist jetzt auf allen Ansichten zu sehen.`;
+
+            try {
+                const savedAt = Date.now();
+
+                await write({ name: file.name, savedAt, blob });
+                hint(savedAt);
+            } catch {
+                hint(null);
+                this.notice = 'Ihr Motiv ist auf dieser Seite zu sehen. Dieses Fenster erlaubt nicht, es für die nächste Seite zu behalten.';
+                this.announcement = `${this.announcement} ${this.notice}`;
+            }
         },
 
         clear() {
             this.release();
             this.error = '';
+            this.notice = '';
             this.announcement = 'Ihr Motiv wurde entfernt. Die Ansichten zeigen wieder Beispiele.';
+
+            // Other tabs look into the store as soon as the note changes – so the
+            // store is emptied first and the note taken away after.
+            remove().catch(() => {}).finally(() => hint(null));
+        },
+
+        /** Puts an image on the mockups once the browser has decoded it, so it does not flicker in. */
+        async show(blob, name) {
+            const url = URL.createObjectURL(blob);
+
+            try {
+                const image = new Image();
+
+                image.src = url;
+                await image.decode();
+            } catch {
+                // The mockups will simply show it a moment later.
+            }
+
+            this.release();
+            this.url = url;
+            this.name = name;
         },
 
         release() {
@@ -79,6 +166,7 @@ document.addEventListener('alpine:init', () => {
 
         dismiss() {
             this.error = '';
+            this.notice = '';
         },
     });
 
@@ -338,6 +426,15 @@ document.addEventListener('alpine:init', () => {
 
         get hasError() {
             return this.$store.motif.error !== '';
+        },
+
+        /** What the message at the bottom shows: a mistake, or else something to know. */
+        get message() {
+            return this.$store.motif.error || this.$store.motif.notice;
+        },
+
+        get hasMessage() {
+            return this.$store.motif.error !== '' || this.$store.motif.notice !== '';
         },
 
         get announcement() {

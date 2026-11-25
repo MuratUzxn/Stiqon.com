@@ -173,7 +173,7 @@ final class RenderTest extends TestCase
         // The markup is HTML, checked here with an XML parser: Alpine's attributes carry a
         // colon without declaring a namespace, and two attributes come without a value.
         $xml = preg_replace('/\sx-[a-z]+:[a-z-]+=/', ' data-x=', $svg);
-        $xml = preg_replace('/\s(x-cloak|data-motif-image)(?=[\s\/>])/', ' $1=""', $xml);
+        $xml = preg_replace('/\s(x-cloak|data-motif-image|data-motif-sample)(?=[\s\/>])/', ' $1=""', $xml);
         $document = simplexml_load_string($xml);
         $errors = array_map(static fn ($error): string => trim($error->message), libxml_get_errors());
         libxml_clear_errors();

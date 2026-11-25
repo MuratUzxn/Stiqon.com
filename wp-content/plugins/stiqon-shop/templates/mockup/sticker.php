@@ -114,7 +114,7 @@ $classes = Html::classes([
         <g clip-path="url(#<?php echo esc_attr($uid); ?>-print)" <?php if ($blend) : ?> style="<?php echo esc_attr($blend); ?>" <?php endif; ?> x-data="motifLayer">
             <svg
                 x="<?php echo esc_attr($box['x']); ?>" y="<?php echo esc_attr($box['y']); ?>" width="<?php echo esc_attr($box['width']); ?>" height="<?php echo esc_attr($box['height']); ?>"
-                viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" x-show="idle"
+                viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" x-show="idle" data-motif-sample
             >
                 <?php Template::output('motif/'.$motif, ['uid' => $uid, 'bare' => $mockup->bareMotif()]); ?>
             </svg>

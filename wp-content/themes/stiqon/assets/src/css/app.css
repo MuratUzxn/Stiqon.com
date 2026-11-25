@@ -95,6 +95,12 @@
         display: none !important;
     }
 
+    /* A motif stored by an earlier page is about to replace the samples (see
+       inc/site.php); until then they stay out of sight but keep their place. */
+    [data-motif='pending'] [data-motif-sample] {
+        visibility: hidden;
+    }
+
     /* WordPress' and WooCommerce's class for text that is only for screen readers.
        WordPress styles it in a stylesheet this theme does not always load. */
     .screen-reader-text {

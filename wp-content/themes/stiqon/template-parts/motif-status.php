@@ -14,12 +14,12 @@ defined('ABSPATH') || exit;
     <p class="sr-only" role="status" x-text="announcement"></p>
     <p class="sr-only" role="alert" x-text="error"></p>
 
-    <?php // The same message for the eye; it stays until it is closed or a motif is chosen. ?>
+    <?php // The same for the eye: a mistake, or something to know. It stays until it is closed or a motif is chosen. ?>
     <div
-        x-show="hasError" x-cloak
-        class="on-night pointer-events-auto flex max-w-full items-center gap-1 rounded-full bg-night py-1.5 pr-1.5 pl-5 text-on-night"
+        x-show="hasMessage" x-cloak
+        class="on-night pointer-events-auto flex max-w-full items-center gap-1 rounded-card bg-night py-1.5 pr-1.5 pl-5 text-on-night"
     >
-        <p class="text-label" x-text="error" aria-hidden="true"></p>
+        <p class="text-label py-1.5" x-text="message" aria-hidden="true"></p>
         <button
             type="button" x-on:click="dismiss" aria-label="Meldung schließen"
             class="inline-flex size-9 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white/14"

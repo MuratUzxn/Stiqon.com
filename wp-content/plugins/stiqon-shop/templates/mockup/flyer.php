@@ -60,7 +60,7 @@ $classes = Html::classes(['lift block h-auto overflow-visible', 'w-full' => ! $s
         <g x-data="motifLayer">
             <svg
                 x="<?php echo esc_attr($x); ?>" y="<?php echo esc_attr($y); ?>" width="<?php echo esc_attr($w); ?>" height="<?php echo esc_attr($h); ?>"
-                viewBox="0 0 100 141.4" preserveAspectRatio="xMidYMid slice" x-show="idle"
+                viewBox="0 0 100 141.4" preserveAspectRatio="xMidYMid slice" x-show="idle" data-motif-sample
             >
                 <?php Template::output('motif/flyer/'.$motif, ['uid' => $uid]); ?>
             </svg>
