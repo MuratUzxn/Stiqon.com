@@ -17,12 +17,26 @@ test.describe('smoke', () => {
         await expect.poll(() => page.evaluate(() => typeof window.Alpine?.version)).toBe('string');
     });
 
-    test('shop pages are served by WooCommerce inside the theme', async ({ page }) => {
-        const response = await page.goto('/shop/');
+    test('a product page is served by WooCommerce inside the theme', async ({ page }) => {
+        const response = await page.goto('/produkt/runde-sticker/');
 
         expect(response.status()).toBe(200);
         await expect(page.locator('main#inhalt')).toBeVisible();
         await expect(page.locator('body')).toHaveClass(/woocommerce/);
+        await expect(page.locator('header nav[aria-label="Hauptnavigation"]').first()).toBeAttached();
+    });
+
+    test('WooCommerce\'s own list pages lead to the shop\'s areas', async ({ page }) => {
+        // The shop's lists are the area pages; nobody should land on an unstyled archive.
+        await page.goto('/produktkategorie/sticker/');
+        await expect(page).toHaveURL(/\/sticker\/$/);
+
+        await page.goto('/produktkategorie/flyer/');
+        await expect(page).toHaveURL(/\/flyer\/$/);
+
+        await page.goto('/shop/');
+        await expect(page).toHaveURL(/127\.0\.0\.1:\d+\/$/);
+        await expect(page.getByRole('heading', { level: 1, name: 'Werbemittel, die haften bleiben.' })).toBeVisible();
     });
 
     for (const [path, title] of [['/warenkorb/', 'Warenkorb'], ['/kasse/', 'Warenkorb'], ['/mein-konto/', 'Ihr Konto']]) {

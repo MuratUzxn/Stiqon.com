@@ -140,7 +140,7 @@ test.describe('what the pages bring along', () => {
         });
     }
 
-    for (const path of [...pages, '/shop/', '/warenkorb/']) {
+    for (const path of [...pages, '/produkt/runde-sticker/', '/warenkorb/']) {
         // The guard on every test sees requests. A hint in the page head – preconnect,
         // dns-prefetch – makes the browser contact a server without any request the
         // guard could see, so the markup itself is read here.

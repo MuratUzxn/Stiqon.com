@@ -3,6 +3,7 @@
  * Functions the theme's templates call. They return markup that is ready to print.
  */
 
+use Stiqon\Shop\Catalog\Choice;
 use Stiqon\Shop\Catalog\Gallery;
 use Stiqon\Shop\Catalog\ProductView;
 use Stiqon\Shop\Mockup\Flyer;
@@ -56,6 +57,49 @@ function stiqon_product_view(WC_Product $product, array $chosen = [], array $opt
     return $resolved['type'] === 'sticker'
         ? stiqon_sticker($spec, $options['class'] ?? '')
         : stiqon_flyer($spec, $options['class'] ?? '');
+}
+
+/**
+ * A product drawn once for each value of the option a visitor can see in the
+ * drawing (a sticker on each material), for a product page that switches
+ * between them. A product that always looks the same comes back as one view.
+ *
+ * @return array{key: ?string, views: list<array{value: string, name: string, html: string}>}  "key" names the option as in a request ("attribute_pa_material")
+ */
+function stiqon_product_views(WC_Product $product): array
+{
+    $visible = ProductView::visible($product);
+
+    if ($visible === null) {
+        return ['key' => null, 'views' => [['value' => '', 'name' => '', 'html' => stiqon_product_view($product)]]];
+    }
+
+    $key = 'attribute_'.$visible['key'];
+    $views = [];
+
+    foreach ($visible['options'] as $option) {
+        $views[] = [
+            'value' => $option['slug'],
+            'name' => $option['name'],
+            'html' => stiqon_product_view($product, [$key => $option['slug']], ['label' => $product->get_name().', '.$option['name']]),
+        ];
+    }
+
+    return ['key' => $key, 'views' => $views];
+}
+
+/**
+ * Which options of a product the current request chooses – always a complete
+ * choice, see Catalog\Choice – and the variation that makes.
+ *
+ * @return array{chosen: array<string, string>, variation: ?WC_Product_Variation}
+ */
+function stiqon_product_choice(WC_Product $product): array
+{
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- options of a public page; values are only compared with what the product offers.
+    $chosen = Choice::of($product, wp_unslash($_REQUEST));
+
+    return ['chosen' => $chosen, 'variation' => Choice::variation($product, $chosen)];
 }
 
 /**

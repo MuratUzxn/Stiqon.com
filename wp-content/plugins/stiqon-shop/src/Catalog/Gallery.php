@@ -3,7 +3,6 @@
 namespace Stiqon\Shop\Catalog;
 
 use WC_Product;
-use WC_Product_Attribute;
 
 /**
  * The cards of an area of the shop: one per product and per option that can be
@@ -40,13 +39,13 @@ final class Gallery
             // Stand-ins from tools/dev/example-catalogue.php; the page says so.
             $gallery['examples'] = $gallery['examples'] || (bool) $product->get_meta('_stiqon_example');
 
-            $axis = self::axis($product);
-            $prices = self::lowestPrices($product, $axis?->get_name());
+            $visible = ProductView::visible($product);
+            $prices = self::lowestPrices($product, $visible['key'] ?? null);
             $slug = $product->get_slug();
 
             $gallery['products'][] = ['slug' => $slug, 'name' => $product->get_name()];
 
-            if ($axis === null) {
+            if ($visible === null) {
                 $gallery['cards'][] = [
                     'key' => $slug,
                     'product' => $product,
@@ -62,11 +61,11 @@ final class Gallery
                 continue;
             }
 
-            $key = sanitize_title($axis->get_name());
-            $axes[$key] ??= ['key' => $key, 'parameter' => self::parameter($key), 'label' => wc_attribute_label($axis->get_name(), $product), 'options' => []];
+            $key = $visible['key'];
+            $axes[$key] ??= ['key' => $key, 'parameter' => self::parameter($key), 'label' => $visible['label'], 'options' => []];
 
-            foreach (self::options($product, $axis) as $option) {
-                $axes[$key]['options'][$option['slug']] = $option;
+            foreach ($visible['options'] as $option) {
+                $axes[$key]['options'][$option['slug']] = ['slug' => $option['slug'], 'name' => $option['name']];
 
                 $gallery['cards'][] = [
                     'key' => $slug.'--'.$option['slug'],
@@ -121,50 +120,6 @@ final class Gallery
     }
 
     /**
-     * The attribute a visitor can see on the product: the first one used for
-     * variations whose options change the drawing.
-     */
-    private static function axis(WC_Product $product): ?WC_Product_Attribute
-    {
-        $view = ProductView::resolve($product);
-
-        if ($view === null || ! $product->is_type('variable')) {
-            return null;
-        }
-
-        foreach ($product->get_attributes() as $attribute) {
-            if (! $attribute instanceof WC_Product_Attribute || ! $attribute->get_variation() || ! $attribute->is_taxonomy()) {
-                continue;
-            }
-
-            foreach (self::options($product, $attribute) as $option) {
-                if (Guess::option($view['type'], $option['name']) !== [] || Spec::known($view['type'], $option['stored']) !== []) {
-                    return $attribute;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return list<array{slug: string, name: string, stored: array<string, mixed>}>
-     */
-    private static function options(WC_Product $product, WC_Product_Attribute $attribute): array
-    {
-        $terms = wc_get_product_terms($product->get_id(), $attribute->get_name(), ['fields' => 'all']);
-        $options = [];
-
-        foreach (is_array($terms) ? $terms : [] as $term) {
-            $stored = get_term_meta($term->term_id, ProductView::TERM_META, true);
-
-            $options[] = ['slug' => $term->slug, 'name' => $term->name, 'stored' => is_array($stored) ? $stored : []];
-        }
-
-        return $options;
-    }
-
-    /**
      * The lowest price per option of the axis, as the shop displays prices. The
      * key '' holds the lowest price of variations that are not tied to one option
      * (and the price of a product without variations).
@@ -186,7 +141,7 @@ final class Gallery
         update_meta_cache('post', array_keys($prices));
 
         foreach ($prices as $variation => $price) {
-            $option = $axis === null ? '' : (string) get_post_meta((int) $variation, 'attribute_'.sanitize_title($axis), true);
+            $option = $axis === null ? '' : (string) get_post_meta((int) $variation, 'attribute_'.$axis, true);
 
             $lowest[$option] = min($lowest[$option] ?? INF, (float) $price);
         }

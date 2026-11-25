@@ -37,6 +37,16 @@ add_action('template_redirect', function (): void {
         return '';
     }
 
+    function stiqon_product_views(WC_Product $product): array
+    {
+        return ['key' => null, 'views' => []];
+    }
+
+    function stiqon_product_choice(WC_Product $product): array
+    {
+        return ['chosen' => [], 'variation' => null];
+    }
+
     function stiqon_gallery(string $category): array
     {
         return ['products' => [], 'axis' => null, 'cards' => [], 'examples' => false, 'selection' => ['produkt' => null, 'option' => null]];

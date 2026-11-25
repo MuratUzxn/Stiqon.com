@@ -74,6 +74,65 @@ final class ProductView
     }
 
     /**
+     * The option of a product that a visitor can see in the drawing: the first
+     * one used for variations whose values change it – a sticker's material, a
+     * flyer's paper. Null for a product that looks the same whatever is chosen.
+     *
+     * @return array{key: string, name: string, label: string, options: list<array{slug: string, name: string, stored: array<string, mixed>}>}|null
+     */
+    public static function visible(WC_Product $product): ?array
+    {
+        $view = self::resolve($product);
+
+        if ($view === null || ! $product->is_type('variable')) {
+            return null;
+        }
+
+        foreach ($product->get_attributes() as $key => $attribute) {
+            if (! $attribute instanceof WC_Product_Attribute || ! $attribute->get_variation() || ! $attribute->is_taxonomy()) {
+                continue;
+            }
+
+            $options = self::options($product, $attribute);
+
+            foreach ($options as $option) {
+                if (Guess::option($view['type'], $option['name']) !== [] || Spec::known($view['type'], $option['stored']) !== []) {
+                    return [
+                        'key' => (string) $key,
+                        'name' => $attribute->get_name(),
+                        'label' => wc_attribute_label($attribute->get_name(), $product),
+                        'options' => $options,
+                    ];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * The values of one of a product's options, in the order set for the attribute.
+     *
+     * @return list<array{slug: string, name: string, stored: array<string, mixed>}>
+     */
+    public static function options(WC_Product $product, WC_Product_Attribute $attribute): array
+    {
+        // Asked for through WooCommerce, the terms come in the order set for the
+        // attribute – the order of the options on the product page. The attribute
+        // object itself would hand them over sorted by name.
+        $terms = wc_get_product_terms($product->get_id(), $attribute->get_name(), ['fields' => 'all']);
+        $options = [];
+
+        foreach (is_array($terms) ? $terms : [] as $term) {
+            $stored = get_term_meta($term->term_id, self::TERM_META, true);
+
+            $options[] = ['slug' => $term->slug, 'name' => $term->name, 'stored' => is_array($stored) ? $stored : []];
+        }
+
+        return $options;
+    }
+
+    /**
      * The option of one attribute that is drawn: the first of the wanted ones
      * that exists, otherwise the attribute's first option.
      *
@@ -100,29 +159,20 @@ final class ProductView
             return ['name' => $texts[0], 'stored' => []];
         }
 
-        // Asked for through WooCommerce, the terms come in the order set for the
-        // attribute – the order of the options on the product page. The attribute
-        // object itself would hand them over sorted by name.
-        $terms = wc_get_product_terms($product->get_id(), $attribute->get_name(), ['fields' => 'all']);
+        $options = self::options($product, $attribute);
 
-        if (! is_array($terms) || $terms === []) {
+        if ($options === []) {
             return null;
         }
 
-        $term = $terms[0];
-
         foreach ($wanted as $slug) {
-            foreach ($terms as $candidate) {
-                if ($candidate->slug === $slug) {
-                    $term = $candidate;
-
-                    break 2;
+            foreach ($options as $option) {
+                if ($option['slug'] === $slug) {
+                    return ['name' => $option['name'], 'stored' => $option['stored']];
                 }
             }
         }
 
-        $stored = get_term_meta($term->term_id, self::TERM_META, true);
-
-        return ['name' => $term->name, 'stored' => is_array($stored) ? $stored : []];
+        return ['name' => $options[0]['name'], 'stored' => $options[0]['stored']];
     }
 }

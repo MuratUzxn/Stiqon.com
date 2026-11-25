@@ -72,9 +72,11 @@ test.describe('"coming soon" for the shop pages only', () => {
         await page.goto('/');
         await expect(page.getByRole('heading', { level: 1, name: 'Werbemittel, die haften bleiben.' })).toBeVisible();
 
-        await page.goto('/shop/');
+        // WooCommerce prints its announcement between this theme's header and footer.
+        await page.goto('/produkt/runde-sticker/');
         await expect(page.locator('header nav[aria-label="Hauptnavigation"]').first()).toBeAttached();
-        await expect(page.locator('[data-mockup]')).toHaveCount(0);
+        await expect(page.getByRole('button', { name: 'In den Warenkorb' })).toHaveCount(0);
+        await expect(page.locator('main [data-mockup]')).toHaveCount(0);
         expect(await stylesheets(page)).toContain('wp-block-library-inline-css');
     });
 });

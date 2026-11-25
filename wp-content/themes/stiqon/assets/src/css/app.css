@@ -95,6 +95,20 @@
         display: none !important;
     }
 
+    /* WordPress' and WooCommerce's class for text that is only for screen readers.
+       WordPress styles it in a stylesheet this theme does not always load. */
+    .screen-reader-text {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -209,3 +223,133 @@
     margin-block: -0.2em;
     vertical-align: -0.2em;
 }
+
+/*
+ | Markup that WooCommerce and Germanized print themselves. It carries their
+ | class names, not this theme's, so it is styled here by those names. Their
+ | own stylesheets are not loaded on the pages this covers (see inc/shop.php).
+ */
+@layer components {
+    /* --- Product page: the price and the notes around it ------------------------ */
+    .summary .price {
+        margin-top: 1.25rem;
+        font-size: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);
+        font-weight: 650;
+        letter-spacing: -0.01em;
+        line-height: 1.1;
+    }
+
+    .summary .price del {
+        margin-right: 0.5rem;
+        color: var(--color-muted);
+        font-weight: 450;
+    }
+
+    .summary .price ins {
+        text-decoration: none;
+    }
+
+    /* "inkl. MwSt.", "zzgl. Versandkosten", delivery time … */
+    .wc-gzd-additional-info {
+        color: var(--color-muted);
+        font-size: 0.875rem;
+        font-weight: 500;
+        letter-spacing: 0.0125em;
+        line-height: 1.43;
+    }
+
+    .wc-gzd-additional-info a {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    .wc-gzd-additional-info a:hover {
+        color: var(--color-ink);
+    }
+
+    /* Germanized keeps empty places for notes a variation may bring. */
+    .wc-gzd-additional-info-placeholder:empty {
+        display: none;
+    }
+
+    .legal-price-info {
+        margin-top: 0.5rem;
+    }
+
+    /* --- Product page: what WooCommerce says about the chosen variation --------- */
+    /* Its price is the one shown above; the copy here stays for screen readers,
+       which hear this block when the choice changes. */
+    .woocommerce-variation-price {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .woocommerce-variation-description:not(:empty),
+    .woocommerce-variation-availability:not(:empty) {
+        margin-bottom: 1rem;
+        color: var(--color-muted);
+    }
+
+    /* WooCommerce marks the button like this while no variation is chosen. */
+    .single_add_to_cart_button.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .quantity .qty {
+        width: 5rem;
+        height: 3rem;
+        border-radius: 999px;
+        background-color: color-mix(in srgb, var(--color-ink) 8%, transparent);
+        font-weight: 600;
+        text-align: center;
+    }
+
+    /* --- Messages ("… wurde Ihrem Warenkorb hinzugefügt") ----------------------- */
+    .woocommerce-notices-wrapper:not(:empty) {
+        display: grid;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .shop-notice {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem 1.5rem;
+        border-radius: var(--radius-card);
+        background-color: var(--color-mist);
+        padding: 1rem 1.5rem;
+    }
+
+    .shop-notice:focus-visible {
+        outline-offset: -2px;
+    }
+
+    /* WooCommerce puts the link to the cart before the sentence; it belongs after it. */
+    .shop-notice .button {
+        order: 2;
+        display: inline-flex;
+        height: 2.75rem;
+        flex-shrink: 0;
+        align-items: center;
+        border-radius: 999px;
+        background-color: var(--color-ink);
+        padding-inline: 1rem;
+        color: var(--color-paper);
+        font-weight: 600;
+        letter-spacing: 0.0125em;
+        white-space: nowrap;
+        transition: background-color 200ms var(--ease-soft);
+    }
+
+    .shop-notice .button:hover {
+        background-color: var(--color-ink-soft);
+    }
+}
+

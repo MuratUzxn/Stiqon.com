@@ -153,6 +153,8 @@ foreach ($products as $order => [$type, $slug, $name, $summary, $drawing, $sizes
     $product->set_status('publish');
     $product->set_catalog_visibility('visible');
     $product->set_menu_order($order);
+    // How many is one of the options ("Auflage"); a separate quantity field would ask twice.
+    $product->set_sold_individually(true);
     $product->set_short_description($summary);
     $product->set_description($type === 'sticker' ? $stickerText : $flyerText);
     $product->set_category_ids([$categories[$type]]);
