@@ -49,7 +49,7 @@ jobs:
         run: composer audit
 
   shop:
-    name: Shop on PHP ${{ matrix.php }} (WordPress, browser tests)
+    name: Shop on PHP ${{ matrix.php }}${{ matrix.label }} (WordPress, browser tests)
     runs-on: ubuntu-latest
     # A run takes about eight minutes. One that hangs must end by itself, and in a
     # way that still hands over its logs: the steps below have limits of their
@@ -61,6 +61,15 @@ jobs:
         # The theme only ever runs inside WordPress, so the oldest PHP version it
         # promises to support is tested here too – the unit tests cover the plugin alone.
         php: ['8.1', '8.3']
+        ini: ['']
+        include:
+          # For now, to find out why the web server crashes on PHP 8.1 since e4a3763:
+          # the same run with PHP's just-in-time compiler switched off. The action
+          # that installs PHP switches it on; PHP's own default is off.
+          - php: '8.1'
+            ini: 'opcache.jit=0, opcache.jit_buffer_size=0'
+            label: ' without JIT'
+            suffix: '-without-jit'
 
     services:
       mariadb:
@@ -85,7 +94,33 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: mysqli, gd, intl, zip, mbstring, curl, dom, exif
+          ini-values: ${{ matrix.ini }}
           coverage: none
+
+      # The tests run against PHP's built-in web server, whose settings differ from
+      # those of the command line ("php -i"): the cache for compiled code and the
+      # just-in-time compiler are switched on separately for each. When a run
+      # behaves oddly on one version, this says what it ran with.
+      - name: Show how PHP runs as a web server
+        run: |
+          mkdir -p /tmp/php-probe
+          cat > /tmp/php-probe/index.php <<'PHP'
+          <?php
+          $status = function_exists('opcache_get_status') ? opcache_get_status(false) : null;
+          echo 'PHP ', PHP_VERSION, ' as ', PHP_SAPI, "\n";
+          foreach (['opcache.enable', 'opcache.enable_cli', 'opcache.jit', 'opcache.jit_buffer_size', 'memory_limit'] as $name) {
+              echo $name, ' = ', var_export(ini_get($name), true), "\n";
+          }
+          echo 'cache for compiled code in use: ', var_export($status['opcache_enabled'] ?? null, true), "\n";
+          echo 'just-in-time compiler in use: ', var_export($status['jit']['on'] ?? null, true), "\n";
+          PHP
+          php -S 127.0.0.1:8199 -t /tmp/php-probe > /dev/null 2>&1 &
+          server=$!
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            curl --silent --fail http://127.0.0.1:8199/ && break
+            sleep 0.5
+          done
+          kill "$server"
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -132,11 +167,15 @@ jobs:
           echo "::group::Web server log (last 60 lines that are not plain requests)"
           grep -v -E '\] (127\.0\.0\.1|\[::1\]):[0-9]+ (Accepted|Closing|\[(200|301|302|304)\])|Failed to poll event' "$HOME"/.stiqon-wp/sites/e2e.server.log 2>/dev/null | tail -n 60 || echo "There is none."
           echo "::endgroup::"
+          # A process that crashed leaves a line with the system: which program, and in which part of it.
+          echo "::group::Crashes the system recorded"
+          sudo dmesg 2>/dev/null | grep -i -E 'segfault|general protection|php' | tail -n 20 || echo "None."
+          echo "::endgroup::"
 
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: shop-results-php${{ matrix.php }}
+          name: shop-results-php${{ matrix.php }}${{ matrix.suffix }}
           path: test-results
           retention-days: 7
