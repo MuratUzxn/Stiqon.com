@@ -54,6 +54,15 @@ if (trim((string) ($state['stdout'] ?? '')) !== 'stiqon|plugin') {
     $problems[] = 'After the round trip the site is not back to theme and plugin active: '.trim((string) ($state['stdout'] ?? ''));
 }
 
+// The plugin gives the list of references its address. WordPress has to know that
+// address again after the plugin was off – it rebuilds its list of addresses at times,
+// and while the plugin is off the address is not on it.
+$address = $run('eval "echo isset(get_option(\'rewrite_rules\')[\'referenzen/?$\']) ? \'known\' : \'unknown\';"');
+
+if (trim((string) ($address['stdout'] ?? '')) !== 'known') {
+    $problems[] = 'After the plugin was switched off and on, WordPress does not know the address of the references.';
+}
+
 if ($problems !== []) {
     WP_CLI::error_multi_line($problems);
     WP_CLI::halt(1);

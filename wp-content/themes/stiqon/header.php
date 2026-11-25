@@ -1,12 +1,13 @@
 <?php
 /**
- * Opens every page: document head, skip link and the header with the two areas,
- * the search, the motif button and the menu for small screens.
+ * Opens every page: document head, skip link and the header with the areas (and
+ * the references, once there are any), the search, the motif button and the
+ * menu for small screens.
  */
 
 defined('ABSPATH') || exit;
 
-$areas = stiqon_areas();
+$areas = stiqon_navigation();
 $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-offset-[6px] decoration-2 transition-opacity duration-200 hover:opacity-60';
 ?>
 <!DOCTYPE html>

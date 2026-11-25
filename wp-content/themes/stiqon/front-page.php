@@ -11,6 +11,9 @@ defined('ABSPATH') || exit;
 $sticker = stiqon_page_url('sticker');
 $flyer = stiqon_page_url('flyer');
 
+// The newest work the shop has to show; empty until the first reference is published.
+$references = stiqon_references(3);
+
 /**
  * A product view set into a line of headline type. Decorative: the words carry
  * the meaning. Only motifs without lettering are used here – text inside the
@@ -199,6 +202,21 @@ get_header();
         </ol>
     </div>
 </section>
+
+<?php // References – only once there are any to show ?>
+<?php if ($references !== []) : ?>
+    <section class="wrap pt-16 lg:pt-28" aria-labelledby="referenzen">
+        <?php echo stiqon_section_heading(['id' => 'referenzen', 'title' => 'So sieht es bei anderen aus']); ?>
+        <ul class="mt-10 flex flex-wrap justify-center gap-x-4 gap-y-10 lg:mt-14">
+            <?php foreach ($references as $reference) : ?>
+                <?php echo stiqon_reference_card($reference); ?>
+            <?php endforeach; ?>
+        </ul>
+        <div class="mt-10 text-center">
+            <?php echo stiqon_button('Alle Referenzen '.stiqon_icon('arrow-right'), ['variant' => 'secondary', 'href' => (string) stiqon_references_url()]); ?>
+        </div>
+    </section>
+<?php endif; ?>
 
 <?php // Questions ?>
 <section class="wrap py-16 lg:py-28" aria-labelledby="fragen">

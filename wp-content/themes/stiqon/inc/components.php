@@ -198,6 +198,29 @@ function stiqon_product_card(array $card, bool $hidden = false): string
 }
 
 /**
+ * One reference: its photo, the customer or the project, and a sentence or two.
+ * See stiqon_references().
+ *
+ * @param  array{id: int, title: string, text: string, image: int}  $reference
+ */
+function stiqon_reference_card(array $reference): string
+{
+    // WordPress writes the tag, with the sizes it has of the photo.
+    $photo = wp_get_attachment_image($reference['image'], 'stiqon-referenz', false, [
+        'class' => 'size-full object-cover',
+        'loading' => 'lazy',
+        'sizes' => '(min-width: 64rem) 23rem, (min-width: 40rem) 50vw, 100vw',
+    ]);
+
+    // Widths for a row that is centred: one, two or three in a line, whatever their number.
+    return '<li id="referenz-'.(int) $reference['id'].'" class="w-full scroll-mt-8 sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]">'
+        .'<div class="aspect-[4/3] overflow-hidden rounded-card bg-mist">'.$photo.'</div>'
+        .'<h3 class="mt-4 text-lg font-semibold">'.esc_html($reference['title']).'</h3>'
+        .($reference['text'] !== '' ? '<p class="mt-1 text-muted">'.esc_html($reference['text']).'</p>' : '')
+        .'</li>';
+}
+
+/**
  * Title of a page section with an optional small label above and lead paragraph
  * below. Centred by default, as section titles are throughout the site.
  *

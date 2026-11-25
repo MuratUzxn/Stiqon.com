@@ -6,6 +6,7 @@
 use Stiqon\Shop\Catalog\Choice;
 use Stiqon\Shop\Catalog\Gallery;
 use Stiqon\Shop\Catalog\ProductView;
+use Stiqon\Shop\Content\References;
 use Stiqon\Shop\Mockup\Flyer;
 use Stiqon\Shop\Mockup\Stage;
 use Stiqon\Shop\Mockup\Sticker;
@@ -135,6 +136,26 @@ function stiqon_search(string $query, int $limit = 48): array
 function stiqon_search_index_url(): string
 {
     return rest_url(Index::REST_NAMESPACE.Index::REST_ROUTE);
+}
+
+/**
+ * The references the shop shows, in their order: work it has delivered. See
+ * Content\References.
+ *
+ * @return list<array{id: int, title: string, text: string, image: int}>  "image": id of the photo in the media library, 0 without one
+ */
+function stiqon_references(int $limit = -1): array
+{
+    return References::all($limit);
+}
+
+/**
+ * Address of the list of references – null while there is none to show, and
+ * then the address does not exist either.
+ */
+function stiqon_references_url(): ?string
+{
+    return References::url();
 }
 
 /**

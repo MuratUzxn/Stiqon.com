@@ -16,9 +16,11 @@ final class Plugin
         self::$file = $file;
 
         register_activation_hook($file, [Setup\Defaults::class, 'apply']);
+        register_deactivation_hook($file, [Content\References::class, 'forgetAddresses']);
 
         Catalog\AddToCart::register();
         Search\Index::register();
+        Content\References::register();
 
         if (is_admin()) {
             Admin\ProductPreview::register();

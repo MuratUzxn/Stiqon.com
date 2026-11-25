@@ -29,9 +29,9 @@ defined('ABSPATH') || exit;
             </div>
 
             <nav aria-labelledby="footer-areas">
-                <h2 id="footer-areas" class="text-label text-on-night-muted">Bereiche</h2>
+                <h2 id="footer-areas" class="text-label text-on-night-muted">Übersicht</h2>
                 <ul class="mt-3">
-                    <?php foreach (stiqon_areas() as $area) : ?>
+                    <?php foreach (stiqon_navigation() as $area) : ?>
                         <li><a href="<?php echo esc_url($area['url']); ?>" class="text-action inline-flex h-11 items-center rounded-sm transition-opacity hover:opacity-60"><?php echo esc_html($area['label']); ?></a></li>
                     <?php endforeach; ?>
                 </ul>

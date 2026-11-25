@@ -17,7 +17,7 @@ test.describe('without the plugin', () => {
 
             expect(response.status()).toBe(200);
             await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-            await expect(page.getByRole('navigation', { name: 'Bereiche' })).toBeAttached();
+            await expect(page.getByRole('navigation', { name: 'Übersicht' })).toBeAttached();
             await expect(page.locator('[data-mockup]')).toHaveCount(0);
         });
     }

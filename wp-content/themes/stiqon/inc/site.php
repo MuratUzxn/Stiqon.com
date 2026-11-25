@@ -52,6 +52,24 @@ function stiqon_areas(): array
 }
 
 /**
+ * What the header and the footer link to: the areas and, once there is one to
+ * show, the references.
+ *
+ * @return list<array{slug: string, label: string, url: string, current: bool}>
+ */
+function stiqon_navigation(): array
+{
+    $items = stiqon_areas();
+    $references = stiqon_references_url();
+
+    if ($references !== null) {
+        $items[] = ['slug' => 'referenzen', 'label' => 'Referenzen', 'url' => $references, 'current' => is_post_type_archive('stiqon_referenz')];
+    }
+
+    return $items;
+}
+
+/**
  * A visitor's motif is kept in the browser and appears on the next page a moment
  * after it loads – without this, the sample motifs would flash up first. This
  * runs before anything is painted: if a motif is stored, the samples are held

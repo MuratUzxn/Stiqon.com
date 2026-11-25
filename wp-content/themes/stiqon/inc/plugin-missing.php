@@ -61,6 +61,16 @@ add_action('template_redirect', function (): void {
     {
         return '';
     }
+
+    function stiqon_references(int $limit = -1): array
+    {
+        return [];
+    }
+
+    function stiqon_references_url(): ?string
+    {
+        return null;
+    }
 }, 0);
 
 add_action('admin_notices', function (): void {
