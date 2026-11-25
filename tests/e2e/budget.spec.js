@@ -24,6 +24,12 @@ const pages = {
     // Twenty cards, each an inline drawing: about 800 elements. On top of what the
     // home page loads come the gallery's own script and the serif face of the samples.
     '/sticker/': { document: 11.3, total: 137, elements: 900 },
+    // The pages WooCommerce draws, measured with a product in the cart. They bring
+    // what its cart and checkout run on: jQuery (30 kB), the script behind the
+    // select fields (21 kB), its own scripts and Germanized's. The classic pages,
+    // that is – the ones built from blocks weighed 1,5 MB each.
+    '/warenkorb/': { withCart: true, document: 10.5, total: 222, elements: 330, stylesheet: 17.5, script: 96, requests: 22 },
+    '/kasse/': { withCart: true, document: 13.2, total: 234, elements: 520, stylesheet: 17.5, script: 102, requests: 25 },
 };
 
 // Scripts: the theme's own script with Alpine bundled in.
@@ -39,8 +45,18 @@ function transferSize(resourceType, body) {
 test.describe('weight of the first load on a phone', () => {
     test.skip(({ isMobile }) => !isMobile, 'The budget applies to the phone viewport.');
 
-    for (const [path, limits] of Object.entries(pages)) {
+    for (const [path, own] of Object.entries(pages)) {
+        const limits = { ...shared, ...own };
+
         test(`${path} stays within its budget`, async ({ page }) => {
+            if (limits.withCart) {
+                await page.goto('/produkt/runde-sticker/');
+                await page.getByRole('button', { name: 'In den Warenkorb' }).click();
+                await expect(page.getByText('wurde Ihrem Warenkorb hinzugefügt')).toBeVisible();
+                // Whatever the product page is still fetching is not the weight of the next page.
+                await page.goto('about:blank');
+            }
+
             const loaded = [];
 
             page.on('response', (response) => {
@@ -66,23 +82,24 @@ test.describe('weight of the first load on a phone', () => {
 
             await page.goto(path, { waitUntil: 'load' });
             await page.evaluate(() => document.fonts.ready);
-            await page.waitForTimeout(500);
+            // The checkout fetches its overview once more after loading; that counts.
+            await page.waitForTimeout(limits.withCart ? 1500 : 500);
 
             const responses = (await Promise.all(loaded)).filter(Boolean);
             const sum = (type) => responses.filter((response) => response.type === type).reduce((total, response) => total + response.size, 0);
             const total = responses.reduce((sum, response) => sum + response.size, 0);
 
-            expect(responses.length, 'number of requests').toBeLessThanOrEqual(shared.requests);
+            expect(responses.length, 'number of requests').toBeLessThanOrEqual(limits.requests);
 
             expect(sum('document') / KB, 'HTML document (kB)').toBeLessThanOrEqual(limits.document);
-            expect(sum('stylesheet') / KB, 'stylesheets (kB)').toBeLessThanOrEqual(shared.stylesheet);
-            expect(sum('script') / KB, 'scripts (kB)').toBeLessThanOrEqual(shared.script);
-            expect(sum('font') / KB, 'fonts (kB)').toBeLessThanOrEqual(shared.font);
-            expect(sum('image') / KB, 'images (kB)').toBeLessThanOrEqual(shared.image);
+            expect(sum('stylesheet') / KB, 'stylesheets (kB)').toBeLessThanOrEqual(limits.stylesheet);
+            expect(sum('script') / KB, 'scripts (kB)').toBeLessThanOrEqual(limits.script);
+            expect(sum('font') / KB, 'fonts (kB)').toBeLessThanOrEqual(limits.font);
+            expect(sum('image') / KB, 'images (kB)').toBeLessThanOrEqual(limits.image);
             expect(total / KB, 'everything (kB)').toBeLessThanOrEqual(limits.total);
 
             expect(await page.evaluate(() => document.querySelectorAll('*').length), 'elements in the page').toBeLessThanOrEqual(limits.elements);
-            expect(await page.evaluate(() => window.layoutShift), 'cumulative layout shift').toBeLessThanOrEqual(shared.layoutShift);
+            expect(await page.evaluate(() => window.layoutShift), 'cumulative layout shift').toBeLessThanOrEqual(limits.layoutShift);
 
             test.info().annotations.push({
                 type: 'weight',

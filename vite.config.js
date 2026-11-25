@@ -19,6 +19,7 @@ export default defineConfig({
         rollupOptions: {
             input: [
                 resolve(theme, 'assets/src/css/app.css'),
+                resolve(theme, 'assets/src/css/shop.css'),
                 resolve(theme, 'assets/src/js/app.js'),
             ],
         },

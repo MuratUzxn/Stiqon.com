@@ -52,6 +52,26 @@ function stiqon_is_lean_page(): bool
 }
 
 /**
+ * A "shop" page is drawn by WooCommerce inside this theme's frame: cart,
+ * checkout, account. It needs WooCommerce's scripts, and none of its
+ * stylesheets – the theme styles that markup itself (assets/src/css/shop.css).
+ * Like a lean page it has no editor content. Its template says so before it
+ * prints the header.
+ */
+function stiqon_declare_shop_page(): void
+{
+    $GLOBALS['stiqon_shop_page'] = true;
+
+    remove_action('wp_enqueue_scripts', 'wp_enqueue_global_styles');
+    remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
+}
+
+function stiqon_is_shop_page(): bool
+{
+    return ! empty($GLOBALS['stiqon_shop_page']);
+}
+
+/**
  * What a lean page leaves out: the stylesheets for editor content, and the
  * scripts and styles WooCommerce loads on every page of a site.
  */
@@ -90,5 +110,21 @@ add_action('wp_enqueue_scripts', function (): void {
         if (str_starts_with($handle, 'wc-') || str_starts_with($handle, 'woocommerce')) {
             wp_dequeue_style($handle);
         }
+    }
+}, 100);
+
+/**
+ * What a shop page leaves out: the stylesheets for editor content, and those of
+ * WooCommerce and Germanized. Stylesheets of other plugins stay – a payment
+ * method brings what its fields need. So does the one for searchable select
+ * boxes, which WooCommerce's scripts build where a country can be chosen.
+ */
+add_action('wp_enqueue_scripts', function (): void {
+    if (! stiqon_is_shop_page()) {
+        return;
+    }
+
+    foreach (['wp-block-library', 'classic-theme-styles', 'global-styles', 'woocommerce-general', 'woocommerce-layout', 'woocommerce-smallscreen', 'woocommerce-inline', 'woocommerce-gzd-layout'] as $handle) {
+        wp_dequeue_style($handle);
     }
 }, 100);

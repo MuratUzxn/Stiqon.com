@@ -1,13 +1,14 @@
 <?php
 /**
  * Opens every page: document head, skip link and the header with the areas (and
- * the references, once there are any), the search, the motif button and the
- * menu for small screens.
+ * the references, once there are any), the search, the motif button, the cart
+ * and the menu for small screens.
  */
 
 defined('ABSPATH') || exit;
 
 $areas = stiqon_navigation();
+$cart = stiqon_cart_link();
 $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-offset-[6px] decoration-2 transition-opacity duration-200 hover:opacity-60';
 ?>
 <!DOCTYPE html>
@@ -52,6 +53,17 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
                 <kbd class="ml-auto rounded-md bg-paper px-1.5 py-0.5 font-sans text-xs font-semibold text-muted max-lg:hidden pointer-coarse:hidden" aria-hidden="true" data-search-shortcut data-needs-script>Strg K</kbd>
             </a>
             <?php echo stiqon_motif_button('Eigenes Motiv', ['variant' => 'secondary', 'class' => 'max-sm:hidden']); ?>
+
+            <?php if ($cart !== null) : ?>
+                <a
+                    href="<?php echo esc_url($cart['url']); ?>" aria-label="<?php echo esc_attr($cart['label']); ?>" data-cart-count="<?php echo esc_attr((string) $cart['count']); ?>"
+                    class="relative inline-flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ease-soft hover:bg-ink/8"
+                >
+                    <?php echo stiqon_icon('bag'); ?>
+                    <?php // Always there, so the page's script can keep it in step where the cart changes without a new page. ?>
+                    <span class="absolute top-1 right-0 inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-ink px-1 text-[0.6875rem] leading-none font-semibold text-paper [&[hidden]]:hidden" aria-hidden="true"<?php echo $cart['count'] > 0 ? '' : ' hidden'; ?>><?php echo esc_html((string) $cart['count']); ?></span>
+                </a>
+            <?php endif; ?>
 
             <?php // The menu for small screens is a plain disclosure: it opens without any script. ?>
             <details class="group/menu md:hidden">

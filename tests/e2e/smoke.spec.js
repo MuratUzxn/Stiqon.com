@@ -40,21 +40,28 @@ test.describe('smoke', () => {
     });
 
     for (const [path, title] of [['/warenkorb/', 'Warenkorb'], ['/kasse/', 'Warenkorb'], ['/mein-konto/', 'Ihr Konto']]) {
-        // The theme's own pages leave WooCommerce's styles and scripts out. That
-        // must never reach the pages WooCommerce draws. (The checkout sends an
-        // empty cart back to the cart page.)
-        test(`${path} keeps the styles and scripts of WooCommerce`, async ({ page }) => {
+        // WooCommerce draws these pages inside the theme. Its scripts stay – they
+        // make cart and checkout work, and the theme's own pages leaving them out
+        // must never reach here. Its stylesheets go: the theme gives the markup
+        // its look (assets/src/css/shop.css). (The checkout sends an empty cart
+        // back to the cart page.)
+        test(`${path} keeps WooCommerce's scripts and gets its look from the theme`, async ({ page }) => {
             const response = await page.goto(path);
 
             expect(response.status()).toBe(200);
             await expect(page.getByRole('heading', { level: 1 })).toHaveText(title);
 
-            const styles = await page.evaluate(() => [...document.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.id));
+            const styles = await page.evaluate(() => [...document.querySelectorAll('link[rel="stylesheet"], style[id]')].map((element) => element.id));
             const scripts = await page.evaluate(() => [...document.querySelectorAll('script[src]')].map((script) => new URL(script.src).pathname));
 
-            expect(styles).toContain('woocommerce-general-css');
             expect(styles).toContain('stiqon-css');
+            expect(styles).toContain('stiqon-shop-css');
+            expect(styles.filter((id) => /^woocommerce-|^wc-|block-library|global-styles|classic-theme/.test(id))).toEqual([]);
             expect(scripts.some((script) => script.includes('/plugins/woocommerce/'))).toBe(true);
+
+            // In the theme's look: its face, and its page frame around WooCommerce's markup.
+            expect(await page.evaluate(() => getComputedStyle(document.querySelector('.woocommerce')).fontFamily)).toContain('Instrument Sans');
+            await expect(page.locator('header nav[aria-label="Hauptnavigation"]').first()).toBeAttached();
         });
     }
 

@@ -1,0 +1,1145 @@
+/*
+ | The pages WooCommerce draws: cart, checkout, order confirmation, account.
+ |
+ | Their markup comes from WooCommerce's and Germanized's own templates and
+ | scripts, with their class names. It is left as it is – payment plugins and
+ | a supplier's plugin expect it – and given the shop's look here, by those
+ | names. WooCommerce's own stylesheets are not loaded on these pages
+ | (inc/cleanup.php); this file is loaded only there (inc/assets.php), after
+ | app.css, whose tokens it uses.
+ */
+
+/* --- Buttons ------------------------------------------------------------------- */
+
+.woocommerce :where(.button, button[type='submit']),
+.woocommerce-button {
+    display: inline-flex;
+    height: 2.75rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-ink) 8%, transparent);
+    padding-inline: 1rem;
+    color: var(--color-ink);
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.0125em;
+    white-space: nowrap;
+    transition: background-color 200ms var(--ease-soft);
+}
+
+.woocommerce :where(.button, button[type='submit']):hover,
+.woocommerce-button:hover {
+    background-color: color-mix(in srgb, var(--color-ink) 14%, transparent);
+}
+
+/* The one button a page is about: to the checkout, place the order, log in, save. */
+.woocommerce .button.alt,
+.woocommerce .checkout-button,
+.woocommerce .return-to-shop .button,
+.woocommerce #place_order,
+.woocommerce .woocommerce-form-login__submit,
+.woocommerce .woocommerce-form-register__submit,
+.woocommerce .woocommerce-Button,
+.woocommerce form.edit-account button[type='submit'],
+.woocommerce form.woocommerce-address-fields button[type='submit'] {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+}
+
+.woocommerce .button.alt:hover,
+.woocommerce .checkout-button:hover,
+.woocommerce .return-to-shop .button:hover,
+.woocommerce #place_order:hover,
+.woocommerce .woocommerce-form-login__submit:hover,
+.woocommerce .woocommerce-form-register__submit:hover,
+.woocommerce .woocommerce-Button:hover,
+.woocommerce form.edit-account button[type='submit']:hover,
+.woocommerce form.woocommerce-address-fields button[type='submit']:hover {
+    background-color: var(--color-ink-soft);
+}
+
+.woocommerce :where(.button, button[type='submit']):disabled,
+.woocommerce .button.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* --- Form fields --------------------------------------------------------------- */
+
+.woocommerce .form-row {
+    margin: 0;
+}
+
+.woocommerce .form-row label,
+.woocommerce form label {
+    display: block;
+    margin-bottom: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.0125em;
+    line-height: 1.43;
+}
+
+.woocommerce .required {
+    color: var(--color-alert);
+    text-decoration: none;
+}
+
+.woocommerce .optional {
+    color: var(--color-muted);
+    font-weight: 400;
+}
+
+.woocommerce .input-text,
+.woocommerce input[type='text'],
+.woocommerce input[type='email'],
+.woocommerce input[type='tel'],
+.woocommerce input[type='password'],
+.woocommerce input[type='number'],
+.woocommerce select,
+.woocommerce textarea {
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    border-radius: var(--radius-control);
+    background-color: var(--color-mist);
+    padding: 0.625rem 0.875rem;
+    color: var(--color-ink);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.woocommerce textarea {
+    min-height: 6rem;
+    resize: vertical;
+}
+
+.woocommerce .input-text:focus-visible,
+.woocommerce select:focus-visible,
+.woocommerce textarea:focus-visible {
+    outline-offset: 0;
+}
+
+.woocommerce ::placeholder {
+    color: var(--color-muted);
+    opacity: 1;
+}
+
+/* A field the visitor has to look at again, and what is wrong with it. */
+.woocommerce .woocommerce-invalid .input-text,
+.woocommerce .woocommerce-invalid select,
+.woocommerce .woocommerce-invalid textarea {
+    outline: 2px solid var(--color-alert);
+    outline-offset: 0;
+}
+
+.woocommerce .checkout-inline-error-message {
+    margin-top: 0.375rem;
+    color: var(--color-alert);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* A country that cannot be chosen because it is the only one reads as text. */
+.woocommerce select.country_to_state--single {
+    min-height: 0;
+    appearance: none;
+    background-color: transparent;
+    padding: 0;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.woocommerce input[type='checkbox'],
+.woocommerce input[type='radio'] {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    accent-color: var(--color-ink);
+}
+
+/* A checkbox with its sentence: the box stands in front, the sentence – with
+   the star of a required one right behind its last word – runs beside it. */
+.woocommerce label.checkbox,
+.woocommerce label.woocommerce-form__label-for-checkbox {
+    position: relative;
+    display: block;
+    margin-bottom: 0;
+    padding-left: 1.875rem;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.5;
+}
+
+.woocommerce label.checkbox input,
+.woocommerce label.woocommerce-form__label-for-checkbox input {
+    position: absolute;
+    top: 0.125rem;
+    left: 0;
+}
+
+.woocommerce label.checkbox a,
+.woocommerce .woocommerce-privacy-policy-text a,
+.woocommerce .woocommerce-shipping-destination a,
+.woocommerce-MyAccount-content a:not(.button) {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* Fields in two columns where WooCommerce pairs them (first and last name). */
+.woocommerce-billing-fields__field-wrapper,
+.woocommerce-shipping-fields__field-wrapper,
+.woocommerce-address-fields__field-wrapper,
+.woocommerce-additional-fields__field-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.woocommerce .form-row-wide,
+.woocommerce .form-row.notes,
+.woocommerce-address-fields__field-wrapper > :not(.form-row-first, .form-row-last),
+.woocommerce-billing-fields__field-wrapper > :not(.form-row-first, .form-row-last),
+.woocommerce-shipping-fields__field-wrapper > :not(.form-row-first, .form-row-last) {
+    grid-column: 1 / -1;
+}
+
+/* WooCommerce keeps the row of a field it hides (the state, for Germany). */
+.woocommerce .form-row:has(> .woocommerce-input-wrapper > input[type='hidden']:only-child) {
+    display: none;
+}
+
+@media (max-width: 30rem) {
+    .woocommerce .form-row-first,
+    .woocommerce .form-row-last {
+        grid-column: 1 / -1;
+    }
+}
+
+/* --- Messages ------------------------------------------------------------------ */
+
+.woocommerce .woocommerce-notices-wrapper:empty {
+    display: none;
+}
+
+/* What is wrong with a field is said at the field as well; in the list above
+   the form each line leads there. */
+.woocommerce .woocommerce-NoticeGroup {
+    margin-bottom: 0;
+}
+
+/* --- Sums: the same table in the cart, at the checkout and in an order ----------- */
+
+.woocommerce table.shop_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.woocommerce table.shop_table th {
+    text-align: left;
+    font-weight: 500;
+}
+
+.woocommerce table.shop_table tfoot th,
+.woocommerce .cart_totals table.shop_table th {
+    padding: 0.5rem 1rem 0.5rem 0;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    vertical-align: top;
+}
+
+.woocommerce table.shop_table tfoot td,
+.woocommerce .cart_totals table.shop_table td {
+    padding-block: 0.5rem;
+    text-align: right;
+    vertical-align: top;
+}
+
+/* In the cart and at the checkout the sums stand in a narrow column. There each
+   row is laid out on its own – what it is, then the amount with all the room
+   that is left – so that the name of a way of shipping does not have to break
+   because a product's name above it is long. Still a table for WooCommerce's
+   scripts and for screen readers. */
+.woocommerce .cart_totals table.shop_table,
+.woocommerce .cart_totals table.shop_table tbody,
+.woocommerce-checkout-review-order-table,
+.woocommerce-checkout-review-order-table tbody,
+.woocommerce-checkout-review-order-table tfoot {
+    display: block;
+}
+
+.woocommerce .cart_totals table.shop_table tr,
+.woocommerce-checkout-review-order-table tfoot tr {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.woocommerce .cart_totals table.shop_table th,
+.woocommerce-checkout-review-order-table tfoot th {
+    flex: none;
+    padding-right: 0;
+}
+
+.woocommerce .cart_totals table.shop_table td,
+.woocommerce-checkout-review-order-table tfoot td {
+    min-width: 0;
+    flex: 1;
+}
+
+.woocommerce table.shop_table .order-total th,
+.woocommerce table.shop_table .order-total td {
+    padding-top: 1rem;
+    color: var(--color-ink);
+    font-size: 1.125rem;
+    font-weight: 650;
+}
+
+/* WooCommerce adds the tax in brackets; Germanized lists it in a row of its own. */
+.woocommerce table.shop_table .order-total .includes_tax {
+    display: none;
+}
+
+.woocommerce table.shop_table .order-tax th,
+.woocommerce table.shop_table .order-tax td {
+    padding-top: 0;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+}
+
+.woocommerce ul.woocommerce-shipping-methods li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.25rem 0.5rem;
+}
+
+.woocommerce ul.woocommerce-shipping-methods label {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+.woocommerce .woocommerce-shipping-destination {
+    margin-top: 0.25rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+}
+
+/* Nothing to say about where it goes: see inc/shop.php. */
+.woocommerce .woocommerce-shipping-destination:has(.stiqon-nothing-to-add) {
+    display: none;
+}
+
+/* What Germanized adds below a product's name: how long delivery takes. */
+.woocommerce .wc-gzd-cart-info {
+    margin: 0.125rem 0 0;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.0125em;
+    line-height: 1.43;
+}
+
+/* What was chosen of a product: "Material: Kraftpapier". */
+.woocommerce dl.variation {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0 0.375rem;
+    margin-top: 0.25rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.0125em;
+    line-height: 1.43;
+}
+
+.woocommerce dl.variation dt {
+    font-weight: 500;
+}
+
+.woocommerce dl.variation dd,
+.woocommerce dl.variation dd p {
+    margin: 0;
+}
+
+/* --- Cart ---------------------------------------------------------------------- */
+
+.woocommerce-cart .woocommerce {
+    display: grid;
+    gap: 2.5rem;
+}
+
+@media (min-width: 64rem) {
+    .woocommerce-cart .woocommerce:has(.cart-collaterals) {
+        grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+        column-gap: 3.5rem;
+        align-items: start;
+    }
+
+    .woocommerce-cart .woocommerce > .woocommerce-notices-wrapper {
+        grid-column: 1 / -1;
+    }
+
+    .woocommerce-cart .cart-collaterals {
+        position: sticky;
+        top: 2rem;
+    }
+}
+
+/* The rows of the cart: a table for WooCommerce and for screen readers, laid out
+   as a list – drawing, name and options, price, and the way to take it out. */
+.woocommerce-cart-form__contents,
+.woocommerce-cart-form__contents tbody {
+    display: block;
+}
+
+.woocommerce-cart-form__contents thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.woocommerce-cart-form__contents tr.cart_item {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr) auto;
+    grid-template-areas:
+        'picture name sum'
+        'picture name remove';
+    gap: 0.25rem 1rem;
+    border-top: 1px solid var(--color-line);
+    padding-block: 1.25rem;
+}
+
+.woocommerce-cart-form__contents tr.cart_item:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.woocommerce-cart-form__contents td {
+    display: block;
+    padding: 0;
+}
+
+.woocommerce-cart-form__contents .product-thumbnail {
+    grid-area: picture;
+}
+
+.woocommerce-cart-form__contents .product-name {
+    grid-area: name;
+    font-weight: 600;
+}
+
+.woocommerce-cart-form__contents .product-name > a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.woocommerce-cart-form__contents .product-subtotal {
+    grid-area: sum;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.woocommerce-cart-form__contents .product-remove {
+    grid-area: remove;
+    align-self: end;
+    justify-self: end;
+}
+
+.woocommerce-cart-form__contents .product-remove a {
+    display: inline-flex;
+    min-height: 1.75rem;
+    align-items: center;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.woocommerce-cart-form__contents .product-remove a:hover {
+    color: var(--color-ink);
+}
+
+/* Price for one and the number: only where a number can be chosen. Here it is
+   one of the product's options ("Auflage"), and the row's sum says it all. */
+.woocommerce-cart-form__contents .product-price,
+.woocommerce-cart-form__contents .product-quantity {
+    display: none;
+}
+
+.woocommerce-cart-form__contents tr.cart_item:has(.qty:not([type='hidden'])) {
+    grid-template-areas:
+        'picture name sum'
+        'picture number remove';
+}
+
+.woocommerce-cart-form__contents tr.cart_item:has(.qty:not([type='hidden'])) .product-quantity {
+    display: block;
+    grid-area: number;
+}
+
+/* Below the rows: a voucher, and "update" where numbers can be changed. */
+.woocommerce-cart-form__contents tr:has(> td.actions) {
+    display: block;
+}
+
+.woocommerce-cart-form__contents td.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-top: 1px solid var(--color-line);
+    padding-top: 1.25rem;
+}
+
+.woocommerce-cart-form__contents .coupon {
+    display: flex;
+    max-width: 26rem;
+    flex: 1 1 16rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.woocommerce-cart-form__contents .coupon .input-text {
+    width: auto;
+    min-width: 0;
+    min-height: 2.75rem;
+    flex: 1 1 8rem;
+    border-radius: 999px;
+    padding-inline: 1rem;
+}
+
+.woocommerce-cart-form:not(:has(.qty:not([type='hidden']))) [name='update_cart'] {
+    display: none;
+}
+
+/* The sums, on a grey surface beside the rows. */
+.woocommerce .cart_totals,
+.woocommerce-checkout #order_review {
+    border-radius: var(--radius-tile);
+    background-color: var(--color-mist);
+    padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.woocommerce .cart_totals > h2 {
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 650;
+}
+
+.woocommerce .wc-proceed-to-checkout {
+    margin-top: 1.5rem;
+}
+
+.woocommerce .wc-proceed-to-checkout .checkout-button,
+.woocommerce #place_order {
+    width: 100%;
+    height: 3.25rem;
+    font-size: 1.0625rem;
+}
+
+.woocommerce .shipping-calculator-button {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.woocommerce .shipping-calculator-form {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    text-align: left;
+}
+
+.woocommerce .shipping-calculator-form .input-text,
+.woocommerce .shipping-calculator-form select,
+.woocommerce-checkout #order_review .input-text {
+    background-color: var(--color-paper);
+}
+
+/* An empty cart. */
+.woocommerce .wc-empty-cart-message .shop-notice,
+.woocommerce .cart-empty {
+    justify-content: center;
+    text-align: center;
+}
+
+.woocommerce .return-to-shop {
+    text-align: center;
+}
+
+/* --- Checkout ------------------------------------------------------------------ */
+
+.woocommerce-checkout .woocommerce {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.woocommerce form.checkout {
+    display: grid;
+    gap: 2.5rem;
+}
+
+@media (min-width: 64rem) {
+    .woocommerce form.checkout {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+        column-gap: 3.5rem;
+        align-items: start;
+    }
+
+    .woocommerce form.checkout > :not(#customer_details, #order_review) {
+        grid-column: 1 / -1;
+    }
+
+    .woocommerce-checkout #order_review {
+        position: sticky;
+        top: 2rem;
+    }
+}
+
+.woocommerce #customer_details {
+    display: grid;
+    gap: 2.5rem;
+}
+
+.woocommerce #customer_details .col-2 {
+    display: grid;
+    gap: 2.5rem;
+}
+
+.woocommerce-checkout h3,
+.woocommerce-account .woocommerce h2,
+.woocommerce-account .woocommerce h3,
+.woocommerce-order h2 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 650;
+    letter-spacing: -0.005em;
+    line-height: 1.3;
+}
+
+/* "Deliver to a different address?" is a heading in WooCommerce's markup. */
+.woocommerce #ship-to-different-address {
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.woocommerce .shipping_address {
+    margin-top: 1rem;
+}
+
+/* A voucher, an account: lines that open a field or two. */
+.woocommerce-form-coupon-toggle .shop-notice,
+.woocommerce-form-login-toggle .shop-notice {
+    padding-block: 0.75rem;
+    font-size: 0.9375rem;
+}
+
+.woocommerce form.checkout_coupon,
+.woocommerce-checkout form.woocommerce-form-login {
+    border-radius: var(--radius-card);
+    background-color: var(--color-mist);
+    padding: 1.25rem 1.5rem;
+}
+
+.woocommerce-checkout form.woocommerce-form-login .input-text,
+.woocommerce form.checkout_coupon .input-text {
+    background-color: var(--color-paper);
+}
+
+/* "Create an account?" below the address. */
+.woocommerce .woocommerce-account-fields {
+    margin-top: 1rem;
+}
+
+.woocommerce .woocommerce-account-fields .create-account {
+    margin-top: 1rem;
+}
+
+.woocommerce form.checkout_coupon {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.woocommerce form.checkout_coupon .form-row-first {
+    flex: 1 1 12rem;
+}
+
+.woocommerce form.checkout_coupon .clear {
+    display: none;
+}
+
+/* How to pay. */
+.woocommerce ul.payment_methods {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.woocommerce li.wc_payment_method {
+    border-radius: var(--radius-card);
+    background-color: var(--color-paper);
+    padding: 1rem 1.25rem;
+}
+
+.woocommerce li.wc_payment_method > label {
+    display: inline-block;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.woocommerce li.wc_payment_method > input[type='radio'] {
+    margin-right: 0.5rem;
+    vertical-align: -0.2em;
+}
+
+.woocommerce .payment_box {
+    margin-top: 0.375rem;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+}
+
+/* Germanized sets the parts in the order the law suggests: how to pay, the
+   sentences to agree to, then what is ordered directly above the button. Its
+   heading "Ihre Bestellung" stands before the sentences in the markup; on
+   screen it heads what it names. */
+.woocommerce-checkout #order_review:has(> #order_review_heading) {
+    display: flex;
+    flex-direction: column;
+}
+
+.woocommerce-checkout #order_review:has(> #order_review_heading) > :is(#order_review_heading, table.shop_table, .wc-gzd-order-submit) {
+    order: 1;
+}
+
+.woocommerce #order_review_heading {
+    margin-top: 2rem;
+}
+
+/* What the order consists of. */
+.woocommerce-checkout-review-order-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.woocommerce-checkout-review-order-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    padding-bottom: 1rem;
+}
+
+.woocommerce-checkout-review-order-table tbody td {
+    display: block;
+    padding: 0;
+}
+
+.woocommerce-checkout-review-order-table tbody .product-total {
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.woocommerce-checkout-review-order-table tfoot {
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+    padding-top: 0.75rem;
+}
+
+/* Each row: the drawing in front, beside it the name, how many, and what was
+   chosen. WooCommerce prints the drawing behind the number (inc/shop.php). */
+.woocommerce-checkout-review-order-table td.product-name {
+    position: relative;
+    min-height: 3.5rem;
+    padding-left: 4.25rem;
+    font-weight: 600;
+}
+
+.woocommerce .stiqon-order-drawing {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3.5rem;
+    border-radius: var(--radius-control);
+    background-color: var(--color-paper);
+    padding: 0.375rem;
+}
+
+/* Where Germanized would set a picture of its own. */
+.woocommerce .wc-gzd-cart-item-thumbnail {
+    display: none;
+}
+
+.woocommerce-checkout-review-order-table .product-quantity {
+    color: var(--color-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* The legal sentences to agree to, and the button that orders. */
+.woocommerce .wc-gzd-checkbox-placeholder:empty {
+    display: none;
+}
+
+.woocommerce .wc-gzd-checkbox-placeholder {
+    margin-top: 1.25rem;
+}
+
+.woocommerce .wc-gzd-order-submit {
+    margin-top: 1.5rem;
+}
+
+.woocommerce .woocommerce-privacy-policy-text,
+.woocommerce .wc-gzd-order-submit noscript {
+    display: block;
+    margin-bottom: 1rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+}
+
+/* While WooCommerce recalculates, it lays a veil over the part in question. */
+.woocommerce .blockUI.blockOverlay {
+    border-radius: inherit;
+    background-color: var(--color-mist) !important;
+    opacity: 0.6 !important;
+}
+
+/* --- An order: after buying, and in the account ---------------------------------- */
+
+.woocommerce-order,
+.woocommerce-MyAccount-content {
+    display: grid;
+    gap: 2rem;
+    min-width: 0;
+}
+
+.woocommerce .woocommerce-thankyou-order-received {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+/* The order in four facts: number, date, total, way of paying. */
+.woocommerce ul.order_details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.woocommerce ul.order_details li {
+    min-width: 9rem;
+    flex: 1 1 auto;
+    border-radius: var(--radius-card);
+    background-color: var(--color-mist);
+    padding: 1rem 1.25rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.woocommerce ul.order_details li strong {
+    display: block;
+    margin-top: 0.125rem;
+    color: var(--color-ink);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* Where to send the money. */
+.woocommerce .woocommerce-bacs-bank-details ul.bacs_details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.woocommerce .woocommerce-bacs-bank-details .wc-bacs-bank-details-account-name {
+    margin-block: 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.woocommerce table.woocommerce-table--order-details tbody td,
+.woocommerce table.woocommerce-table--order-details thead th {
+    padding-block: 0.75rem;
+    vertical-align: top;
+}
+
+.woocommerce table.woocommerce-table--order-details thead th {
+    border-bottom: 1px solid var(--color-line);
+    color: var(--color-muted);
+    font-size: 0.875rem;
+}
+
+.woocommerce table.woocommerce-table--order-details td:last-child,
+.woocommerce table.woocommerce-table--order-details th:last-child {
+    text-align: right;
+}
+
+.woocommerce table.woocommerce-table--order-details tfoot tr:first-child th,
+.woocommerce table.woocommerce-table--order-details tfoot tr:first-child td {
+    border-top: 1px solid var(--color-line);
+    padding-top: 1rem;
+}
+
+.woocommerce table.woocommerce-table--order-details .product-name a {
+    font-weight: 600;
+}
+
+.woocommerce .wc-item-meta {
+    margin-top: 0.25rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+}
+
+.woocommerce .wc-item-meta li,
+.woocommerce .wc-item-meta p {
+    display: inline;
+    margin: 0;
+}
+
+.woocommerce .wc-item-meta li + li::before {
+    content: ' · ';
+}
+
+.woocommerce .woocommerce-customer-details address {
+    border-radius: var(--radius-card);
+    background-color: var(--color-mist);
+    padding: 1.25rem 1.5rem;
+    font-style: normal;
+    line-height: 1.6;
+}
+
+.woocommerce .woocommerce-columns--addresses {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1.5rem;
+}
+
+/* --- Account --------------------------------------------------------------------- */
+
+.woocommerce-account .woocommerce:has(.woocommerce-MyAccount-navigation) {
+    display: grid;
+    gap: 2rem;
+}
+
+@media (min-width: 48rem) {
+    .woocommerce-account .woocommerce:has(.woocommerce-MyAccount-navigation) {
+        grid-template-columns: 14rem minmax(0, 1fr);
+        column-gap: 3.5rem;
+        align-items: start;
+    }
+
+    .woocommerce-account .woocommerce > .woocommerce-notices-wrapper {
+        grid-column: 1 / -1;
+    }
+}
+
+.woocommerce-MyAccount-navigation ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+
+@media (min-width: 48rem) {
+    .woocommerce-MyAccount-navigation ul {
+        flex-direction: column;
+    }
+}
+
+.woocommerce-MyAccount-navigation a {
+    display: flex;
+    height: 2.75rem;
+    align-items: center;
+    border-radius: 999px;
+    padding-inline: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.0125em;
+    transition: background-color 200ms var(--ease-soft);
+}
+
+.woocommerce-MyAccount-navigation a:hover,
+.woocommerce-MyAccount-navigation .is-active a {
+    background-color: var(--color-mist);
+}
+
+/* Logging in and registering: one or two forms side by side. */
+.woocommerce .u-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: 2.5rem;
+}
+
+.woocommerce form.woocommerce-form-login,
+.woocommerce form.woocommerce-form-register,
+.woocommerce form.woocommerce-ResetPassword,
+.woocommerce form.edit-account,
+.woocommerce form.woocommerce-address-fields {
+    display: grid;
+    max-width: 32rem;
+    gap: 1rem;
+}
+
+.woocommerce form .form-row-first + .form-row-last {
+    margin-top: 0;
+}
+
+.woocommerce .woocommerce-LostPassword a,
+.woocommerce .lost_password a {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.woocommerce fieldset {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.woocommerce fieldset legend {
+    margin-bottom: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 650;
+}
+
+.woocommerce .password-input {
+    position: relative;
+    display: block;
+}
+
+.woocommerce .show-password-input {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    transform: translateY(-50%);
+    border-radius: 999px;
+}
+
+/* WooCommerce draws the eye with its icon font; here it is a drawn one. */
+.woocommerce .show-password-input::before {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: auto;
+    background-color: var(--color-muted);
+    content: '';
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z'/%3E%3Ccircle cx='12' cy='12' r='2.75'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* What WooCommerce adds below a field in italics. */
+.woocommerce form .form-row em,
+.woocommerce form fieldset + p em {
+    display: block;
+    margin-top: 0.375rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    font-style: normal;
+}
+
+.woocommerce form.woocommerce-form-login .woocommerce-form-login__submit {
+    justify-self: start;
+}
+
+/* Orders as a list. */
+.woocommerce table.woocommerce-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.woocommerce table.woocommerce-orders-table th,
+.woocommerce table.woocommerce-orders-table td {
+    border-bottom: 1px solid var(--color-line);
+    padding: 0.875rem 1rem 0.875rem 0;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.woocommerce table.woocommerce-orders-table thead th {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.woocommerce table.woocommerce-orders-table .woocommerce-orders-table__cell-order-actions {
+    padding-right: 0;
+    text-align: right;
+}
+
+@media (max-width: 40rem) {
+    .woocommerce table.woocommerce-orders-table thead {
+        display: none;
+    }
+
+    .woocommerce table.woocommerce-orders-table tr {
+        display: grid;
+        gap: 0.25rem;
+        border-bottom: 1px solid var(--color-line);
+        padding-block: 1rem;
+    }
+
+    .woocommerce table.woocommerce-orders-table th,
+    .woocommerce table.woocommerce-orders-table td {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        border: 0;
+        padding: 0;
+    }
+
+    .woocommerce table.woocommerce-orders-table td::before,
+    .woocommerce table.woocommerce-orders-table th[data-title]::before {
+        content: attr(data-title);
+        color: var(--color-muted);
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+}
+
+.woocommerce .woocommerce-Addresses {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1.5rem;
+}
+
+.woocommerce .woocommerce-Address {
+    border-radius: var(--radius-card);
+    background-color: var(--color-mist);
+    padding: 1.25rem 1.5rem;
+}
+
+.woocommerce .woocommerce-Address-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.woocommerce .woocommerce-Address address {
+    font-style: normal;
+    line-height: 1.6;
+}

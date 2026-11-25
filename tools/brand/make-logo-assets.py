@@ -6,6 +6,7 @@ no transparency). This script produces, from that one file:
 
   logo-{400,800}.webp        the wordmark with a transparent background
   logo-light-{400,800}.webp  letters in off-white for dark surfaces, gold line kept
+  logo-mail-320.png          the wordmark on white, for the head of e-mails
   icon-{32,180,192,512}.png  the "S" on an ink tile (favicon, touch icon)
   logo-original-800.webp     the source as supplied, reduced, for side-by-side review
   favicon.ico
@@ -185,6 +186,15 @@ def main() -> None:
     light = crop_to_content(compose(light_colour, alpha), padding=8)
     save_widths(dark, "logo", (400, 800))
     save_widths(light, "logo-light", (400, 800))
+
+    # For e-mails. PNG, because not every mail program shows WebP. On white,
+    # because a wordmark in ink with a transparent background disappears where
+    # a mail program shows mails on a dark surface. Twice the width it is shown at.
+    mail = Image.new("RGBA", dark.size, (255, 255, 255, 255))
+    mail.alpha_composite(dark)
+    mail.convert("RGB").resize((320, round(dark.height * 320 / dark.width)), Image.LANCZOS).save(
+        OUT / "logo-mail-320.png", optimize=True
+    )
 
     letter = crop_to_content(compose(light_colour, alpha * first_letter(alpha)), padding=0)
 
