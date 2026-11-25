@@ -2,13 +2,14 @@
 
 namespace Stiqon\Shop\Search;
 
+use Stiqon\Shop\Catalog\Areas;
 use Stiqon\Shop\Catalog\Gallery;
 use Stiqon\Shop\Catalog\ProductView;
 use Stiqon\Shop\Plugin;
 use WC_Product;
+use WP_Post;
 use WP_REST_Request;
 use WP_REST_Response;
-use WP_Term;
 
 /**
  * What the shop's search looks through: one entry per area (a category of
@@ -18,6 +19,10 @@ use WP_Term;
  * The results page asks find(). The page's script fetches the same entries
  * from the address route() sets up and ranks them in the browser, so results
  * appear while a visitor types.
+ *
+ * The entries are gathered once and kept for everyone. So they hold what
+ * everyone may see – no product behind a password – and prices as a visitor
+ * without an account sees them, whoever's request happens to gather them.
  */
 final class Index
 {
@@ -40,7 +45,7 @@ final class Index
     private const CACHE_SECONDS = 3600;
 
     private const CHANGES = [
-        // A product or one of its variations was saved or deleted.
+        // A product or one of its variations was saved.
         'woocommerce_delete_product_transients',
         // Names of categories and options.
         'created_term', 'edited_term', 'delete_term',
@@ -57,6 +62,11 @@ final class Index
         foreach (self::CHANGES as $hook) {
             add_action($hook, [self::class, 'forget'], 10, 0);
         }
+
+        // WooCommerce reports none of these: a product goes to the bin or comes
+        // back, a scheduled one goes live, one is deleted for good.
+        add_action('transition_post_status', [self::class, 'forgetMoved'], 10, 3);
+        add_action('deleted_post', [self::class, 'forgetDeleted'], 10, 2);
     }
 
     /**
@@ -96,6 +106,34 @@ final class Index
     }
 
     /**
+     * @param  mixed  $new  the status a post got
+     * @param  mixed  $old  the status it had
+     * @param  mixed  $post  the post
+     */
+    public static function forgetMoved($new, $old, $post): void
+    {
+        if ($new !== $old && self::listed($post)) {
+            self::forget();
+        }
+    }
+
+    /**
+     * @param  mixed  $id  number of the deleted post
+     * @param  mixed  $post  the post as it was
+     */
+    public static function forgetDeleted($id, $post = null): void
+    {
+        if (self::listed($post)) {
+            self::forget();
+        }
+    }
+
+    private static function listed(mixed $post): bool
+    {
+        return $post instanceof WP_Post && in_array($post->post_type, ['product', 'product_variation'], true);
+    }
+
+    /**
      * What a query finds, best first: areas, and cards in the form the gallery
      * hands them to the theme (see Catalog\Gallery).
      *
@@ -118,8 +156,8 @@ final class Index
 
             $product = wc_get_product($entry['id']);
 
-            // Gone since the entries were gathered.
-            if (! $product instanceof WC_Product) {
+            // Gone, taken back or locked since the entries were gathered.
+            if (! $product instanceof WC_Product || $product->get_status() !== 'publish' || $product->get_post_password() !== '') {
                 $found['total']--;
 
                 continue;
@@ -224,9 +262,29 @@ final class Index
      */
     private static function build(): array
     {
+        // WooCommerce works out the price to show for the customer of the current
+        // request: where they live, whether they pay VAT. These entries are kept
+        // for everyone, so they are gathered as for a visitor nothing is known of.
+        $customer = WC()->customer;
+        WC()->customer = null;
+
+        try {
+            return self::gather();
+        } finally {
+            WC()->customer = $customer;
+        }
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private static function gather(): array
+    {
         $products = wc_get_products([
             'status' => 'publish',
             'visibility' => 'search',
+            // WordPress keeps posts behind a password out of its search, too.
+            'has_password' => false,
             'limit' => -1,
             'orderby' => 'menu_order',
             'order' => 'ASC',
@@ -241,14 +299,17 @@ final class Index
             $form = $view['spec'][$type === 'sticker' ? 'shape' : 'format'] ?? null;
             $visible = ProductView::visible($product);
             $cards = Gallery::cards($product, $visible);
-            $area = self::area($product);
             $prices = array_filter(array_column($cards, 'price'), 'is_float');
+
+            // The area's page shows the product in each area it belongs to; a result names the first.
+            $belongs = Areas::of($product);
+            $area = $belongs[0] ?? null;
             $keywords = implode(' ', array_filter([self::ALSO_CALLED[$type] ?? '', $area?->name, $cards[0]['summary']]));
 
-            if ($area !== null) {
-                $areas[$area->term_id] ??= ['term' => $area, 'types' => [], 'products' => 0];
-                $areas[$area->term_id]['types'][$type] = true;
-                $areas[$area->term_id]['products']++;
+            foreach ($belongs as $term) {
+                $areas[$term->term_id] ??= ['term' => $term, 'types' => [], 'products' => 0];
+                $areas[$term->term_id]['types'][$type] = true;
+                $areas[$term->term_id]['products']++;
             }
 
             $shared = [
@@ -282,16 +343,9 @@ final class Index
         $first = [];
 
         foreach ($areas as $area) {
-            /**
-             * Address of an area of the shop. A theme that shows the products of a
-             * category on a page of its own names that page here.
-             *
-             * @param  string|\WP_Error  $url  address of the category's archive
-             * @param  WP_Term  $term  the product category
-             */
-            $url = apply_filters('stiqon_shop_area_url', get_term_link($area['term']), $area['term']);
+            $url = Areas::url($area['term']);
 
-            if (! is_string($url) || $url === '') {
+            if ($url === null) {
                 continue;
             }
 
@@ -322,26 +376,5 @@ final class Index
             // wc_price() returns markup; a result shows the price as text.
             'p' => isset($more['price']) ? 'ab '.html_entity_decode(wp_strip_all_tags(wc_price($more['price'])), ENT_QUOTES, 'UTF-8') : '',
         ] + $more + Entry::searchable($kind, $name, $subtitle, $keywords);
-    }
-
-    /**
-     * The area a product belongs to: the top-level category above the first of
-     * its categories. The category WooCommerce files products under that have
-     * none is not an area.
-     */
-    private static function area(WC_Product $product): ?WP_Term
-    {
-        $terms = get_the_terms($product->get_id(), 'product_cat');
-        $term = is_array($terms) ? ($terms[0] ?? null) : null;
-
-        while ($term instanceof WP_Term && $term->parent > 0) {
-            $term = get_term($term->parent, 'product_cat');
-        }
-
-        if (! $term instanceof WP_Term || $term->term_id === (int) get_option('default_product_cat')) {
-            return null;
-        }
-
-        return $term;
     }
 }

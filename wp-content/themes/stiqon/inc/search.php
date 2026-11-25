@@ -66,9 +66,23 @@ add_filter('document_title_parts', static function (array $parts): array {
 });
 
 /**
- * The areas of the shop are pages of this theme. What search finds leads
- * there directly – the archive of the category would only redirect to it.
+ * WooCommerce's own search field, an old link or a widget ask for products
+ * only ("post_type=product"). There is one search in this shop; such a request
+ * is sent on to its results page instead of an empty list of products.
  */
-add_filter('stiqon_shop_area_url', static function (mixed $url, WP_Term $term): mixed {
-    return isset(stiqon_required_pages()[$term->slug]) ? stiqon_page_url($term->slug) : $url;
+add_action('template_redirect', static function (): void {
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only whether the parameter is there.
+    if (is_search() && isset($_GET['post_type'])) {
+        wp_safe_redirect(stiqon_search_url(stiqon_search_query()), 301);
+        exit;
+    }
+});
+
+/**
+ * The areas of the shop are pages of this theme. What search finds leads
+ * there directly. A category without such a page is no area: its archive
+ * only redirects to the home page (inc/shop.php).
+ */
+add_filter('stiqon_shop_area_url', static function (mixed $url, WP_Term $term): string {
+    return isset(stiqon_required_pages()[$term->slug]) ? stiqon_page_url($term->slug) : '';
 }, 10, 2);

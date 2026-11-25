@@ -125,6 +125,20 @@ Form, ein Motiv oder eine Kartenfarbe nicht, bleibt in der Entwicklung die Seite
 Fehler auffällt; im Live-Betrieb fehlt nur diese eine Ansicht, und der Grund steht im
 Fehlerprotokoll.
 
+Angeboten wird, was sich kaufen lässt: Ein Material, das am Produkt angehakt ist, aber keine
+Variante mit Preis hat, bekommt keine Karte, keine Ansicht und keinen Auswahlknopf. Nicht jede
+Kombination von Optionen muss es geben. Passt eine gewählte Option nicht zum Rest der Auswahl,
+wandert der Rest zur nächsten Kombination, die es gibt – die Seite sagt das unter den Optionen –,
+und auch eine Adresse mit nur einer Option öffnet eine vorhandene Kombination. Server und Browser
+folgen dabei derselben Regel (`Catalog\Choice::closest()` im Plugin, `variation-match.js` im
+Theme; gemeinsame Fälle in `tests/fixtures/choice-cases.json`).
+
+Ein Bereich ist eine Produktkategorie der obersten Ebene, für die das Theme eine Seite hat; ein
+Produkt gehört zum Bereich über seinen Kategorien. Welche Seite das ist, sagt das Theme dem Plugin
+über den Filter `stiqon_shop_area_url` (leer für Kategorien ohne Seite). Ein Produkt mit Passwort
+erscheint weder in der Galerie noch in der Suche – es ist für die gedacht, die seine Adresse
+bekommen haben.
+
 Beim ersten Aktivieren setzt das Plugin Datenschutz-Voreinstellungen (`src/Setup/Defaults.php`):
 keine Profilbilder von Gravatar, neue Inhalte ohne Kommentare, keine Herkunftsmessung von
 Bestellungen per Cookie, keine Nutzungsdaten an WooCommerce. Jede davon wird genau einmal gesetzt;
@@ -145,7 +159,11 @@ alle seine Varianten; eine Variante erscheint, wenn nach ihr gefragt ist („kra
   ändert `Search\Text`/`Search\Matcher` im Plugin und `assets/src/js/search-match.js` im Theme
   zusammen.
 - Das Verzeichnis wird zwischengespeichert und verworfen, sobald sich ein Produkt, ein Begriff
-  oder eine Adresse ändert.
+  oder eine Adresse ändert – auch wenn ein Produkt in den Papierkorb wandert oder ein geplantes
+  erscheint. Es gilt für alle: Seine Preise sind die, die ein Besucher ohne Konto sieht, gleich
+  in wessen Anfrage es entsteht.
+- Eine Suche nur nach Produkten (`/?s=…&post_type=product`, das Suchfeld von WooCommerce) führt auf
+  dieselbe Ergebnisseite.
 - Solange WooCommerce den Shop als „Demnächst verfügbar“ ankündigt, findet die Suche für Besucher
   nichts; wer den Shop verwaltet, sucht normal.
 

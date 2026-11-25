@@ -88,10 +88,88 @@ $expect(Index::find('runde sticker', 48)['total'] === 0, 'A product that is a dr
 
 $product->set_status('publish');
 $product->save();
+
+// In the bin it is gone at once – WooCommerce reports no change for that – and back when it is restored.
+wp_trash_post($product->get_id());
+$expect(Index::find('runde sticker', 48)['total'] === 0 && count(Index::entries()) === 37, 'With a product in the bin the index holds '.count(Index::entries()).' entries.');
+
+wp_untrash_post($product->get_id());
+$expect(get_post_status($product->get_id()) === 'publish', 'A product restored from the bin is "'.get_post_status($product->get_id()).'".');
+$expect(Index::find('runde sticker', 48)['total'] === 1, 'A product restored from the bin is not found.');
+
+// A product behind a password is for whoever has its address: not in search, not in the gallery.
+$product = wc_get_product($product->get_id());
+$product->set_post_password('nur-fuer-einen');
+$product->save();
+
+$expect(Index::find('runde sticker', 48)['total'] === 0, 'A product behind a password is found.');
+$expect(! in_array('runde-sticker', array_column(stiqon_gallery('sticker')['products'], 'slug'), true), 'A product behind a password is in the gallery.');
+$expect(! in_array('runde-sticker', array_column(stiqon_products_beside(wc_get_product(wc_get_product_id_by_sku('beispiel-ovale-sticker')), 'sticker', 4), 'slug'), true), 'A product behind a password is offered beside another product.');
+
+$product->set_post_password('');
+$product->save();
+$expect(in_array('runde-sticker', array_column(stiqon_gallery('sticker')['products'], 'slug'), true), 'A product whose password was taken away is not in the gallery.');
+
+// The entries are kept for everyone. Whoever's request gathers them, they hold
+// the prices a visitor without an account sees.
+$variation = wc_get_product($product->get_children()[0]);
+$known = WC()->customer;
+
+WC()->customer = new WC_Customer(0);
+WC()->customer->set_is_vat_exempt(true);
+
+$expect(abs((float) wc_get_price_to_display($variation) - 20.92) < 0.005, 'This check takes for granted that a customer who pays no VAT is shown the net price; shown is '.wc_get_price_to_display($variation).'.');
+
+Index::forget();
+$expect(Index::entries()[2]['p'] === "ab 24,90\u{a0}€", 'Gathered in the request of a customer who pays no VAT, the round sticker starts at "'.Index::entries()[2]['p'].'".');
+$expect(WC()->customer instanceof WC_Customer && WC()->customer->get_is_vat_exempt(), 'Gathering the entries changed the customer of the request.');
+
+WC()->customer = $known;
+Index::forget();
+
+// An area is a category with a page of the theme. Other categories are none,
+// and a product belongs to the area above any of its categories.
+$offers = wp_insert_term('Angebote', 'product_cat', ['slug' => 'angebote']);
+$cards = wp_insert_term('Visitenkarten', 'product_cat', ['slug' => 'visitenkarten']);
+$sticker = get_term_by('slug', 'sticker', 'product_cat');
+$round = wp_insert_term('Rund', 'product_cat', ['slug' => 'rund', 'parent' => $sticker->term_id]);
+$flyer = wc_get_product(wc_get_product_id_by_sku('beispiel-flyer-din-a6'));
+$filed = [$product->get_category_ids(), $flyer->get_category_ids()];
+
+if (is_wp_error($offers) || is_wp_error($cards) || is_wp_error($round)) {
+    WP_CLI::error('The categories for this check could not be made.');
+}
+
+// "Angebote" comes before "Sticker" by name; the sticker is filed under a sub-category of "Sticker".
+$product->set_category_ids([(int) $offers['term_id'], (int) $round['term_id']]);
+$product->save();
+$flyer->set_category_ids([(int) $cards['term_id']]);
+$flyer->save();
+
+$entries = Index::entries();
+$areas = array_values(array_filter($entries, static fn (array $entry): bool => $entry['kind'] === 'area'));
+$named = static fn (string $name): array => array_values(array_filter($entries, static fn (array $entry): bool => $entry['kind'] === 'product' && $entry['n'] === $name))[0] ?? [];
+
+$expect(array_column($areas, 'n') === ['Sticker', 'Flyer'], 'With two more categories the areas are: '.implode(', ', array_column($areas, 'n')));
+$expect(array_column($areas, 's') === ['5 Produkte', '4 Produkte'], 'The areas count: '.implode(', ', array_column($areas, 's')));
+$expect(($named('Runde Sticker')['s'] ?? null) === 'Sticker', 'A sticker filed under "Angebote" and a sub-category of "Sticker" is filed under "'.($named('Runde Sticker')['s'] ?? '?').'".');
+$expect(($named('Flyer DIN A6')['s'] ?? null) === '', 'A product in a category without a page is filed under "'.($named('Flyer DIN A6')['s'] ?? '?').'".');
+$expect((stiqon_product_area($product)['slug'] ?? null) === 'sticker' && stiqon_product_area($flyer) === null, 'The product page names another area than search does.');
+$expect(in_array('runde-sticker', array_column(stiqon_gallery('sticker')['products'], 'slug'), true), 'The area page does not show a product of a sub-category.');
+
+$product->set_category_ids($filed[0]);
+$product->save();
+$flyer->set_category_ids($filed[1]);
+$flyer->save();
+
+foreach ([$offers, $cards, $round] as $made) {
+    wp_delete_term((int) $made['term_id'], 'product_cat');
+}
+
 $expect(count(Index::entries()) === 42, 'After all changes were taken back the index holds '.count(Index::entries()).' entries.');
 
 if ($problems !== []) {
     WP_CLI::error("Search:\n- ".implode("\n- ", $problems));
 }
 
-WP_CLI::success('Search finds the areas, products and variants of the shop, and follows their changes.');
+WP_CLI::success('Search finds the areas, products and variants of the shop, follows their changes, and holds what everyone may see.');

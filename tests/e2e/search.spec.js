@@ -392,6 +392,13 @@ test.describe('results page', () => {
         await expect(page.getByRole('radio', { name: 'Holografische Folie' })).toBeChecked();
     });
 
+    test('a search for products only – WooCommerce\'s own field, an old link – ends at the same page', async ({ page }) => {
+        await page.goto('/?s=runde+sticker&post_type=product');
+
+        await expect(page).toHaveURL(/\/\?s=runde(\+|%20)sticker$/);
+        await expect(page.locator('[data-card]').filter({ hasText: 'Runde Sticker' })).toHaveCount(1);
+    });
+
     test('nothing found: the page says so and shows the way to the areas', async ({ page }) => {
         await page.goto('/?s=tasse');
 
