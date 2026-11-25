@@ -19,8 +19,12 @@ const KB = 1024;
 // about 1 kB with its control in the header: the search opens the moment it is
 // asked for, and its markup stays a PHP template like the rest. Its script and
 // the list it searches are fetched only when a visitor opens it.
+//
+// The home page lists the print suppliers' product families (seven categories,
+// one entry per supplier in each): about 4 kB of the document and 370 elements,
+// closed until a visitor opens a category.
 const pages = {
-    '/': { document: 12.5, total: 130, elements: 1500 },
+    '/': { document: 16.5, total: 134, elements: 1900 },
     // Twenty cards, each an inline drawing: about 800 elements. On top of what the
     // home page loads come the gallery's own script and the serif face of the samples.
     '/sticker/': { document: 11.3, total: 137, elements: 900 },

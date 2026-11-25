@@ -185,9 +185,10 @@ get_header();
     </ul>
 </section>
 
-<?php // How it works ?>
+<?php // The print suppliers' product families, by category ?>
 <?php get_template_part('template-parts/supplier-categories'); ?>
 
+<?php // How it works ?>
 <section class="bg-mist py-16 lg:py-28" aria-labelledby="ablauf">
     <div class="wrap">
         <?php echo stiqon_section_heading(['id' => 'ablauf', 'title' => 'In drei Schritten zum fertigen Werbemittel']); ?>
