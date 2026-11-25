@@ -359,3 +359,108 @@
     }
 }
 
+
+.supplier-intro {
+    margin: 1rem auto 2rem;
+    max-width: 42rem;
+    text-align: center;
+}
+
+.supplier-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    align-items: start;
+    gap: 1rem;
+}
+
+.supplier-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 1.5rem;
+}
+
+.supplier-card summary {
+    padding: .75rem 1rem 1rem;
+    cursor: pointer;
+}
+
+.supplier-art {
+    display: grid;
+    margin: 0 -.25rem .875rem;
+    height: 9rem;
+    place-items: center;
+    background: #f2f2f2;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.supplier-art > :first-child {
+    max-width: 8rem;
+    width: 100%;
+}
+
+.supplier-art > span {
+    height: 4.75rem;
+    background: #4658cb;
+    border-radius: .4rem;
+    transform: rotate(-9deg);
+    box-shadow: .5rem .5rem 0 #c3cbff;
+}
+
+.supplier-art--werbetechnik > span {
+    background: repeating-linear-gradient(155deg, #252252 0 1.15rem, #5147ba 1.15rem 2.3rem);
+}
+
+.supplier-art--verpackungen > span {
+    background: repeating-linear-gradient(90deg, #bd7e4c 0 3.6rem, #e9b68b 3.6rem 4.4rem, #bd7e4c 4.4rem 8rem);
+    box-shadow: .55rem .55rem 0 #9c5836;
+}
+
+.supplier-art--textilien > span {
+    height: 6.5rem;
+    clip-path: polygon(25% 0, 38% 0, 50% 12%, 62% 0, 75% 0, 100% 24%, 82% 47%, 73% 38%, 73% 100%, 27% 100%, 27% 38%, 18% 47%, 0 24%);
+    background: #306752;
+}
+
+.supplier-art--werbeartikel > span {
+    width: 5rem;
+    border-radius: .35rem .35rem 1.6rem 1.6rem;
+    border-top: .55rem solid #efb5cc;
+    background: #a83463;
+    box-shadow: 1rem .35rem 0 -.15rem #a83463;
+}
+
+.supplier-art--wohnen > span {
+    border: .45rem solid #6a4831;
+    background: linear-gradient(150deg, #b4d9ed 0 45%, #47896e 45% 63%, #246959 63%);
+    box-shadow: .5rem .5rem 0 #d7cbbb;
+}
+
+.supplier-title {
+    font-weight: 700;
+}
+
+.supplier-count {
+    display: block;
+    margin: .25rem 0 0 1rem;
+    color: #575757;
+}
+
+.supplier-offers {
+    padding: 0 1rem 1rem;
+    overflow-wrap: anywhere;
+}
+
+.supplier-offers li {
+    padding: .625rem 0;
+    border-top: 1px solid #e5e5e5;
+}
+
+.supplier-offers a {
+    display: inline-block;
+    margin-right: .625rem;
+    text-decoration: underline;
+}
+
+.supplier-offers strong {
+    display: block;
+}
