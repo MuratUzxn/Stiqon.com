@@ -1,7 +1,7 @@
 <?php
 /**
  * Opens every page: document head, skip link and the header with the two areas,
- * the motif button and the menu for small screens.
+ * the search, the motif button and the menu for small screens.
  */
 
 defined('ABSPATH') || exit;
@@ -41,6 +41,15 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
         </nav>
 
         <div class="ml-auto flex items-center gap-2">
+            <?php // Search: a link to the results page. The page's script opens the search over the page instead. ?>
+            <a
+                href="<?php echo esc_url(stiqon_search_url()); ?>" data-search-open
+                class="group/search text-action inline-flex h-11 shrink-0 items-center gap-2 rounded-full transition-colors duration-200 ease-soft max-lg:size-11 max-lg:justify-center max-lg:hover:bg-ink/8 lg:w-48 lg:bg-mist lg:px-4 lg:hover:bg-mist-deep"
+            >
+                <?php echo stiqon_icon('search'); ?>
+                <span class="max-lg:sr-only lg:font-medium lg:text-muted lg:group-hover/search:text-ink">Suche</span>
+                <kbd class="ml-auto rounded-md bg-paper px-1.5 py-0.5 font-sans text-xs font-semibold text-muted max-lg:hidden pointer-coarse:hidden" aria-hidden="true" data-search-shortcut data-needs-script>Strg K</kbd>
+            </a>
             <?php echo stiqon_motif_button('Eigenes Motiv', ['variant' => 'secondary', 'class' => 'max-sm:hidden']); ?>
 
             <?php // The menu for small screens is a plain disclosure: it opens without any script. ?>

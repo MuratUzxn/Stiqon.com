@@ -105,7 +105,9 @@ Adresse an.
 | Adresse | Vorlage | Hinweis |
 |---|---|---|
 | `/` | `front-page.php` | Startseite |
-| `/sticker/`, `/flyer/` | `page-sticker.php`, `page-flyer.php` | Bereiche; die Produktgalerie folgt |
+| `/sticker/`, `/flyer/` | `page-sticker.php`, `page-flyer.php` | Bereiche mit Galerie: je Produkt und Material bzw. Papier eine Karte. Die Filter sind Links und funktionieren ohne Skript; am Desktop öffnet eine Karte groß über der Galerie |
+| `/produkt/…` | `woocommerce/…` | Produktseite auf den Vorlagen von WooCommerce, damit sich Germanized und weitere Plugins einhängen können |
+| `/?s=…` | `search.php` | Ergebnisseite der Suche |
 | `/musterbogen/` | `page-musterbogen.php` | Logo, Schrift, Farben und Mockups auf einer Seite. Nur wer das Erscheinungsbild der Website verwalten darf, sieht sie; alle anderen bekommen „nicht gefunden“ – auch wenn die Seite versehentlich veröffentlicht wurde |
 
 Fehlt eine der beiden Bereichsseiten oder fehlen dem Theme seine gebauten Dateien, weist die
@@ -123,6 +125,25 @@ keine Profilbilder von Gravatar, neue Inhalte ohne Kommentare, keine Herkunftsme
 Bestellungen per Cookie, keine Nutzungsdaten an WooCommerce. Jede davon wird genau einmal gesetzt;
 was die Inhaberin oder der Inhaber später ändert, bleibt auch nach erneutem Aktivieren bestehen.
 
+## Suche
+
+Die Suche durchsucht nicht Beiträge und Seiten, sondern ein eigenes Verzeichnis des Sortiments:
+Bereiche, Produkte und deren sichtbare Varianten (`src/Search` im Plugin). Ein Produkt steht für
+alle seine Varianten; eine Variante erscheint, wenn nach ihr gefragt ist („kraftpapier“).
+
+- Das Suchfeld im Kopf ist ein Link auf die Ergebnisseite. Mit Skript öffnet es die Suche über der
+  Seite (auch mit Strg + K bzw. ⌘ K) und zeigt Treffer schon beim Tippen. Skript und Verzeichnis
+  werden erst geladen, wenn jemand die Suche öffnet (`/wp-json/stiqon/v1/suchindex`).
+- Die Ergebnisseite rechnet auf dem Server, die Soforttreffer im Browser – nach denselben Regeln.
+  Dass beide Seiten übereinstimmen, prüfen gemeinsame Fälle in `tests/fixtures/search-cases.json`
+  (PHP: `tests/php/Search`, Skript: `tests/e2e/search-logic.spec.js`). Wer die Regeln ändert,
+  ändert `Search\Text`/`Search\Matcher` im Plugin und `assets/src/js/search-match.js` im Theme
+  zusammen.
+- Das Verzeichnis wird zwischengespeichert und verworfen, sobald sich ein Produkt, ein Begriff
+  oder eine Adresse ändert.
+- Solange WooCommerce den Shop als „Demnächst verfügbar“ ankündigt, findet die Suche für Besucher
+  nichts; wer den Shop verwaltet, sucht normal.
+
 ## Gestaltung
 
 - Der Look folgt [mobbin.com](https://mobbin.com) (Stand 24.11.2026): weiße Seiten, zentrierte
@@ -138,9 +159,10 @@ was die Inhaberin oder der Inhaber später ändert, bleibt auch nach erneutem Ak
   heißen: `text-control` wäre zugleich die Textfarbe des Tokens `control`.
 - Die Texte der Oberfläche stehen auf Deutsch direkt in den Vorlagen. Für eine zweite Sprache
   müssten sie durch Übersetzungsfunktionen ersetzt werden.
-- Verhalten im Browser liegt in `assets/src/js/app.js` als benannte Alpine-Komponenten; Vorlagen
-  verweisen nur auf deren Eigenschaften und Methoden. Das Menü für kleine Bildschirme kommt ohne
-  Skript aus.
+- Verhalten im Browser liegt in `assets/src/js` als benannte Alpine-Komponenten; Vorlagen
+  verweisen nur auf deren Eigenschaften und Methoden. `app.js` lädt jede Seite; was nur eine
+  Seitenart braucht (Galerie, Produktseite) oder erst auf Wunsch (Suche), liegt in eigenen Dateien
+  und wird nur dort geholt. Das Menü für kleine Bildschirme kommt ohne Skript aus.
 - Die Hilfsklasse für den Seitenrand heißt `wrap`, nicht `page`: WordPress setzt die Klasse `page`
   auf den `body` jeder Seite.
 - Vorlagen, die ganz aus eigenem Markup bestehen (Startseite, Bereiche, 404, Musterbogen), rufen

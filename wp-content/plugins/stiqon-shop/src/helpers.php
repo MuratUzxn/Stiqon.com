@@ -10,6 +10,7 @@ use Stiqon\Shop\Mockup\Flyer;
 use Stiqon\Shop\Mockup\Stage;
 use Stiqon\Shop\Mockup\Sticker;
 use Stiqon\Shop\Plugin;
+use Stiqon\Shop\Search\Index;
 
 defined('ABSPATH') || exit;
 
@@ -114,6 +115,26 @@ function stiqon_gallery(string $category): array
 
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- filters of a public page; values are only compared with known ones.
     return $gallery + ['selection' => Gallery::selection($gallery, wp_unslash($_GET))];
+}
+
+/**
+ * What the shop's search finds for a query, best first: areas of the shop, and
+ * cards as stiqon_gallery() returns them – a product, or a product with one of
+ * its options chosen when that option was asked for. See Search\Index.
+ *
+ * @return array{query: string, total: int, areas: list<array{name: string, note: string, url: string}>, cards: list<array>}  "total" counts everything found, also beyond $limit
+ */
+function stiqon_search(string $query, int $limit = 48): array
+{
+    return Index::find($query, $limit);
+}
+
+/**
+ * Address from which a page's script fetches what search looks through.
+ */
+function stiqon_search_index_url(): string
+{
+    return rest_url(Index::REST_NAMESPACE.Index::REST_ROUTE);
 }
 
 /**

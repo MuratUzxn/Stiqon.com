@@ -14,11 +14,16 @@ const KB = 1024;
 // The document limits are tight on purpose: stylesheets that WordPress puts into
 // the page inline (the ones for editor content weigh about 3 kB) add no request,
 // so only the size of the document shows them.
+//
+// Every document carries the search that opens over the page as a <template>,
+// about 1 kB with its control in the header: the search opens the moment it is
+// asked for, and its markup stays a PHP template like the rest. Its script and
+// the list it searches are fetched only when a visitor opens it.
 const pages = {
     '/': { document: 12.5, total: 130, elements: 1500 },
     // Twenty cards, each an inline drawing: about 800 elements. On top of what the
     // home page loads come the gallery's own script and the serif face of the samples.
-    '/sticker/': { document: 9.5, total: 135, elements: 900 },
+    '/sticker/': { document: 11.3, total: 137, elements: 900 },
 };
 
 // Scripts: the theme's own script with Alpine bundled in.

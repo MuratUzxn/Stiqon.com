@@ -1,6 +1,7 @@
 <?php
 /**
- * Closes every page: the dark footer and the bar that reports the visitor's motif.
+ * Closes every page: the dark footer, the bar that reports the visitor's motif,
+ * and the search that opens over the page.
  */
 
 defined('ABSPATH') || exit;
@@ -45,6 +46,7 @@ defined('ABSPATH') || exit;
 </footer>
 
 <?php get_template_part('template-parts/motif-status'); ?>
+<?php get_template_part('template-parts/search-panel'); ?>
 
 <?php wp_footer(); ?>
 </body>

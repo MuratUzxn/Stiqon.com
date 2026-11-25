@@ -40,47 +40,18 @@ final class Gallery
             $gallery['examples'] = $gallery['examples'] || (bool) $product->get_meta('_stiqon_example');
 
             $visible = ProductView::visible($product);
-            $prices = self::lowestPrices($product, $visible['key'] ?? null);
-            $slug = $product->get_slug();
-            $summary = trim(wp_strip_all_tags($product->get_short_description()));
 
-            $gallery['products'][] = ['slug' => $slug, 'name' => $product->get_name()];
+            $gallery['products'][] = ['slug' => $product->get_slug(), 'name' => $product->get_name()];
 
-            if ($visible === null) {
-                $gallery['cards'][] = [
-                    'key' => $slug,
-                    'product' => $product,
-                    'slug' => $slug,
-                    'title' => $product->get_name(),
-                    'summary' => $summary,
-                    'option' => null,
-                    'subtitle' => null,
-                    'chosen' => [],
-                    'url' => $product->get_permalink(),
-                    'price' => $prices[''] ?? null,
-                ];
+            array_push($gallery['cards'], ...self::cards($product, $visible));
 
-                continue;
-            }
+            if ($visible !== null) {
+                $key = $visible['key'];
+                $axes[$key] ??= ['key' => $key, 'parameter' => self::parameter($key), 'label' => $visible['label'], 'options' => []];
 
-            $key = $visible['key'];
-            $axes[$key] ??= ['key' => $key, 'parameter' => self::parameter($key), 'label' => $visible['label'], 'options' => []];
-
-            foreach ($visible['options'] as $option) {
-                $axes[$key]['options'][$option['slug']] = ['slug' => $option['slug'], 'name' => $option['name']];
-
-                $gallery['cards'][] = [
-                    'key' => $slug.'--'.$option['slug'],
-                    'product' => $product,
-                    'slug' => $slug,
-                    'title' => $product->get_name(),
-                    'summary' => $summary,
-                    'option' => $option['slug'],
-                    'subtitle' => $option['name'],
-                    'chosen' => ['attribute_'.$key => $option['slug']],
-                    'url' => add_query_arg('attribute_'.$key, rawurlencode($option['slug']), $product->get_permalink()),
-                    'price' => $prices[$option['slug']] ?? $prices[''] ?? null,
-                ];
+                foreach ($visible['options'] as $option) {
+                    $axes[$key]['options'][$option['slug']] = ['slug' => $option['slug'], 'name' => $option['name']];
+                }
             }
         }
 
@@ -93,6 +64,51 @@ final class Gallery
         }
 
         return $gallery;
+    }
+
+    /**
+     * The cards of one product: one for each value of the option that can be
+     * seen, or a single card for a product that always looks the same.
+     *
+     * @param  array{key: string, label: string, options: list<array{slug: string, name: string}>}|null  $visible  what ProductView::visible() says about the product
+     * @return list<array{key: string, product: WC_Product, slug: string, title: string, summary: string, option: ?string, subtitle: ?string, chosen: array<string, string>, url: string, price: ?float}>
+     */
+    public static function cards(WC_Product $product, ?array $visible): array
+    {
+        $prices = self::lowestPrices($product, $visible['key'] ?? null);
+        $slug = $product->get_slug();
+
+        $card = [
+            'key' => $slug,
+            'product' => $product,
+            'slug' => $slug,
+            'title' => $product->get_name(),
+            'summary' => trim(wp_strip_all_tags($product->get_short_description())),
+            'option' => null,
+            'subtitle' => null,
+            'chosen' => [],
+            'url' => $product->get_permalink(),
+            'price' => $prices[''] ?? null,
+        ];
+
+        if ($visible === null) {
+            return [$card];
+        }
+
+        $cards = [];
+
+        foreach ($visible['options'] as $option) {
+            $cards[] = [
+                'key' => $slug.'--'.$option['slug'],
+                'option' => $option['slug'],
+                'subtitle' => $option['name'],
+                'chosen' => ['attribute_'.$visible['key'] => $option['slug']],
+                'url' => add_query_arg('attribute_'.$visible['key'], rawurlencode($option['slug']), $card['url']),
+                'price' => $prices[$option['slug']] ?? $card['price'],
+            ] + $card;
+        }
+
+        return $cards;
     }
 
     /**

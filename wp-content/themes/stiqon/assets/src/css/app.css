@@ -230,20 +230,82 @@
     vertical-align: -0.2em;
 }
 
-/* The quick view of a gallery: a sheet over the dimmed page. While it is open
-   the page behind it does not scroll, and keeps its width. */
+/* The quick view of a gallery and the search: sheets over the dimmed page.
+   While one is open the page behind it does not scroll, and keeps its width. */
 @layer components {
-    .quick-view::backdrop {
+    .quick-view::backdrop,
+    .search-panel::backdrop {
         background-color: rgb(20 20 20 / 0.55);
     }
 
     /* Where scrollbars take up room, that room is kept, or the page would jump
        sideways. The strip shows the colour of the root element – given here the
        colour the dimmed page has, or it would stand out as a white stripe. */
-    html:has(.quick-view[open]) {
+    html:has(.quick-view[open], .search-panel[open]) {
         overflow: hidden;
         scrollbar-gutter: stable;
         background-color: #7e7e7e;
+    }
+
+    /* The browser's own "clear" cross in search fields: the sheet has a button
+       to close it, and the results page keeps the query to be edited. */
+    input[type='search']::-webkit-search-cancel-button {
+        display: none;
+    }
+
+    /* A search result's small picture: the outline of what was found – a round
+       sticker unless the entry says otherwise – as a paper shape on a grey tile. */
+    .search-glyph {
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: var(--radius-control);
+        background-color: color-mix(in srgb, var(--color-ink) 8%, transparent);
+    }
+
+    .search-glyph::before {
+        width: 1.375rem;
+        height: 1.375rem;
+        border-radius: 999px;
+        background-color: var(--color-paper);
+        content: '';
+        filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.16));
+    }
+
+    .search-glyph[data-glyph='sticker-square']::before {
+        border-radius: 0.3125rem;
+    }
+
+    .search-glyph[data-glyph='sticker-rect']::before,
+    .search-glyph[data-glyph='sticker-oval']::before {
+        width: 1.625rem;
+        height: 1.0625rem;
+        border-radius: 0.25rem;
+    }
+
+    .search-glyph[data-glyph='sticker-oval']::before {
+        border-radius: 50%;
+    }
+
+    .search-glyph[data-glyph='sticker-contour']::before {
+        border-radius: 62% 38% 46% 54% / 44% 58% 42% 56%;
+    }
+
+    .search-glyph[data-glyph^='flyer']::before {
+        width: 1.0625rem;
+        height: 1.5rem;
+        border-radius: 0.125rem;
+    }
+
+    .search-glyph[data-glyph='flyer-lang']::before {
+        width: 0.75rem;
+    }
+
+    .search-glyph[data-glyph='flyer-quadrat']::before {
+        width: 1.3125rem;
+        height: 1.3125rem;
     }
 }
 

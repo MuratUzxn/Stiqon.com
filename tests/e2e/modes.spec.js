@@ -1,4 +1,4 @@
-import { test, expect, cli } from './fixtures.js';
+import { test, expect, cli, logInAsAdministrator } from './fixtures.js';
 
 /**
  * The theme's own pages leave out stylesheets and scripts they do not use. Some
@@ -13,7 +13,7 @@ const stylesheets = (page) => page.evaluate(() => [...document.querySelectorAll(
 const set = (option, value) => cli('option', 'update', option, value);
 
 test.describe('the theme\'s own pages', () => {
-    for (const path of ['/', '/sticker/', '/flyer/']) {
+    for (const path of ['/', '/sticker/', '/flyer/', '/?s=folie']) {
         test(`${path} carries the theme's stylesheet and none for editor content or shop markup`, async ({ page }) => {
             await page.goto(path);
 
@@ -56,6 +56,28 @@ test.describe('"coming soon" for the whole site', () => {
             expect(Math.abs(heading.x + heading.width / 2 - width / 2)).toBeLessThan(width * 0.1);
         });
     }
+
+    test('search tells visitors nothing the announcement does not', async ({ request }) => {
+        const response = await request.get('/wp-json/stiqon/v1/suchindex');
+
+        expect(response.status()).toBe(200);
+        expect(await response.json()).toEqual({ entries: [] });
+        // Who asks decides the answer, so it must not be kept for the next one who asks.
+        expect(response.headers()['cache-control']).toBe('no-store');
+        expect(response.headers().etag).toBeUndefined();
+    });
+
+    test('whoever runs the shop sees it, and can search it', async ({ page }) => {
+        await logInAsAdministrator(page);
+        await page.goto('/');
+        await expect(page.getByRole('heading', { level: 1, name: 'Werbemittel, die haften bleiben.' })).toBeVisible();
+
+        await page.locator('header [data-search-open]').click();
+        await expect(page.getByRole('dialog', { name: 'Suche' }).getByRole('option')).toHaveCount(5);
+
+        await page.goto('/?s=kraft');
+        await expect(page.locator('[data-card]')).toHaveCount(5);
+    });
 });
 
 test.describe('"coming soon" for the shop pages only', () => {
@@ -78,6 +100,19 @@ test.describe('"coming soon" for the shop pages only', () => {
         await expect(page.getByRole('button', { name: 'In den Warenkorb' })).toHaveCount(0);
         await expect(page.locator('main [data-mockup]')).toHaveCount(0);
         expect(await stylesheets(page)).toContain('wp-block-library-inline-css');
+    });
+
+    test('search finds nothing for visitors while the products are not on show', async ({ page }) => {
+        await page.goto('/?s=sticker');
+        await expect(page.getByRole('main')).toContainText('Zu „sticker“ haben wir nichts gefunden.');
+        await expect(page.locator('[data-card]')).toHaveCount(0);
+
+        await page.locator('header [data-search-open]').click();
+
+        const field = page.getByRole('dialog', { name: 'Suche' }).getByRole('combobox');
+
+        await field.fill('sticker');
+        await expect(page.getByRole('dialog', { name: 'Suche' })).toContainText('Dazu haben wir nichts gefunden.');
     });
 });
 

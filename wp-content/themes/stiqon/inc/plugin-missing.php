@@ -51,6 +51,16 @@ add_action('template_redirect', function (): void {
     {
         return ['products' => [], 'axis' => null, 'cards' => [], 'examples' => false, 'selection' => ['produkt' => null, 'option' => null]];
     }
+
+    function stiqon_search(string $query, int $limit = 48): array
+    {
+        return ['query' => $query, 'total' => 0, 'areas' => [], 'cards' => []];
+    }
+
+    function stiqon_search_index_url(): string
+    {
+        return '';
+    }
 }, 0);
 
 add_action('admin_notices', function (): void {

@@ -330,3 +330,57 @@ await Promise.all(
 
 window.Alpine = Alpine;
 Alpine.start();
+
+/**
+ * Search opens over the page, at a click on a search control or with Ctrl + K
+ * (⌘ K on a Mac). What it needs is fetched when a visitor first asks for it.
+ * A search control is a link to the results page: without this script, or if
+ * the fetch fails, that is where it leads.
+ */
+const searchControls = document.querySelectorAll('[data-search-open]');
+
+async function openSearch() {
+    try {
+        const search = await import('./search.js');
+
+        return search.open(Alpine);
+    } catch {
+        return false;
+    }
+}
+
+if (searchControls.length > 0) {
+    const shortcut = /mac|iphone|ipad/i.test(navigator.userAgentData?.platform ?? navigator.platform) ? '⌘K' : null;
+
+    searchControls.forEach((control) => {
+        // With this script the link opens a dialog, and there are keys for it.
+        control.setAttribute('aria-haspopup', 'dialog');
+        control.setAttribute('aria-keyshortcuts', 'Control+K Meta+K');
+
+        if (shortcut !== null) {
+            control.querySelectorAll('[data-search-shortcut]').forEach((hint) => {
+                hint.textContent = shortcut;
+            });
+        }
+
+        control.addEventListener('click', async (event) => {
+            // With a modifier key the link opens where the visitor wants it: a new tab, a new window.
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+                return;
+            }
+
+            event.preventDefault();
+
+            if (!(await openSearch())) {
+                window.location.assign(control.href);
+            }
+        });
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if ((event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key?.toLowerCase() === 'k') {
+            event.preventDefault();
+            openSearch();
+        }
+    });
+}

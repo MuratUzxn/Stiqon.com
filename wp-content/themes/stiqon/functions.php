@@ -17,3 +17,4 @@ require __DIR__.'/inc/cleanup.php';
 require __DIR__.'/inc/plugin-missing.php';
 require __DIR__.'/inc/checks.php';
 require __DIR__.'/inc/shop.php';
+require __DIR__.'/inc/search.php';
