@@ -1,10 +1,11 @@
 /**
  * Shop behaviour.
  *
- * Alpine is bundled with this script. Components are registered here; templates
- * only ever reference their properties and methods (x-show="open",
- * x-on:click="toggle") and carry no logic of their own, so behaviour has one
- * home and can be read and tested in one place.
+ * Alpine is bundled with this script. Components are registered here and in
+ * the files this one loads on demand; templates only ever reference their
+ * properties and methods (x-show="open", x-on:click="toggle") and carry no
+ * logic of their own, so behaviour has one home and can be read and tested in
+ * one place.
  */
 import Alpine from 'alpinejs';
 import { HINT, hint, preview, read, remove, write } from './motif-store.js';
@@ -238,174 +239,6 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 
-    /**
-     * The filters of a gallery. They are links and work on their own; with this,
-     * a click filters the cards in place instead of loading the page again. The
-     * state is the markup itself: which chip says aria-current, which card is hidden.
-     */
-    Alpine.data('galleryFilter', () => ({
-        choose(event) {
-            // A click that asks for a new tab or window stays a plain link.
-            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-                return;
-            }
-
-            event.preventDefault();
-
-            const chip = event.currentTarget;
-            const chosen = { ...this.chosen(), [chip.dataset.filter]: chip.dataset.value };
-
-            this.apply(chosen);
-            window.history.replaceState(window.history.state, '', this.address(chosen));
-        },
-
-        /** What is chosen now, per filter; an empty value means "all". */
-        chosen() {
-            const chosen = { produkt: '', option: '' };
-
-            this.$root.querySelectorAll('[data-filter][aria-current="true"]').forEach((chip) => {
-                chosen[chip.dataset.filter] = chip.dataset.value;
-            });
-
-            return chosen;
-        },
-
-        /** The page's address for a choice – the same one the server writes into the chips. */
-        address(chosen) {
-            const url = new URL(this.$root.dataset.page, window.location.href);
-
-            if (chosen.produkt) {
-                url.searchParams.set('produkt', chosen.produkt);
-            }
-
-            if (chosen.option) {
-                url.searchParams.set(this.$root.dataset.optionParameter, chosen.option);
-            }
-
-            return url.toString();
-        },
-
-        apply(chosen) {
-            const cards = [...this.$root.querySelectorAll('[data-card]')];
-            let shown = 0;
-
-            cards.forEach((card) => {
-                const matches = (!chosen.produkt || card.dataset.produkt === chosen.produkt)
-                    && (!chosen.option || card.dataset.option === chosen.option);
-
-                card.hidden = !matches;
-                shown += matches ? 1 : 0;
-            });
-
-            this.$root.querySelectorAll('[data-filter]').forEach((chip) => {
-                chip.setAttribute('aria-current', chosen[chip.dataset.filter] === chip.dataset.value ? 'true' : 'false');
-                chip.href = this.address({ ...chosen, [chip.dataset.filter]: chip.dataset.value });
-            });
-
-            this.$root.querySelector('[data-count]').textContent = shown === cards.length
-                ? `${cards.length} Ausführungen`
-                : `${shown} von ${cards.length} Ausführungen`;
-            this.$root.querySelector('[data-empty]').hidden = shown > 0;
-        },
-    }));
-
-    /**
-     * The product page. Its options are radio buttons that work on their own;
-     * this keeps what surrounds them in step with the choice: the drawing, the
-     * price without VAT, which options can still be combined – and WooCommerce's
-     * own script, which reads a select element per option.
-     */
-    Alpine.data('productOptions', () => ({
-        form: null,
-
-        init() {
-            this.form = this.$root.querySelector('form.variations_form');
-
-            if (!this.form) {
-                return;
-            }
-
-            this.form.addEventListener('change', (event) => {
-                if (event.target.matches('input[type="radio"][data-select]')) {
-                    this.pass(event.target);
-                    this.follow();
-                }
-            });
-
-            // A page restored from the browser's memory may come back with other pills
-            // checked than the page was sent with.
-            this.form.querySelectorAll('input[type="radio"][data-select]:checked').forEach((radio) => this.pass(radio));
-            this.follow();
-        },
-
-        /** Hands a choice on to the select that WooCommerce's script listens to. */
-        pass(radio) {
-            const select = this.form.querySelector(`select[data-attribute_name="${CSS.escape(radio.name)}"]`);
-
-            if (select && select.value !== radio.value) {
-                select.value = radio.value;
-                select.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-        },
-
-        /** What is chosen now: { attribute_pa_material: 'vinyl', … }. */
-        chosen() {
-            const radios = this.form.querySelectorAll('input[type="radio"][data-select]:checked');
-
-            return Object.fromEntries([...radios].map((radio) => [radio.name, radio.value]));
-        },
-
-        /** The variations WooCommerce wrote into the form – or none, when it loads them on demand. */
-        variations() {
-            try {
-                const variations = JSON.parse(this.form.dataset.product_variations);
-
-                return Array.isArray(variations) ? variations : [];
-            } catch {
-                return [];
-            }
-        },
-
-        /** Whether a variation fits a choice; an empty value on a variation means "any". */
-        fits(variation, chosen) {
-            return Object.entries(variation.attributes).every(([name, value]) => value === '' || chosen[name] === value);
-        },
-
-        follow() {
-            const chosen = this.chosen();
-            const variations = this.variations();
-
-            // The drawing for the chosen material or paper.
-            const stage = this.$root.querySelector('[data-product-stage]');
-
-            if (stage && stage.dataset.option && chosen[stage.dataset.option] !== undefined) {
-                stage.querySelectorAll('[data-view]').forEach((view) => {
-                    view.hidden = view.dataset.view !== chosen[stage.dataset.option];
-                });
-            }
-
-            if (variations.length === 0) {
-                return;
-            }
-
-            // The price without VAT of the chosen variation.
-            const variation = variations.find((candidate) => this.fits(candidate, chosen));
-            const net = this.$root.querySelector('[data-net-price]');
-
-            if (net && variation) {
-                net.innerHTML = variation.stiqon_net_price ?? '';
-                net.hidden = !variation.stiqon_net_price;
-            }
-
-            // An option that no variation offers together with the rest of the choice.
-            this.form.querySelectorAll('input[type="radio"][data-select]').forEach((radio) => {
-                const tried = { ...chosen, [radio.name]: radio.value };
-
-                radio.disabled = !radio.checked && !variations.some((candidate) => this.fits(candidate, tried));
-            });
-        },
-    }));
-
     /** The bar that reports the chosen motif and lets the visitor remove it. */
     Alpine.data('motifStatus', () => ({
         get active() {
@@ -462,6 +295,22 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 });
+
+/**
+ * Behaviour that belongs to one kind of page lives in a file of its own and is
+ * fetched only where the page asks for it: an element with x-data="…" names
+ * the component it needs. The home page does not pay for the product page.
+ */
+const features = {
+    galleryFilter: () => import('./gallery.js'),
+    productOptions: () => import('./product.js'),
+};
+
+await Promise.all(
+    Object.entries(features)
+        .filter(([component]) => document.querySelector(`[x-data="${component}"]`))
+        .map(([, load]) => load().then((feature) => feature.default(Alpine))),
+);
 
 window.Alpine = Alpine;
 Alpine.start();

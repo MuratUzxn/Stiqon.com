@@ -16,8 +16,9 @@ const KB = 1024;
 // so only the size of the document shows them.
 const pages = {
     '/': { document: 12.5, total: 130, elements: 1500 },
-    // Twenty cards, each an inline drawing: about 800 elements.
-    '/sticker/': { document: 9.5, total: 130, elements: 900 },
+    // Twenty cards, each an inline drawing: about 800 elements. On top of what the
+    // home page loads come the gallery's own script and the serif face of the samples.
+    '/sticker/': { document: 9.5, total: 135, elements: 900 },
 };
 
 // Scripts: the theme's own script with Alpine bundled in.

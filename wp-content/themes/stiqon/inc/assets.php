@@ -43,3 +43,23 @@ add_action('wp_enqueue_scripts', function (): void {
         wp_enqueue_script_module('stiqon', $script, [], null);
     }
 });
+
+/**
+ * The page's script fetches the behaviour of gallery and product pages on
+ * demand (see assets/src/js/app.js). Told about it up front, the browser
+ * fetches that file alongside the main script instead of after it.
+ */
+add_action('wp_head', function (): void {
+    $source = match (true) {
+        function_exists('is_product') && is_product() => 'assets/src/js/product.js',
+        is_page(array_keys(stiqon_required_pages())) => 'assets/src/js/gallery.js',
+        default => null,
+    };
+
+    $file = $source !== null ? stiqon_built_asset($source) : null;
+
+    if ($file !== null) {
+        printf('<link rel="modulepreload" href="%s">'."\n", esc_url($file));
+    }
+}, 3);
+
