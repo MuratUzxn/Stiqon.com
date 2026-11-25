@@ -52,11 +52,15 @@ export function forgetMails() {
     }
 }
 
-/** Runs WP-CLI in the test site and returns what it printed. */
+/**
+ * Runs WP-CLI in the test site and returns what it printed. A command that does
+ * not come back within three minutes is ended and fails its test: nothing else
+ * would – while this waits, the test's own time limit cannot fire.
+ */
 export function cli(...args) {
     const wp = fileURLToPath(new URL('../../tools/dev/wp.sh', import.meta.url));
 
-    return execFileSync('bash', [wp, ...args], { env: { ...process.env, STIQON_SITE: 'e2e' }, encoding: 'utf8' }).trim();
+    return execFileSync('bash', [wp, ...args], { env: { ...process.env, STIQON_SITE: 'e2e' }, encoding: 'utf8', timeout: 180_000, killSignal: 'SIGKILL' }).trim();
 }
 
 /** What is in the visitor's cart, as WooCommerce's own interface reports it. */
