@@ -18,6 +18,7 @@ final class Plugin
         register_activation_hook($file, [Setup\Defaults::class, 'apply']);
 
         Catalog\AddToCart::register();
+        Catalog\SupplierCataloguePage::register();
     }
 
     /**

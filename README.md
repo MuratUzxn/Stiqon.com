@@ -123,6 +123,15 @@ keine Profilbilder von Gravatar, neue Inhalte ohne Kommentare, keine Herkunftsme
 Bestellungen per Cookie, keine Nutzungsdaten an WooCommerce. Jede davon wird genau einmal gesetzt;
 was die Inhaberin oder der Inhaber später ändert, bleibt auch nach erneutem Aktivieren bestehen.
 
+## Druckanbieter
+
+Unter **Produkte → Druckanbieter** stehen die Produktfamilien von elf Lieferanten mit Links
+zum jeweiligen Anbieter und, soweit verfügbar, zur Schnittstelle. „Entwürfe anlegen“ legt
+je Familie einen ausgeblendeten WooCommerce-Entwurf an. Erneutes Anlegen überspringt bereits
+vorhandene Produkte. Lieferantenartikelnummern, Preise und Varianten werden beim Import nicht
+gesetzt. Der Import nutzt die im Plugin hinterlegte Übersicht der öffentlichen Sortimente.
+Ein Live-Abgleich und die Auftragsübergabe brauchen eine separate Anbindung.
+
 ## Gestaltung
 
 - Der Look folgt [mobbin.com](https://mobbin.com) (Stand 24.11.2026): weiße Seiten, zentrierte
