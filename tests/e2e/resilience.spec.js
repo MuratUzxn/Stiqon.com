@@ -1,13 +1,4 @@
-import { execFileSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
-import { test, expect } from './fixtures.js';
-
-const wp = fileURLToPath(new URL('../../tools/dev/wp.sh', import.meta.url));
-
-/** Runs WP-CLI in the test site. */
-function cli(...args) {
-    return execFileSync('bash', [wp, ...args], { env: { ...process.env, STIQON_SITE: 'e2e' }, encoding: 'utf8' });
-}
+import { test, expect, cli } from './fixtures.js';
 
 test.describe('without the plugin', () => {
     // The shop's product views come from the plugin "Stiqon Shop-Funktionen". If it is

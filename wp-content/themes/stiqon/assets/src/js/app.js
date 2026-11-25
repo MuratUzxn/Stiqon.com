@@ -21,6 +21,10 @@ document.addEventListener('alpine:init', () => {
         url: null,
         name: '',
         error: '',
+        // What just happened, in a sentence; read out by screen readers.
+        announcement: '',
+        // The button the visitor last opened the file dialog with.
+        trigger: null,
 
         choose(file) {
             if (!file) {
@@ -39,29 +43,42 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            this.clear();
+            this.release();
             this.url = URL.createObjectURL(file);
             this.name = file.name;
+            this.error = '';
+            this.announcement = `Ihr Motiv „${file.name}“ ist jetzt auf allen Ansichten zu sehen.`;
         },
 
         clear() {
+            this.release();
+            this.error = '';
+            this.announcement = 'Ihr Motiv wurde entfernt. Die Ansichten zeigen wieder Beispiele.';
+        },
+
+        release() {
             if (this.url) {
                 URL.revokeObjectURL(this.url);
             }
 
             this.url = null;
             this.name = '';
-            this.error = '';
         },
 
-        /** Shows a message for a few seconds; the current motif stays as it is. */
+        /**
+         * Shows a message until it is closed or a motif is chosen; the current
+         * motif stays as it is. The text is set anew a moment later, so that the
+         * same message is read out again when the same mistake happens twice.
+         */
         fail(message) {
-            this.error = message;
+            this.error = '';
             window.setTimeout(() => {
-                if (this.error === message) {
-                    this.error = '';
-                }
-            }, 6000);
+                this.error = message;
+            }, 50);
+        },
+
+        dismiss() {
+            this.error = '';
         },
     });
 
@@ -82,7 +99,8 @@ document.addEventListener('alpine:init', () => {
 
     /** A button with its own hidden file input for choosing the motif. */
     Alpine.data('motifPicker', () => ({
-        pick() {
+        pick(event) {
+            this.$store.motif.trigger = event.currentTarget;
             this.$refs.file.click();
         },
 
@@ -154,8 +172,28 @@ document.addEventListener('alpine:init', () => {
             return this.$store.motif.error !== '';
         },
 
-        clear() {
+        get announcement() {
+            return this.$store.motif.announcement;
+        },
+
+        clear(event) {
+            // With the keyboard, the focus sits on the button that is about to
+            // disappear with the bar. It goes back to where the motif was chosen.
+            const byKeyboard = event.currentTarget.matches(':focus-visible');
+
             this.$store.motif.clear();
+
+            if (byKeyboard) {
+                const shown = (button) => button && button.isConnected && button.offsetParent !== null;
+                const buttons = [...document.querySelectorAll('[data-motif-button]')];
+                const target = shown(this.$store.motif.trigger) ? this.$store.motif.trigger : buttons.find(shown);
+
+                target?.focus();
+            }
+        },
+
+        dismiss() {
+            this.$store.motif.dismiss();
         },
     }));
 });

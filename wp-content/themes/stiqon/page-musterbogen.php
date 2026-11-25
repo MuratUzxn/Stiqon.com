@@ -54,6 +54,7 @@ $mockups = [
 
 $brand = static fn (string $file): string => esc_url(get_theme_file_uri('assets/brand/'.$file));
 
+stiqon_declare_lean_page();
 get_header();
 ?>
 <section class="wrap pt-8 pb-12 text-center lg:pt-14 lg:pb-16">

@@ -33,7 +33,9 @@ function stiqon_classes(array $classes): string
 
 /**
  * Attributes for a tag, with a leading space. true prints the bare name,
- * false and null leave the attribute out.
+ * false and null leave the attribute out. A name that is not a plain attribute
+ * name (it may carry Alpine's colons, dots and @) is left out as well: escaping
+ * a name does not stop it from starting a second attribute.
  *
  * @param  array<string, string|int|bool|null>  $attributes
  */
@@ -42,7 +44,7 @@ function stiqon_attributes(array $attributes): string
     $html = '';
 
     foreach ($attributes as $name => $value) {
-        if ($value === false || $value === null) {
+        if ($value === false || $value === null || preg_match('/\A[a-zA-Z_:@][a-zA-Z0-9_:@.-]*\z/', (string) $name) !== 1) {
             continue;
         }
 
@@ -89,8 +91,11 @@ function stiqon_icon(string $name, string $class = '', array $attributes = []): 
  */
 function stiqon_button(string $content, array $options = []): string
 {
+    // "aria-disabled" is for buttons that go out of use while they may hold the
+    // keyboard focus: unlike "disabled" it does not throw the focus away.
     $base = 'text-action inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full '
-        .'transition-colors duration-200 ease-soft disabled:pointer-events-none disabled:opacity-50';
+        .'transition-colors duration-200 ease-soft disabled:pointer-events-none disabled:opacity-50 '
+        .'aria-disabled:pointer-events-none aria-disabled:opacity-50';
 
     $sizes = [
         'sm' => 'h-9 px-3.5 text-sm',
@@ -177,6 +182,7 @@ function stiqon_section_heading(array $options): string
 /**
  * Lets the visitor choose an image. It is only shown on the mockups; nothing is uploaded.
  * Classes passed in apply to the wrapper, so callers can hide or stretch the whole control.
+ * The control only works with the page's script, so without script it is not shown at all.
  *
  * @param  array{variant?: string, size?: string, class?: string}  $options
  */
@@ -186,10 +192,10 @@ function stiqon_motif_button(string $label = 'Eigenes Motiv ausprobieren', array
         'variant' => $options['variant'] ?? 'primary',
         'size' => $options['size'] ?? 'md',
         'class' => 'w-full',
-        'attributes' => ['x-on:click' => 'pick'],
+        'attributes' => ['x-on:click' => 'pick', 'data-motif-button' => true],
     ]);
 
-    return '<span x-data="motifPicker" class="'.esc_attr(stiqon_classes(['inline-flex', $options['class'] ?? ''])).'">'
+    return '<span x-data="motifPicker" data-needs-script class="'.esc_attr(stiqon_classes(['inline-flex', $options['class'] ?? ''])).'">'
         .$button
         .'<input x-ref="file" x-on:change="chosen" type="file" accept="image/png,image/jpeg,image/webp" class="sr-only" tabindex="-1" aria-hidden="true">'
         .'</span>';

@@ -5,12 +5,13 @@
 
 defined('ABSPATH') || exit;
 
+stiqon_declare_lean_page();
 get_header();
 
 get_template_part('template-parts/area', null, [
     'name' => 'Flyer',
     'lead' => 'Von DIN A6 bis DIN A4, DIN lang und quadratisch – als einzelnes Blatt oder im Stapel gezeigt.',
-    'other' => ['label' => 'Sticker ansehen', 'url' => home_url('/sticker/')],
+    'other' => ['label' => 'Sticker ansehen', 'url' => stiqon_page_url('sticker')],
     'cards' => [
         ['title' => 'Flyer DIN A6', 'meta' => 'Einzelblatt', 'flyer' => ['format' => 'a6', 'motif' => 'fest']],
         ['title' => 'Flyer DIN A5', 'meta' => 'Auflage im Stapel', 'flyer' => ['format' => 'a5', 'motif' => 'eroeffnung', 'stack' => true]],

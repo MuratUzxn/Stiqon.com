@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -20,13 +21,24 @@ export function siteSettings() {
     return Object.fromEntries(lines.map((line) => [line.slice(0, line.indexOf('=')), line.slice(line.indexOf('=') + 1)]));
 }
 
+/** Runs WP-CLI in the test site and returns what it printed. */
+export function cli(...args) {
+    const wp = fileURLToPath(new URL('../../tools/dev/wp.sh', import.meta.url));
+
+    return execFileSync('bash', [wp, ...args], { env: { ...process.env, STIQON_SITE: 'e2e' }, encoding: 'utf8' }).trim();
+}
+
 /** Logs the page's browser in as the site's administrator. */
 export async function logInAsAdministrator(page) {
     const { ADMIN_USER, ADMIN_PASSWORD } = siteSettings();
 
     await page.goto('/wp-login.php');
     await page.locator('#user_login').fill(ADMIN_USER);
-    await page.locator('#user_pass').fill(ADMIN_PASSWORD);
+    // Not with fill(): when a step fails, Playwright prints the calls before it,
+    // values included – and test output is kept (CI logs, uploaded results).
+    await page.locator('#user_pass').evaluate((field, password) => {
+        field.value = password;
+    }, ADMIN_PASSWORD);
     await page.locator('#wp-submit').click();
     await page.waitForURL(/\/wp-admin\//);
 }

@@ -15,3 +15,4 @@ require __DIR__.'/inc/components.php';
 require __DIR__.'/inc/site.php';
 require __DIR__.'/inc/cleanup.php';
 require __DIR__.'/inc/plugin-missing.php';
+require __DIR__.'/inc/checks.php';

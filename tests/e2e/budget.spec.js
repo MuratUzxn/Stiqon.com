@@ -11,9 +11,12 @@ import { test, expect } from './fixtures.js';
  */
 const KB = 1024;
 
+// The document limits are tight on purpose: stylesheets that WordPress puts into
+// the page inline (the ones for editor content weigh about 3 kB) add no request,
+// so only the size of the document shows them.
 const pages = {
-    '/': { document: 25, total: 150, elements: 1500 },
-    '/sticker/': { document: 15, total: 160, elements: 600 },
+    '/': { document: 12.5, total: 130, elements: 1500 },
+    '/sticker/': { document: 8, total: 130, elements: 600 },
 };
 
 // Scripts: the theme's own script with Alpine bundled in.

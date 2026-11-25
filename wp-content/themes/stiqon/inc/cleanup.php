@@ -27,49 +27,61 @@ add_action('init', function (): void {
 add_filter('the_generator', '__return_empty_string');
 
 /**
- * Whether the current page is built entirely from this theme's templates, with
- * no content from the block editor.
+ * A "lean" page is built entirely from this theme's own markup: no content from
+ * the block editor, nothing drawn by WooCommerce. Its template says so before it
+ * prints the header.
+ *
+ * The decision deliberately sits in the template and not in the address: on the
+ * very same address another template can end up being used – WooCommerce's
+ * "coming soon" page is block content printed between this theme's header and
+ * footer – and such a page needs the stylesheets a lean page drops.
  */
-function stiqon_is_templated_page(): bool
+function stiqon_declare_lean_page(): void
 {
-    return is_front_page() || is_404() || is_page(['sticker', 'flyer', 'musterbogen']);
+    $GLOBALS['stiqon_lean_page'] = true;
+
+    // The global styles are queued for the footer and moved to the head by
+    // WordPress, so they are unhooked before either happens.
+    remove_action('wp_enqueue_scripts', 'wp_enqueue_global_styles');
+    remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
+}
+
+function stiqon_is_lean_page(): bool
+{
+    return ! empty($GLOBALS['stiqon_lean_page']);
 }
 
 /**
- * Such pages need none of the stylesheets that exist for editor content. The
- * global styles are printed in the footer and moved to the head by WordPress,
- * so they are unhooked before either happens.
- */
-add_action('wp', function (): void {
-    if (stiqon_is_templated_page()) {
-        remove_action('wp_enqueue_scripts', 'wp_enqueue_global_styles');
-        remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
-    }
-});
-
-add_action('wp_enqueue_scripts', function (): void {
-    if (stiqon_is_templated_page()) {
-        wp_dequeue_style('wp-block-library');
-        wp_dequeue_style('classic-theme-styles');
-        wp_dequeue_style('global-styles');
-    }
-}, 100);
-
-/**
- * WooCommerce loads its scripts and styles on every page. Outside the shop pages
- * there is nothing for them to act on.
+ * What a lean page leaves out: the stylesheets for editor content, and the
+ * scripts and styles WooCommerce loads on every page of a site.
  */
 add_action('wp_enqueue_scripts', function (): void {
-    if (! function_exists('is_woocommerce')) {
+    if (! stiqon_is_lean_page()) {
         return;
     }
 
-    if (is_woocommerce() || is_cart() || is_checkout() || is_account_page()) {
+    wp_dequeue_style('wp-block-library');
+    wp_dequeue_style('classic-theme-styles');
+    wp_dequeue_style('global-styles');
+
+    // The store notice is printed hidden on every page; WooCommerce's script
+    // reveals it and its stylesheet places it. With the notice switched on,
+    // WooCommerce keeps everything it brings.
+    if (! function_exists('is_store_notice_showing') || is_store_notice_showing()) {
         return;
     }
+
+    // Order attribution follows its own setting in WooCommerce. It is off by
+    // default here; if the owner switches it on, it has to see the pages
+    // visitors arrive on – and those are the lean ones.
+    $attribution = ['sourcebuster-js', 'wc-order-attribution'];
 
     foreach (wp_scripts()->queue as $handle) {
-        if (str_starts_with($handle, 'wc-') || str_starts_with($handle, 'woocommerce') || $handle === 'sourcebuster-js') {
+        if (in_array($handle, $attribution, true)) {
+            continue;
+        }
+
+        if (str_starts_with($handle, 'wc-') || str_starts_with($handle, 'woocommerce')) {
             wp_dequeue_script($handle);
         }
     }

@@ -8,12 +8,15 @@
 
 defined('ABSPATH') || exit;
 
-$sticker = home_url('/sticker/');
-$flyer = home_url('/flyer/');
+$sticker = stiqon_page_url('sticker');
+$flyer = stiqon_page_url('flyer');
 
 /**
  * A product view set into a line of headline type. Decorative: the words carry
- * the meaning. Without the plugin there is no view, and no gap in the line either.
+ * the meaning. Only motifs without lettering are used here – text inside the
+ * drawing would become part of the heading's text for search engines, reader
+ * views and copy and paste. Without the plugin there is no view, and no gap in
+ * the line either.
  */
 $inline = static function (array $spec): string {
     $view = stiqon_sticker($spec);
@@ -71,6 +74,7 @@ $mockup = static fn (array $card, string $class = ''): string => isset($card['st
     ? stiqon_sticker($card['sticker'], $class)
     : stiqon_flyer($card['flyer'], $class);
 
+stiqon_declare_lean_page();
 get_header();
 ?>
 <?php // Hero: the headline, one action ?>
@@ -78,8 +82,8 @@ get_header();
     <?php // Two lines on wide screens, three on a phone – with the views between the words either way. ?>
     <h1 class="text-display">
         Werbemittel,<br class="sm:hidden">
-        <?php echo $inline(['shape' => 'circle', 'motif' => 'monogramm']); ?> die<br class="max-sm:hidden">
-        haften <?php echo $inline(['shape' => 'contour', 'motif' => 'sprechblase']); ?><br class="sm:hidden">
+        <?php echo $inline(['shape' => 'circle', 'motif' => 'sonne']); ?> die<br class="max-sm:hidden">
+        haften <?php echo $inline(['shape' => 'square', 'motif' => 'wellen']); ?><br class="sm:hidden">
         bleiben.
     </h1>
     <p class="text-lead mx-auto mt-7 max-w-md text-muted lg:mt-9">
@@ -90,7 +94,7 @@ get_header();
         <?php echo stiqon_button('Sticker ansehen', ['variant' => 'secondary', 'href' => $sticker]); ?>
         <?php echo stiqon_button('Flyer ansehen', ['variant' => 'secondary', 'href' => $flyer]); ?>
     </div>
-    <p class="text-label mt-5 text-muted">Ihr Bild bleibt in Ihrem Browser – es wird nichts hochgeladen.</p>
+    <p class="text-label mt-5 text-muted" data-needs-script>Ihr Bild bleibt in Ihrem Browser – es wird nichts hochgeladen.</p>
 </section>
 
 <?php // Showcase: what the shop holds, on a grey panel that the cards run out of ?>
@@ -128,17 +132,21 @@ get_header();
 
 <?php // The promise, in two tones, over a row of large cards ?>
 <section class="pb-16 lg:pb-28" aria-labelledby="versprechen" x-data="cardRow">
-    <div class="wrap flex items-end justify-between gap-8">
+    <div class="wrap flex flex-wrap items-end justify-between gap-x-8 gap-y-6">
         <div class="max-w-3xl">
             <h2 id="versprechen" class="text-title">Erst ansehen, dann bestellen.</h2>
             <p class="text-title text-muted">
                 Ein Bild genügt. Es erscheint auf jedem Sticker und jedem Flyer – in jeder Form, auf jedem Material.
             </p>
         </div>
-        <?php // Shown once the script runs; without it the row still scrolls by touch, wheel and keyboard. ?>
-        <div class="flex shrink-0 gap-2 max-md:hidden" x-cloak>
-            <?php echo stiqon_button(stiqon_icon('arrow-left'), ['variant' => 'secondary', 'class' => 'w-11 !px-0', 'attributes' => ['aria-label' => 'Vorherige Beispiele', 'x-on:click' => 'previous', 'x-bind:disabled' => 'atStart']]); ?>
-            <?php echo stiqon_button(stiqon_icon('arrow-right'), ['variant' => 'secondary', 'class' => 'w-11 !px-0', 'attributes' => ['aria-label' => 'Weitere Beispiele', 'x-on:click' => 'next', 'x-bind:disabled' => 'atEnd']]); ?>
+        <?php
+        // A finger swipes the row. A mouse cannot – the row hides its scrollbar – so the
+        // buttons are there for it at every window width. They are shown once the script
+        // runs, and at either end they go out of use without losing the keyboard focus.
+        ?>
+        <div class="flex shrink-0 gap-2 pointer-coarse:hidden" x-cloak>
+            <?php echo stiqon_button(stiqon_icon('arrow-left'), ['variant' => 'secondary', 'class' => 'w-11 !px-0', 'attributes' => ['aria-label' => 'Vorherige Beispiele', 'x-on:click' => 'previous', 'x-bind:aria-disabled' => 'atStart']]); ?>
+            <?php echo stiqon_button(stiqon_icon('arrow-right'), ['variant' => 'secondary', 'class' => 'w-11 !px-0', 'attributes' => ['aria-label' => 'Weitere Beispiele', 'x-on:click' => 'next', 'x-bind:aria-disabled' => 'atEnd']]); ?>
         </div>
     </div>
     <div
@@ -157,16 +165,18 @@ get_header();
     <?php echo stiqon_section_heading(['id' => 'sortiment', 'title' => 'Formen, Materialien und Formate']); ?>
     <ul class="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-14 lg:grid-cols-3">
         <?php foreach ($tiles as $tile) : ?>
-            <li>
+            <?php
+            // The link is the title alone, stretched over the whole tile. Wrapped around
+            // the drawing, it would carry the lettering of the sample motif as link text.
+            ?>
+            <li class="group relative flex aspect-[4/5] flex-col items-center overflow-hidden rounded-tile bg-mist px-4 pt-6 text-center transition-colors hover:bg-mist-deep sm:aspect-square sm:pt-8">
                 <a
                     href="<?php echo esc_url($tile['url']); ?>"
-                    class="group flex aspect-[4/5] flex-col items-center overflow-hidden rounded-tile bg-mist px-4 pt-6 text-center transition-colors hover:bg-mist-deep sm:aspect-square sm:pt-8"
-                >
-                    <span class="text-heading"><?php echo esc_html($tile['label']); ?></span>
-                    <span class="<?php echo esc_attr(isset($tile['sticker']) ? 'w-[92%]' : 'w-[74%]'); ?> mt-auto translate-y-[14%] transition-transform duration-300 ease-soft group-hover:translate-y-[9%]" aria-hidden="true">
-                        <?php echo $mockup($tile); ?>
-                    </span>
-                </a>
+                    class="text-heading outline-none after:absolute after:inset-0 after:z-10 after:rounded-tile focus-visible:after:outline-2 focus-visible:after:-outline-offset-4 focus-visible:after:outline-ink"
+                ><?php echo esc_html($tile['label']); ?></a>
+                <span class="<?php echo esc_attr(isset($tile['sticker']) ? 'w-[92%]' : 'w-[74%]'); ?> mt-auto translate-y-[14%] transition-transform duration-300 ease-soft group-hover:translate-y-[9%]" aria-hidden="true">
+                    <?php echo $mockup($tile); ?>
+                </span>
             </li>
         <?php endforeach; ?>
     </ul>

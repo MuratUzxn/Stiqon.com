@@ -6,6 +6,31 @@
 defined('ABSPATH') || exit;
 
 /**
+ * The pages this theme has templates for (address => title). They have to exist
+ * in WordPress under exactly these addresses.
+ *
+ * @return array<string, string>
+ */
+function stiqon_required_pages(): array
+{
+    return ['sticker' => 'Sticker', 'flyer' => 'Flyer'];
+}
+
+/**
+ * Address of one of those pages. It is taken from the page itself, so it is
+ * right under every permalink setting; the plain path is only the fallback
+ * for a page that does not exist yet.
+ */
+function stiqon_page_url(string $slug): string
+{
+    $page = get_page_by_path($slug);
+
+    return $page instanceof WP_Post && $page->post_status === 'publish'
+        ? (string) get_permalink($page)
+        : home_url("/{$slug}/");
+}
+
+/**
  * The areas of the shop, for navigation.
  *
  * @return list<array{slug: string, label: string, url: string, current: bool}>
@@ -14,11 +39,11 @@ function stiqon_areas(): array
 {
     $areas = [];
 
-    foreach (['sticker' => 'Sticker', 'flyer' => 'Flyer'] as $slug => $label) {
+    foreach (stiqon_required_pages() as $slug => $label) {
         $areas[] = [
             'slug' => $slug,
             'label' => $label,
-            'url' => home_url("/{$slug}/"),
+            'url' => stiqon_page_url($slug),
             'current' => is_page($slug),
         ];
     }
@@ -43,11 +68,16 @@ add_action('wp_head', function (): void {
 
 /**
  * Icons for browser tabs and home screens, and a description for the home page.
+ * The theme brings its own icons. Once a site icon is chosen under
+ * Einstellungen › Allgemein, WordPress prints that one and the theme's stay out.
  */
 add_action('wp_head', function (): void {
-    printf('<link rel="icon" href="%s" sizes="any">'."\n", esc_url(get_theme_file_uri('assets/brand/favicon.ico')));
-    printf('<link rel="icon" type="image/png" sizes="32x32" href="%s">'."\n", esc_url(get_theme_file_uri('assets/brand/icon-32.png')));
-    printf('<link rel="apple-touch-icon" href="%s">'."\n", esc_url(get_theme_file_uri('assets/brand/icon-180.png')));
+    if (! has_site_icon()) {
+        printf('<link rel="icon" href="%s" sizes="any">'."\n", esc_url(get_theme_file_uri('assets/brand/favicon.ico')));
+        printf('<link rel="icon" type="image/png" sizes="32x32" href="%s">'."\n", esc_url(get_theme_file_uri('assets/brand/icon-32.png')));
+        printf('<link rel="apple-touch-icon" href="%s">'."\n", esc_url(get_theme_file_uri('assets/brand/icon-180.png')));
+    }
+
     echo '<meta name="theme-color" content="#ffffff">'."\n";
 
     if (is_front_page()) {
@@ -56,10 +86,16 @@ add_action('wp_head', function (): void {
 }, 2);
 
 /**
- * WordPress prints its own icon links when a site icon is set in the customizer;
- * the theme brings the icons itself.
+ * Browsers ask for /favicon.ico wherever a page names no icon: the login page,
+ * the administration, files opened directly. Without a site icon WordPress
+ * would answer with its own logo.
  */
-add_filter('get_site_icon_url', '__return_empty_string');
+add_action('do_faviconico', function (): void {
+    if (! has_site_icon()) {
+        wp_safe_redirect(get_theme_file_uri('assets/brand/favicon.ico'));
+        exit;
+    }
+});
 
 /**
  * The home page's title: name and what the shop is, instead of the tagline setting.
@@ -75,7 +111,22 @@ add_filter('document_title_parts', function (array $parts): array {
 add_filter('document_title_separator', static fn (): string => '–');
 
 /**
- * The sample sheet is a design document; WordPress' toolbar for logged-in users
- * would sit on top of what is being judged.
+ * The sample sheet is a working document for whoever looks after the site's
+ * appearance. The page is meant to be private, but a page is quickly published
+ * by mistake – so the template does not rely on that: everybody else gets the
+ * "not found" page.
+ */
+add_action('template_redirect', function (): void {
+    if (is_page('musterbogen') && ! current_user_can('edit_theme_options')) {
+        global $wp_query;
+
+        $wp_query->set_404();
+        status_header(404);
+        nocache_headers();
+    }
+}, 1);
+
+/**
+ * WordPress' toolbar for logged-in users would sit on top of what is being judged there.
  */
 add_filter('show_admin_bar', static fn (bool $show): bool => is_page('musterbogen') ? false : $show);

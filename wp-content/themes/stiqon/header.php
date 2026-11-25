@@ -15,6 +15,8 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>
+    <?php // Controls that only work with the page's script are not offered without it. ?>
+    <noscript><style>[data-needs-script] { display: none !important; }</style></noscript>
 </head>
 <body <?php body_class('flex min-h-screen flex-col'); ?>>
 <?php wp_body_open(); ?>

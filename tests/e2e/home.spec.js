@@ -5,11 +5,13 @@ test.describe('home page', () => {
         await page.goto('/');
 
         // The headline carries two product views between its words. They are decoration:
-        // the heading's name is the sentence alone.
+        // the heading's name is the sentence alone – and so is its text, because the
+        // views shown there have no lettering that would end up in search results.
         const headline = page.getByRole('heading', { level: 1, name: 'Werbemittel, die haften bleiben.', exact: true });
 
         await expect(headline).toBeVisible();
         await expect(headline.locator('[data-mockup]')).toHaveCount(2);
+        await expect(headline).toHaveText('Werbemittel, die haften bleiben.');
 
         const main = page.getByRole('main');
 
@@ -24,7 +26,15 @@ test.describe('home page', () => {
 
     test('a tile opens its area and the navigation marks it', async ({ page, isMobile }) => {
         await page.goto('/');
-        await page.getByRole('link', { name: 'Runde Sticker', exact: true }).click();
+
+        // The link is the title alone – the lettering of the sample motif is not link text –
+        // but the whole tile is its target, down to the drawing at the bottom.
+        const link = page.getByRole('link', { name: 'Runde Sticker', exact: true });
+        const tile = page.getByRole('listitem').filter({ has: link });
+        const size = await tile.boundingBox();
+
+        await expect(link).toHaveText('Runde Sticker');
+        await tile.click({ position: { x: size.width / 2, y: size.height - 12 } });
 
         await expect(page).toHaveURL(/\/sticker\/$/);
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Sticker');
@@ -79,7 +89,7 @@ test.describe('home page', () => {
     });
 
     test('the row of examples moves with its buttons', async ({ page, isMobile }) => {
-        test.skip(isMobile, 'The buttons only exist on wide screens; a phone swipes.');
+        test.skip(isMobile, 'A finger swipes the row; the buttons are for pointers that cannot.');
 
         await page.goto('/');
 
@@ -100,6 +110,46 @@ test.describe('home page', () => {
         await expect(previous).toBeDisabled();
     });
 
+    test('at the end of the row its button goes out of use without dropping the keyboard focus', async ({ page, isMobile }) => {
+        test.skip(isMobile, 'Keyboard navigation is checked on the desktop viewport.');
+
+        await page.goto('/');
+
+        const next = page.getByRole('button', { name: 'Weitere Beispiele' });
+
+        await next.focus();
+
+        // A real "disabled" would throw the focus back to the top of the page here.
+        for (let presses = 0; presses < 12 && await next.isEnabled(); presses += 1) {
+            await page.keyboard.press('Enter');
+            await page.waitForTimeout(350);
+        }
+
+        await expect(next).toBeDisabled();
+        await expect(next).toBeFocused();
+    });
+
+    test('the buttons of the row depend on the pointer, not on the width of the window', async ({ page, isMobile }) => {
+        const next = page.getByRole('button', { name: 'Weitere Beispiele' });
+
+        await page.goto('/');
+
+        if (isMobile) {
+            // A phone: the row is swiped.
+            await expect(next).toBeHidden();
+
+            return;
+        }
+
+        // A laptop at 200 % zoom is this narrow and still has a mouse – which cannot
+        // swipe, and the row shows no scrollbar.
+        await page.setViewportSize({ width: 683, height: 800 });
+        await expect(next).toBeVisible();
+
+        await next.click();
+        await expect.poll(() => page.getByRole('region', { name: 'Beispiele: Motive auf Stickern und Flyern' }).evaluate((element) => element.scrollLeft)).toBeGreaterThan(100);
+    });
+
     test('the row of examples can be reached and moved with the keyboard', async ({ page, isMobile }) => {
         test.skip(isMobile, 'Keyboard navigation is checked on the desktop viewport.');
 
@@ -111,6 +161,27 @@ test.describe('home page', () => {
         await expect(row).toBeFocused();
         await page.keyboard.press('ArrowRight');
         await expect.poll(() => row.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+    });
+});
+
+test.describe('without JavaScript', () => {
+    test('nothing is offered that could not work', async ({ browser, baseURL, isMobile }) => {
+        const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: isMobile ? { width: 390, height: 844 } : { width: 1440, height: 900 } });
+        const page = await context.newPage();
+
+        await page.goto('/');
+
+        // Choosing a motif and moving the row need the script …
+        await expect(page.getByRole('button', { name: /Motiv/ })).toHaveCount(0);
+        await expect(page.getByRole('button', { name: 'Weitere Beispiele' })).toHaveCount(0);
+        await expect(page.getByText('Ihr Bild bleibt in Ihrem Browser')).toBeHidden();
+
+        // … the way into the shop does not.
+        await page.getByRole('main').getByRole('link', { name: 'Sticker ansehen' }).first().click();
+        await expect(page.getByRole('heading', { level: 1 })).toHaveText('Sticker');
+        await expect(page.locator('[data-mockup]')).toHaveCount(8);
+
+        await context.close();
     });
 });
 
