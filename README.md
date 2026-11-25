@@ -21,7 +21,8 @@ Die frühere Fassung des Shops als eigene Laravel-Anwendung liegt in der Git-His
 ## Entwicklung
 
 Voraussetzungen: PHP ≥ 8.1 mit `mysqli`, ein laufender MariaDB- oder MySQL-Server, Node.js 22,
-Composer, `curl` und `unzip`.
+Composer, `curl`, `unzip` sowie Bash ≥ 4.4 und die GNU-Werkzeuge `sha256sum`, `sha512sum` und
+`sed` (unter Linux vorhanden; auf macOS über Homebrew: `bash`, `coreutils`, `gnu-sed`).
 
 ```bash
 npm ci
@@ -47,17 +48,25 @@ mit Theme und Plugin aus diesem Repository als Verknüpfung. Der Shop läuft dan
 
 Gut zu wissen:
 
-- Heruntergeladene Pakete werden gegen die Prüfsummen in `tools/dev/versions.env` geprüft, WP-CLI
-  gegen seine veröffentlichte Prüfsumme.
+- WordPress, WooCommerce, Germanized und WP-CLI kommen von festen Adressen und werden gegen die
+  Prüfsummen in `tools/dev/versions.env` geprüft; ein Paket, das nicht passt, wird gelöscht und
+  abgelehnt. Nicht festlegbar sind die Sprachpakete: Sie werden ohne neue Versionsnummer
+  überarbeitet.
 - WP-CLI läuft nie als root. Wo das Skript als root gestartet wird (Container), legt es dafür den
-  Benutzer `wpdev` an.
+  Benutzer `wpdev` an. Ihm gehören nur die Installationen selbst; die Datei mit Adresse und
+  Passwörtern (`sites/<name>.env`) und die heruntergeladenen Pakete gehören root, und die Skripte
+  lesen die Datei als Daten ein, statt sie auszuführen.
+- Ein zweiter Aufruf ohne `--fresh` behält Inhalte und Passwörter, bringt WordPress und Plugins auf
+  die festgelegten Versionen und setzt Adresse, Sprache, Theme und die Grundeinstellungen des
+  Shops erneut.
 - Die lokale Installation ruft nichts von außen ab (`WP_HTTP_BLOCK_EXTERNAL`) und aktualisiert
   sich nicht selbst.
 - `tools/dev/wp.sh` führt WP-CLI in der lokalen Installation aus, zum Beispiel
   `tools/dev/wp.sh plugin list`.
 - Nach Änderungen an Styles oder Skripten: `npm run build` (oder `npm run watch`).
-- Die Datenbank liegt standardmäßig auf `127.0.0.1` mit dem Verwalter `root` über den lokalen
-  Socket; anderes über `STIQON_DB_HOST`, `STIQON_DB_ADMIN_USER`, `STIQON_DB_ADMIN_PASSWORD`.
+- Datenbank: Ohne weitere Angaben meldet sich das Skript als `root` über den lokalen Socket an –
+  das funktioniert, wenn es selbst als root läuft (üblich in Containern unter Debian/Ubuntu).
+  Sonst den Zugang angeben: `STIQON_DB_HOST`, `STIQON_DB_ADMIN_USER`, `STIQON_DB_ADMIN_PASSWORD`.
 
 ## Tests
 
@@ -74,15 +83,18 @@ npm run e2e
 ```
 
 ```bash
-STIQON_SITE=e2e tests/integration/run.sh
+tests/integration/run.sh
 ```
 
 - **Unit-Tests** (`tests/php`) prüfen die Logik des Plugins ohne WordPress.
 - **Browser-Tests** (`tests/e2e`, Playwright) bauen für jeden Lauf eine frische Installation
-  („e2e“, Port 8123) und prüfen sie am Desktop und am Handy. Jeder Test schlägt fehl, wenn eine
-  Seite Konsolenfehler meldet oder Anfragen an fremde Server stellt.
-- **Prüfungen in der Installation** (`tests/integration`) laufen über WP-CLI und sehen danach im
-  Fehlerprotokoll nach, ob Theme oder Plugin Warnungen hinterlassen haben.
+  („e2e“, Port 8123) und prüfen sie am Desktop und am Handy. Ist der Port schon belegt, bricht der
+  Lauf ab, statt eine alte Installation mitzubenutzen. Jeder Test schlägt fehl, wenn eine Seite
+  Konsolenfehler meldet oder Anfragen an fremde Server stellt.
+- **Prüfungen in der Installation** (`tests/integration`) laufen über WP-CLI in der Installation
+  „e2e“, also nach den Browser-Tests. Danach wird ihr Fehlerprotokoll gelesen: Jede Zeile, die
+  nicht in `tests/integration/log-noise.txt` als bekannte Meldung von WordPress, WooCommerce oder
+  Germanized begründet ist, lässt den Lauf scheitern.
 
 ## Seiten
 
@@ -94,15 +106,22 @@ Adresse an.
 |---|---|---|
 | `/` | `front-page.php` | Startseite |
 | `/sticker/`, `/flyer/` | `page-sticker.php`, `page-flyer.php` | Bereiche; die Produktgalerie folgt |
-| `/musterbogen/` | `page-musterbogen.php` | Logo, Schrift, Farben und Mockups auf einer Seite. Die Seite ist „privat“: nur angemeldete Verwalter sehen sie |
+| `/musterbogen/` | `page-musterbogen.php` | Logo, Schrift, Farben und Mockups auf einer Seite. Nur wer das Erscheinungsbild der Website verwalten darf, sieht sie; alle anderen bekommen „nicht gefunden“ – auch wenn die Seite versehentlich veröffentlicht wurde |
+
+Fehlt eine der beiden Bereichsseiten oder fehlen dem Theme seine gebauten Dateien, weist die
+Verwaltung darauf hin (`inc/checks.php`).
 
 Die Sticker- und Flyer-Ansichten zeichnet das Plugin (`src/Mockup`, Vorlagen unter `templates`).
 Ist es abgeschaltet, erscheinen die Seiten ohne Ansichten, und die Verwaltung weist darauf hin.
-Theme und Plugin lassen sich in beliebiger Reihenfolge aktivieren.
+Theme und Plugin lassen sich in beliebiger Reihenfolge aktivieren. Kennt das Plugin eine verlangte
+Form, ein Motiv oder eine Kartenfarbe nicht, bleibt in der Entwicklung die Seite stehen, damit der
+Fehler auffällt; im Live-Betrieb fehlt nur diese eine Ansicht, und der Grund steht im
+Fehlerprotokoll.
 
-Beim Aktivieren setzt das Plugin Datenschutz-Voreinstellungen (`src/Setup/Defaults.php`): keine
-Profilbilder von Gravatar, keine Kommentare, keine Herkunftsmessung von Bestellungen per Cookie,
-keine Nutzungsdaten an WooCommerce.
+Beim ersten Aktivieren setzt das Plugin Datenschutz-Voreinstellungen (`src/Setup/Defaults.php`):
+keine Profilbilder von Gravatar, neue Inhalte ohne Kommentare, keine Herkunftsmessung von
+Bestellungen per Cookie, keine Nutzungsdaten an WooCommerce. Jede davon wird genau einmal gesetzt;
+was die Inhaberin oder der Inhaber später ändert, bleibt auch nach erneutem Aktivieren bestehen.
 
 ## Gestaltung
 
@@ -124,6 +143,13 @@ keine Nutzungsdaten an WooCommerce.
   Skript aus.
 - Die Hilfsklasse für den Seitenrand heißt `wrap`, nicht `page`: WordPress setzt die Klasse `page`
   auf den `body` jeder Seite.
+- Vorlagen, die ganz aus eigenem Markup bestehen (Startseite, Bereiche, 404, Musterbogen), rufen
+  vor dem Kopf `stiqon_declare_lean_page()` auf. Nur solche Seiten lassen die Stylesheets für
+  Editor-Inhalte und die Skripte von WooCommerce weg. Die Entscheidung hängt bewusst an der Vorlage
+  und nicht an der Adresse: WooCommerce zeigt im Modus „Demnächst verfügbar“ unter denselben
+  Adressen eine Seite aus Blöcken.
+- Links in Karten und Kacheln umschließen nur den Titel und sind über die ganze Fläche gespannt.
+  Um die Zeichnung herumgelegt, würde die Beschriftung des Beispielmotivs zum Linktext.
 - Die Logo-Dateien unter `wp-content/themes/stiqon/assets/brand` entstehen aus
   `tools/brand/logo-original.webp` mit `python3 tools/brand/make-logo-assets.py` (nur nach einem
   Logo-Wechsel nötig).

@@ -6,35 +6,46 @@
  *   tools/dev/wp.sh eval-file tests/integration/activation-order.php
  */
 
-$plugin = 'stiqon-shop/stiqon-shop.php';
+$run = static fn (string $command): array => (array) WP_CLI::runcommand($command, ['return' => 'all', 'exit_error' => false, 'launch' => true]);
+$failed = static fn (array $result): bool => ($result['return_code'] ?? 1) !== 0;
+$said = static fn (array $result): string => trim((string) ($result['stderr'] ?? ''));
 
-$run = static function (string $command): array {
-    return (array) WP_CLI::runcommand($command, ['return' => 'all', 'exit_error' => false, 'launch' => true]);
-};
+// Any other theme will do to switch away to; WordPress ships with a few.
+$others = array_values(array_diff(array_keys(wp_get_themes()), ['stiqon']));
+
+if ($others === []) {
+    WP_CLI::error('There is no second theme installed to switch to.');
+}
 
 $problems = [];
 
-// Theme active, plugin off, then the plugin is switched on.
-$run('plugin deactivate stiqon-shop');
+try {
+    // Theme active, plugin off, then the plugin is switched on.
+    $run('plugin deactivate stiqon-shop');
 
-$alone = $run('eval "echo \'loaded\';"');
+    $alone = $run('eval "echo \'loaded\';"');
 
-if (($alone['return_code'] ?? 1) !== 0 || trim((string) ($alone['stdout'] ?? '')) !== 'loaded') {
-    $problems[] = 'WordPress does not load with the theme active and the plugin switched off: '.trim((string) ($alone['stderr'] ?? ''));
-}
+    if ($failed($alone) || trim((string) ($alone['stdout'] ?? '')) !== 'loaded') {
+        $problems[] = 'WordPress does not load with the theme active and the plugin switched off: '.$said($alone);
+    }
 
-$activate = $run('plugin activate stiqon-shop');
+    $activate = $run('plugin activate stiqon-shop');
 
-if (($activate['return_code'] ?? 1) !== 0) {
-    $problems[] = 'Activating the plugin while the theme is active fails: '.trim((string) ($activate['stderr'] ?? ''));
-}
+    if ($failed($activate)) {
+        $problems[] = 'Activating the plugin while the theme is active fails: '.$said($activate);
+    }
 
-// Plugin active, theme switched away and back.
-$away = $run('theme activate twentytwentyfive');
-$back = $run('theme activate stiqon');
+    // Plugin active, theme switched away and back.
+    $away = $run('theme activate '.$others[0]);
+    $back = $run('theme activate stiqon');
 
-if (($away['return_code'] ?? 1) !== 0 || ($back['return_code'] ?? 1) !== 0) {
-    $problems[] = 'Switching the theme away and back fails: '.trim((string) ($away['stderr'] ?? '').' '.(string) ($back['stderr'] ?? ''));
+    if ($failed($away) || $failed($back)) {
+        $problems[] = 'Switching the theme away and back fails: '.trim($said($away).' '.$said($back));
+    }
+} finally {
+    // Whatever happened above, the site is left with both switched on.
+    $run('plugin activate stiqon-shop');
+    $run('theme activate stiqon');
 }
 
 $state = $run('eval "echo wp_get_theme()->get_stylesheet().\'|\'.(function_exists(\'stiqon_sticker\') ? \'plugin\' : \'no plugin\');"');

@@ -1,0 +1,22 @@
+# Lines in a site's debug.log that do not come from this project's code. One
+# extended regular expression per line; a log line that matches none of them
+# fails tests/integration/run.sh.
+#
+# Keep this list short and each entry explained: it is the only thing between a
+# real mistake and a green run. WordPress reports misuse by a theme with a path
+# inside WordPress itself, so nothing here may be as broad as "a core path".
+
+# Messages from inside WooCommerce and Germanized: theirs to fix.
+/wp-content/plugins/woocommerce(-germanized)?/
+
+# Both load their translations earlier than WordPress would like.
+_load_textdomain_just_in_time.*<code>woocommerce(-germanized)?</code>
+
+# WooCommerce's "coming soon" page in a theme that is not a block theme: its blocks
+# ask for the global styles before WordPress has registered them. Happens with any
+# such theme (tried with an empty one), not with a block theme.
+block-style-variation-styles
+
+# The dashboard's news feed. Calls to wordpress.org are answered with nothing in a
+# local installation (see tools/dev/setup-wordpress.sh).
+A feed could not be found at .https://([a-z]+\.)?wordpress\.org/

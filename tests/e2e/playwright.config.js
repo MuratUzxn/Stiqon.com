@@ -44,7 +44,9 @@ export default defineConfig({
         command: 'bash tests/e2e/server.sh',
         cwd: '../..',
         url: `${baseURL}/`,
-        reuseExistingServer: !process.env.CI,
+        // Never a server left over from an earlier run: the tests are written for
+        // a site that was built for them. If the port is taken, the run stops and says so.
+        reuseExistingServer: false,
         // The first run downloads WordPress and the plugins.
         timeout: 300_000,
         stdout: 'pipe',

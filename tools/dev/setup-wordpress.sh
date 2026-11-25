@@ -10,7 +10,9 @@
 #   --port PORT   port the site is served on (default 8200)
 #   --fresh       throw the site's files and database away first
 #
-# Running it again without --fresh only repairs what is missing.
+# Running it again without --fresh keeps the site's content and passwords. It
+# brings WordPress and the plugins to the pinned versions and puts the settings
+# this script is responsible for (address, language, theme, shop basics) back.
 #
 # Environment:
 #   STIQON_WP_ROOT             where WordPress lives (default /srv/stiqon-wp as root,
@@ -27,8 +29,8 @@ FRESH=0
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --site) SITE_ARG="$2"; shift 2 ;;
-        --port) PORT="$2"; shift 2 ;;
+        --site) SITE_ARG="${2:-}"; shift 2 ;;
+        --port) PORT="${2:-}"; shift 2 ;;
         --fresh) FRESH=1; shift ;;
         *) echo "Unknown option: $1" >&2; exit 1 ;;
     esac
@@ -38,9 +40,9 @@ done
 
 . "$(dirname "$0")/lib.sh"
 
-case "$SITE_NAME" in
-    *[!a-z0-9]*|"") fail "The site name may only contain lowercase letters and digits." ;;
-esac
+# Both values end up in file names, database names and SQL.
+[[ "$SITE_NAME" =~ ^[a-z0-9]+$ ]] || fail "The site name may only contain lowercase letters and digits."
+[[ "$PORT" =~ ^[0-9]{2,5}$ ]] || fail "The port has to be a number."
 
 URL="http://127.0.0.1:$PORT"
 DB_NAME="stiqon_$SITE_NAME"
@@ -60,56 +62,42 @@ if ! db_admin -e 'SELECT 1' >/dev/null 2>&1; then
         sleep 3
     fi
 
-    db_admin -e 'SELECT 1' >/dev/null 2>&1 || fail "Cannot reach the database server as $DB_ADMIN_USER. Is it running?"
+    db_admin -e 'SELECT 1' >/dev/null 2>&1 || fail "Cannot reach the database server as $DB_ADMIN_USER. Is it running, and may this user administer it?"
 fi
 
-# --- Directories and the user that owns WordPress --------------------------------
+# --- Directories, and who owns them (see lib.sh) ----------------------------------
+
+mkdir -p "$STIQON_WP_ROOT/sites" "$DOWNLOADS" "$(dirname "$WP_CLI")"
 
 if [ "$(id -u)" = "0" ]; then
     id "$WP_USER" >/dev/null 2>&1 || useradd --system --create-home --shell /usr/sbin/nologin "$WP_USER"
-    mkdir -p "$STIQON_WP_ROOT"
-    chown "$WP_USER": "$STIQON_WP_ROOT"
-fi
 
-as_site_user mkdir -p "$DOWNLOADS" "$STIQON_WP_ROOT/sites"
-
-# Downloads run as the calling user (who has the machine's proxy and certificate
-# settings) and are then handed to the user that owns WordPress.
-download() { # url target
-    curl -fsSL -o "$2.part" "$1" || { rm -f "$2.part"; fail "Download failed: $1"; }
-    mv "$2.part" "$2"
-
-    if [ "$(id -u)" = "0" ]; then
-        chown "$WP_USER": "$2"
-    fi
-}
-
-# --- WP-CLI, verified against its published checksum -----------------------------
-
-if [ ! -f "$WP_CLI" ]; then
-    say "Downloading WP-CLI"
-    builds=https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar
-    download "$builds/wp-cli.phar" "$WP_CLI.unverified"
-    expected="$(curl -fsSL "$builds/wp-cli.phar.sha512" | tr -d '[:space:]')"
-    actual="$(sha512sum "$WP_CLI.unverified" | cut -d' ' -f1)"
-    [ "$expected" = "$actual" ] || { rm -f "$WP_CLI.unverified"; fail "WP-CLI does not match its published checksum."; }
-    mv "$WP_CLI.unverified" "$WP_CLI"
+    chown root: "$STIQON_WP_ROOT" "$STIQON_WP_ROOT/sites" "$DOWNLOADS" "$(dirname "$WP_CLI")"
+    chmod 755 "$STIQON_WP_ROOT" "$STIQON_WP_ROOT/sites" "$DOWNLOADS" "$(dirname "$WP_CLI")"
+    find "$DOWNLOADS" "$(dirname "$WP_CLI")" -maxdepth 1 -type f -exec chown root: {} +
 fi
 
 # --- Packages ---------------------------------------------------------------------
 # WordPress' own downloader cannot be relied on here (it does not use an HTTP proxy
-# and is switched off in the local configuration), so packages are fetched with curl
-# and installed from the file.
+# and is switched off in the local configuration), so everything is fetched with
+# curl and installed from the file.
 
-fetch_plugin() { # slug version sha256
-    local file="$DOWNLOADS/$1.$2.zip"
-
-    if [ ! -f "$file" ]; then
-        say "Downloading $1 $2"
-        download "https://downloads.wordpress.org/plugin/$1.$2.zip" "$file"
+# Fetches a file unless it is there already, and refuses it unless it matches its
+# pinned checksum. A file that does not match is deleted, so that the next run
+# downloads it anew instead of failing on the same file again.
+fetch() { # url target sha256|sha512 checksum
+    if [ ! -f "$2" ]; then
+        say "Downloading $(basename "$2")"
+        curl -fsSL -o "$2.part" "$1" || { rm -f "$2.part"; fail "Download failed: $1"; }
+        mv "$2.part" "$2"
     fi
 
-    [ "$(sha256sum "$file" | cut -d' ' -f1)" = "$3" ] || fail "$file does not match the checksum in tools/dev/versions.env."
+    if [ "$("${3}sum" "$2" | cut -d' ' -f1)" != "$4" ]; then
+        rm -f "$2"
+        fail "$(basename "$2") did not match the checksum in tools/dev/versions.env and was deleted. Run again to download it anew."
+    fi
+
+    chmod 644 "$2"
 }
 
 # Language packs are revised by their translators without a new version number,
@@ -122,14 +110,21 @@ install_language() { # type slug version locale target-directory
     fi
 
     if [ ! -f "$file" ]; then
-        download "https://downloads.wordpress.org/$path" "$file"
+        curl -fsSL -o "$file.part" "https://downloads.wordpress.org/$path" || { rm -f "$file.part"; fail "Download failed: $path"; }
+        mv "$file.part" "$file"
+        chmod 644 "$file"
     fi
 
     as_site_user unzip -o -q "$file" -d "$5"
 }
 
-fetch_plugin woocommerce "$WOOCOMMERCE_VERSION" "$WOOCOMMERCE_SHA256"
-fetch_plugin woocommerce-germanized "$GERMANIZED_VERSION" "$GERMANIZED_SHA256"
+fetch "https://raw.githubusercontent.com/wp-cli/builds/$WP_CLI_COMMIT/phar/wp-cli.phar" "$WP_CLI" sha512 "$WP_CLI_SHA512"
+
+CORE_ZIP="$DOWNLOADS/wordpress-$WORDPRESS_VERSION.zip"
+
+fetch "https://downloads.wordpress.org/release/wordpress-$WORDPRESS_VERSION.zip" "$CORE_ZIP" sha256 "$WORDPRESS_SHA256"
+fetch "https://downloads.wordpress.org/plugin/woocommerce.$WOOCOMMERCE_VERSION.zip" "$DOWNLOADS/woocommerce.$WOOCOMMERCE_VERSION.zip" sha256 "$WOOCOMMERCE_SHA256"
+fetch "https://downloads.wordpress.org/plugin/woocommerce-germanized.$GERMANIZED_VERSION.zip" "$DOWNLOADS/woocommerce-germanized.$GERMANIZED_VERSION.zip" sha256 "$GERMANIZED_SHA256"
 
 # --- Start over, if asked ---------------------------------------------------------
 
@@ -139,11 +134,14 @@ if [ "$FRESH" = "1" ]; then
     rm -rf "$SITE_DIR" "$SITE_ENV"
 fi
 
-# --- Passwords: generated once per site, kept next to it, never in the repository --
+# --- Settings and passwords: generated once per site, kept next to it, never in the repository
 
-if [ ! -f "$SITE_ENV" ]; then
-    random() { head -c 24 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | cut -c1-24; }
-    as_site_user sh -c "umask 077 && cat > '$SITE_ENV'" <<EOF
+if [ ! -e "$SITE_ENV" ]; then
+    random() { head -c 48 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | cut -c1-24; }
+
+    (
+        umask 077
+        cat > "$SITE_ENV" <<EOF
 SITE_URL=$URL
 SITE_PORT=$PORT
 DB_NAME=$DB_NAME
@@ -152,13 +150,21 @@ DB_PASSWORD=$(random)
 ADMIN_USER=admin
 ADMIN_PASSWORD=$(random)
 EOF
+    )
 fi
 
-# Port and address follow the latest call.
-as_site_user sed -i "s|^SITE_URL=.*|SITE_URL=$URL|; s|^SITE_PORT=.*|SITE_PORT=$PORT|" "$SITE_ENV"
+[ -f "$SITE_ENV" ] && [ ! -L "$SITE_ENV" ] || fail "$SITE_ENV is not a plain file."
 
-# shellcheck disable=SC1090
-. "$SITE_ENV"
+if [ "$(id -u)" = "0" ]; then
+    chown root: "$SITE_ENV"
+fi
+
+chmod 600 "$SITE_ENV"
+
+# Port and address follow the latest call.
+sed -i "s|^SITE_URL=.*|SITE_URL=$URL|; s|^SITE_PORT=.*|SITE_PORT=$PORT|" "$SITE_ENV"
+
+read_site_env
 
 # --- Database ---------------------------------------------------------------------
 
@@ -174,26 +180,45 @@ EOF
 
 # --- WordPress --------------------------------------------------------------------
 
-if [ ! -f "$SITE_DIR/wp-load.php" ]; then
+mkdir -p "$SITE_DIR"
+
+if [ "$(id -u)" = "0" ]; then
+    chown "$WP_USER": "$SITE_DIR"
+fi
+
+# The version the site's files are, read from the files themselves.
+core_version() {
+    [ -f "$SITE_DIR/wp-includes/version.php" ] || return 0
+
+    as_site_user php -r 'include $argv[1]; echo $wp_version;' "$SITE_DIR/wp-includes/version.php"
+}
+
+if [ "$(core_version)" != "$WORDPRESS_VERSION" ]; then
     say "Installing WordPress $WORDPRESS_VERSION"
-    as_site_user mkdir -p "$SITE_DIR"
-    wp core download --version="$WORDPRESS_VERSION" --locale=de_DE --quiet
+    as_site_user rm -rf "$SITE_DIR/.unpack"
+    as_site_user unzip -q "$CORE_ZIP" -d "$SITE_DIR/.unpack"
+    # Over another version this replaces every file of the package and leaves
+    # everything else – configuration, plugins, uploads – as it is.
+    as_site_user cp -a "$SITE_DIR/.unpack/wordpress/." "$SITE_DIR/"
+    as_site_user rm -rf "$SITE_DIR/.unpack"
 fi
 
 if [ ! -f "$SITE_DIR/wp-config.php" ]; then
-    wp config create --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASSWORD" --dbhost="$DB_HOST" \
-        --locale=de_DE --quiet --extra-php <<'PHP'
-// A development and test installation: no calls to the outside, no self-updates,
-// errors go to wp-content/debug.log where the test run reads them.
-define( 'WP_ENVIRONMENT_TYPE', 'local' );
-define( 'WP_HTTP_BLOCK_EXTERNAL', true );
-define( 'AUTOMATIC_UPDATER_DISABLED', true );
-define( 'DISALLOW_FILE_EDIT', true );
-define( 'WP_DEBUG', true );
-define( 'WP_DEBUG_LOG', true );
-define( 'WP_DEBUG_DISPLAY', false );
-PHP
+    # The password is read from standard input: on a command line every user of
+    # the machine could see it in the list of processes.
+    wp config create --dbname="$DB_NAME" --dbuser="$DB_USER" --dbhost="$DB_HOST" --prompt=dbpass --quiet <<<"$DB_PASSWORD" >/dev/null
+
+    # A development and test installation: no calls to the outside, no self-updates,
+    # errors go to wp-content/debug.log where the test run reads them.
+    wp config set WP_ENVIRONMENT_TYPE local --quiet
+
+    for constant in WP_HTTP_BLOCK_EXTERNAL=true AUTOMATIC_UPDATER_DISABLED=true DISALLOW_FILE_EDIT=true WP_DEBUG=true WP_DEBUG_LOG=true WP_DEBUG_DISPLAY=false; do
+        wp config set "${constant%%=*}" "${constant#*=}" --raw --quiet
+    done
 fi
+
+# It holds the database password.
+as_site_user chmod 600 "$SITE_DIR/wp-config.php"
 
 # WordPress asks wordpress.org for updates whenever a plugin is installed or an admin
 # page is opened. Those calls are blocked here and would fill the output and the log
@@ -215,18 +240,26 @@ add_filter('pre_http_request', static function ($response, $arguments, $url) {
 }, 10, 3);
 PHP
 
-if ! wp core is-installed 2>/dev/null; then
-    wp core install --url="$URL" --title="Stiqon" --admin_user="$ADMIN_USER" --admin_password="$ADMIN_PASSWORD" \
-        --admin_email=admin@example.test --skip-email --quiet
+# German, in the formal address ("Sie") the shop uses. The packs are in place before
+# the installer runs, so that it writes its first content in that language.
+as_site_user mkdir -p "$SITE_DIR/wp-content/languages/plugins"
+install_language core core "$WORDPRESS_VERSION" de_DE "$SITE_DIR/wp-content/languages"
+install_language core core "$WORDPRESS_VERSION" de_DE_formal "$SITE_DIR/wp-content/languages"
+
+# The address is given with the question: before the installation WordPress has
+# none, and guessing one from a command line leaves a warning in the site's log.
+if ! wp core is-installed --url="$URL" 2>/dev/null; then
+    # The password comes on standard input, like the database's above.
+    wp core install --url="$URL" --title="Stiqon" --admin_user="$ADMIN_USER" --admin_email=admin@example.test \
+        --locale=de_DE_formal --skip-email --prompt=admin_password --quiet <<<"$ADMIN_PASSWORD" >/dev/null
+else
+    # After a change of version the database may need bringing up to date.
+    wp core update-db --quiet
 fi
 
-# The installer derives the address from the directory layout; state it explicitly.
+# The address follows the latest call (the port may have changed).
 wp option update siteurl "$URL" --quiet
 wp option update home "$URL" --quiet
-
-# Formal German ("Sie") for the shop.
-as_site_user mkdir -p "$SITE_DIR/wp-content/languages/plugins"
-install_language core core "$WORDPRESS_VERSION" de_DE_formal "$SITE_DIR/wp-content/languages"
 wp site switch-language de_DE_formal --quiet
 
 # --- Plugins ----------------------------------------------------------------------
@@ -249,8 +282,17 @@ install_plugin woocommerce-germanized "$GERMANIZED_VERSION"
 
 # --- This repository's theme and plugin -------------------------------------------
 
-as_site_user ln -sfn "$REPO/wp-content/themes/stiqon" "$SITE_DIR/wp-content/themes/stiqon"
-as_site_user ln -sfn "$REPO/wp-content/plugins/stiqon-shop" "$SITE_DIR/wp-content/plugins/stiqon-shop"
+# "ln -sfn" onto a real directory would put the link inside it and report success.
+link_into_site() { # source target
+    if [ -e "$2" ] && [ ! -L "$2" ]; then
+        fail "$2 exists and is not a link to this repository. Move it away, then run again."
+    fi
+
+    as_site_user ln -sfn "$1" "$2"
+}
+
+link_into_site "$REPO/wp-content/themes/stiqon" "$SITE_DIR/wp-content/themes/stiqon"
+link_into_site "$REPO/wp-content/plugins/stiqon-shop" "$SITE_DIR/wp-content/plugins/stiqon-shop"
 
 [ -f "$REPO/wp-content/themes/stiqon/assets/build/manifest.json" ] || fail "The theme is not built yet. Run: npm ci && npm run build"
 
@@ -273,14 +315,22 @@ wp option update blog_public 0 --quiet
 # --- Pages the theme has templates for ----------------------------------------------
 
 ensure_page() { # slug title status
-    if [ -z "$(wp post list --post_type=page --name="$1" --post_status=any --field=ID)" ]; then
+    local pages
+
+    # Listed and compared, not looked up by name: WP-CLI acts as nobody here, and to
+    # nobody WordPress does not show a single private page asked for by its name –
+    # the page would be created again on every run.
+    pages="$(wp post list --post_type=page --post_status=any --field=post_name)"
+
+    if ! grep -qx -- "$1" <<<"$pages"; then
         wp post create --post_type=page --post_name="$1" --post_title="$2" --post_status="$3" --quiet
     fi
 }
 
 ensure_page sticker Sticker publish
 ensure_page flyer Flyer publish
-# The sample sheet is a working document: private, so only logged-in administrators see it.
+# The sample sheet is a working document: private, and its template turns away
+# everybody who does not look after the site's appearance.
 ensure_page musterbogen Musterbogen private
 
 wp rewrite flush --quiet

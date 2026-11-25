@@ -1,23 +1,33 @@
 #!/usr/bin/env bash
-# Runs the checks in this directory inside a local site (default "dev") and then
-# looks for PHP warnings and notices that this project's code left in the log.
+# Runs the checks in this directory inside a local site and then reads the site's
+# error log.
 #
-#   tests/integration/run.sh
-#   STIQON_SITE=e2e tests/integration/run.sh     after the browser tests
+#   tests/integration/run.sh                    the "e2e" site, after the browser tests
+#   STIQON_SITE=dev tests/integration/run.sh
+#
+# The whole log is read, not just what this run adds: the "e2e" site is built anew
+# for every run of the browser tests, so its log is exactly what those tests and
+# these checks left behind. Lines known to come from elsewhere are listed, with
+# their reason, in log-noise.txt; every other line fails the run.
 set -euo pipefail
+
+export STIQON_SITE="${STIQON_SITE:-e2e}"
 
 . "$(dirname "$0")/../../tools/dev/lib.sh"
 
 [ -f "$SITE_DIR/wp-config.php" ] || fail "Site \"$SITE_NAME\" does not exist yet. Run tools/dev/setup-wordpress.sh first."
 
-for check in "$REPO"/tests/integration/*.php; do
-    wp eval-file "$check" "$WOOCOMMERCE_VERSION" "$GERMANIZED_VERSION"
+# The installation as the setup script left it comes first: the later checks
+# switch things off and on.
+for check in environment setup-problems defaults activation-order; do
+    wp eval-file "$REPO/tests/integration/$check.php" "$WORDPRESS_VERSION" "$WOOCOMMERCE_VERSION" "$GERMANIZED_VERSION"
 done
 
 log="$SITE_DIR/wp-content/debug.log"
+noise="$(grep -v -E '^[[:space:]]*(#|$)' "$REPO/tests/integration/log-noise.txt")"
 
-if [ -f "$log" ] && grep -E 'themes/stiqon|plugins/stiqon-shop' "$log"; then
-    fail "The lines above from wp-content/debug.log come from this project's code."
+if [ -f "$log" ] && grep -v -E -f <(printf '%s\n' "$noise") "$log"; then
+    fail "The lines above are in $log and are not known noise (tests/integration/log-noise.txt). If they are from earlier work on a long-lived site, empty the log and run again."
 fi
 
-say "No warnings or notices from this project's code in the log."
+say "Nothing unexpected in the error log."

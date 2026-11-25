@@ -10,10 +10,7 @@ set -euo pipefail
 
 . "$(dirname "$0")/lib.sh"
 
-[ -f "$SITE_ENV" ] || fail "Site \"$SITE_NAME\" does not exist yet. Run tools/dev/setup-wordpress.sh first."
-
-# shellcheck disable=SC1090
-. "$SITE_ENV"
+read_site_env
 
 cd "$SITE_DIR"
 
