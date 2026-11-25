@@ -52,10 +52,11 @@ final class Template
     /**
      * Names come from data as well (a product's motif), so only plain
      * lowercase path segments are accepted – nothing that could leave templates/.
+     * The pattern ends in \z: a plain $ would also accept a trailing line break.
      */
     public static function exists(string $name): bool
     {
-        return preg_match('~^[a-z0-9-]+(/[a-z0-9-]+)*$~', $name) === 1 && is_file(self::file($name));
+        return preg_match('~\A[a-z0-9-]+(/[a-z0-9-]+)*\z~', $name) === 1 && is_file(self::file($name));
     }
 
     /**

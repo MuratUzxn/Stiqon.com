@@ -135,7 +135,26 @@ final class RenderTest extends TestCase
             'format' => [static fn () => new Flyer(format: 'a3')],
             'flyer motif' => [static fn () => new Flyer(motif: 'siegel')],
             'stage tone' => [static fn () => Stage::render('', 'neon')],
+            'stage ratio' => [static fn () => Stage::render('', 'mist', '', 'panorama')],
         ];
+    }
+
+    public function test_text_from_outside_cannot_break_out_of_an_attribute(): void
+    {
+        $hostile = 'A "B" <c> & \'d\'';
+        $escaped = 'A &quot;B&quot; &lt;c&gt; &amp; &#039;d&#039;';
+
+        foreach ([
+            'sticker label' => stiqon_sticker(['label' => $hostile]),
+            'flyer label' => stiqon_flyer(['label' => $hostile]),
+            'sticker class' => stiqon_sticker([], $hostile),
+            'flyer class' => stiqon_flyer([], $hostile),
+            'stage class' => stiqon_stage('', 'mist', $hostile),
+        ] as $what => $markup) {
+            $this->assertStringContainsString($escaped, $markup, $what);
+            $this->assertStringNotContainsString('"B"', $markup, $what);
+            $this->assertStringNotContainsString('<c>', $markup, $what);
+        }
     }
 
     public function test_the_stage_wraps_its_content(): void

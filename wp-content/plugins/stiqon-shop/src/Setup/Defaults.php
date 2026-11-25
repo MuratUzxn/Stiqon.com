@@ -3,8 +3,10 @@
 namespace Stiqon\Shop\Setup;
 
 /**
- * Settings the shop starts with. They are applied once, when the plugin is
- * activated; all of them stay changeable in the administration afterwards.
+ * Settings the shop starts with. Each is applied once, the first time the
+ * plugin is activated after it was added here. All of them stay changeable in
+ * the administration, and switching the plugin off and on again does not undo
+ * such a change.
  */
 final class Defaults
 {
@@ -15,7 +17,7 @@ final class Defaults
     public const PRIVACY = [
         // Profile pictures come from gravatar.com: a request to a third party for every page that shows one.
         'show_avatars' => '0',
-        // The shop has no blog, so nothing can be commented on or pinged.
+        // The shop has no blog: new content is closed to comments and pings.
         'default_comment_status' => 'closed',
         'default_ping_status' => 'closed',
         // WooCommerce's order attribution sets tracking cookies (sbjs_*) on a visitor's first page.
@@ -25,10 +27,21 @@ final class Defaults
         'woocommerce_show_marketplace_suggestions' => 'no',
     ];
 
+    /** Names of the settings that have been applied, so none is applied twice. */
+    public const APPLIED = 'stiqon_shop_defaults_applied';
+
     public static function apply(): void
     {
+        $applied = array_values(array_filter((array) get_option(self::APPLIED, []), 'is_string'));
+
         foreach (self::PRIVACY as $option => $value) {
-            update_option($option, $value);
+            if (! in_array($option, $applied, true)) {
+                update_option($option, $value);
+
+                $applied[] = $option;
+            }
         }
+
+        update_option(self::APPLIED, $applied, false);
     }
 }

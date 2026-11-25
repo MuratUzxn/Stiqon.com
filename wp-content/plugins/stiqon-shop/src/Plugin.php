@@ -19,6 +19,16 @@ final class Plugin
     }
 
     /**
+     * Whether a mistake in a template or in stored data should stop the page.
+     * It should while developing, so it is noticed; a live shop has to stay up.
+     */
+    public static function strict(): bool
+    {
+        return function_exists('wp_get_environment_type')
+            && in_array(wp_get_environment_type(), ['local', 'development'], true);
+    }
+
+    /**
      * Absolute path of a file inside the plugin directory.
      */
     public static function path(string $relative = ''): string
