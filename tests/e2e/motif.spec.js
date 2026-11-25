@@ -195,7 +195,8 @@ test.describe('own motif across pages', () => {
         expect((await motifSources(page)).every((source) => source?.startsWith('blob:'))).toBe(true);
         expect(await motifSources(page)).toHaveLength(20);
 
-        await page.locator('[data-card]').first().getByRole('link').click();
+        // On to the product (on a wide screen a click on the card would open the quick view first).
+        await page.goto(await page.locator('[data-card]').first().getByRole('link').getAttribute('href'));
         await expect(page.locator('[data-product-stage] [data-view]:not([hidden]) [data-motif-image]')).toHaveAttribute('href', /^blob:/);
 
         await page.reload();

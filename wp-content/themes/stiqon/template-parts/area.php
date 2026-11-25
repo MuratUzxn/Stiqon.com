@@ -82,7 +82,7 @@ $count = $shown === $total ? sprintf('%d Ausführungen', $total) : sprintf('%d v
             · Preise inkl. MwSt., zzgl. Versand
         </p>
 
-        <ul class="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 md:grid-cols-3 lg:mt-10 lg:grid-cols-4" data-cards>
+        <ul class="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 md:grid-cols-3 lg:mt-10 lg:grid-cols-4" data-cards x-on:click="open">
             <?php foreach ($gallery['cards'] as $card) : ?>
                 <?php echo stiqon_product_card($card, ! $matches($card)); ?>
             <?php endforeach; ?>
@@ -92,6 +92,8 @@ $count = $shown === $total ? sprintf('%d Ausführungen', $total) : sprintf('%d v
             Zu dieser Auswahl gibt es keine Ausführung.
             <a href="<?php echo esc_url($page); ?>" class="font-semibold text-ink underline underline-offset-4">Alle anzeigen</a>
         </p>
+
+        <?php get_template_part('template-parts/quick-view'); ?>
 
         <?php if ($gallery['examples']) : ?>
             <p class="text-label mx-auto mt-12 max-w-xl text-center text-muted">

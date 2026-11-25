@@ -70,6 +70,8 @@ function stiqon_icon(string $name, string $class = '', array $attributes = []): 
         'check' => 'M5 12.5l4.5 4.5L19 7.5',
         'menu' => 'M4 7h16M4 12h16M4 17h16',
         'x' => 'M6 6l12 12M18 6 6 18',
+        'chevron-left' => 'M15 6l-6 6 6 6',
+        'chevron-right' => 'M9 6l6 6-6 6',
         'chevron-down' => 'M6 9l6 6 6-6',
         'plus' => 'M12 5v14M5 12h14',
     ];
@@ -174,12 +176,19 @@ function stiqon_product_card(array $card, bool $hidden = false): string
     ]);
 
     $details = array_filter([
-        $card['subtitle'] !== null ? esc_html($card['subtitle']) : null,
+        $card['subtitle'] !== null ? '<span data-subtitle>'.esc_html($card['subtitle']).'</span>' : null,
         // wc_price() returns finished markup. The price stays on one line.
-        $card['price'] !== null ? '<span class="whitespace-nowrap">ab '.wc_price($card['price']).'</span>' : null,
+        $card['price'] !== null ? '<span class="whitespace-nowrap" data-price>ab '.wc_price($card['price']).'</span>' : null,
     ]);
 
-    return '<li class="group relative" data-card'.stiqon_attributes(['data-produkt' => $card['slug'], 'data-option' => $card['option'] ?? '', 'hidden' => $hidden]).'>'
+    // "data-summary" is for the quick view, which shows the card large with a sentence about the product.
+    return '<li class="group relative" data-card'.stiqon_attributes([
+        'data-key' => $card['key'],
+        'data-produkt' => $card['slug'],
+        'data-option' => $card['option'] ?? '',
+        'data-summary' => $card['summary'] ?? '',
+        'hidden' => $hidden,
+    ]).'>'
         .stiqon_stage($view, 'mist', 'transition-colors duration-200 ease-soft group-hover:bg-mist-deep')
         .'<h3 class="mt-3 font-semibold"><a href="'.esc_url($card['url']).'" class="outline-none after:absolute after:inset-0 after:z-10 after:rounded-card focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-ink">'
         .esc_html($card['title']).'</a></h3>'

@@ -17,7 +17,7 @@ final class Gallery
      * @return array{
      *     products: list<array{slug: string, name: string}>,
      *     axis: array{key: string, parameter: string, label: string, options: list<array{slug: string, name: string}>}|null,
-     *     cards: list<array{key: string, product: WC_Product, slug: string, title: string, option: ?string, subtitle: ?string, chosen: array<string, string>, url: string, price: ?float}>,
+     *     cards: list<array{key: string, product: WC_Product, slug: string, title: string, summary: string, option: ?string, subtitle: ?string, chosen: array<string, string>, url: string, price: ?float}>,
      *     examples: bool
      * }
      */
@@ -42,6 +42,7 @@ final class Gallery
             $visible = ProductView::visible($product);
             $prices = self::lowestPrices($product, $visible['key'] ?? null);
             $slug = $product->get_slug();
+            $summary = trim(wp_strip_all_tags($product->get_short_description()));
 
             $gallery['products'][] = ['slug' => $slug, 'name' => $product->get_name()];
 
@@ -51,6 +52,7 @@ final class Gallery
                     'product' => $product,
                     'slug' => $slug,
                     'title' => $product->get_name(),
+                    'summary' => $summary,
                     'option' => null,
                     'subtitle' => null,
                     'chosen' => [],
@@ -72,6 +74,7 @@ final class Gallery
                     'product' => $product,
                     'slug' => $slug,
                     'title' => $product->get_name(),
+                    'summary' => $summary,
                     'option' => $option['slug'],
                     'subtitle' => $option['name'],
                     'chosen' => ['attribute_'.$key => $option['slug']],

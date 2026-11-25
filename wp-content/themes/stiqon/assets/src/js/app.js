@@ -297,6 +297,22 @@ document.addEventListener('alpine:init', () => {
 });
 
 /**
+ * The quick view of a gallery puts the product's address into the browser's
+ * history without leaving the gallery (see gallery.js). To the browser those
+ * two addresses are one page from then on: after a reload on the product's
+ * address, the Back button changes the address to the gallery's – and leaves
+ * the product page on screen. Whenever the Back or Forward button arrives at an
+ * address that is not this page's and is not a quick view, the page is loaded.
+ */
+const loadedAt = window.location.pathname;
+
+window.addEventListener('popstate', () => {
+    if (window.location.pathname !== loadedAt && !window.history.state?.quickView) {
+        window.location.reload();
+    }
+});
+
+/**
  * Behaviour that belongs to one kind of page lives in a file of its own and is
  * fetched only where the page asks for it: an element with x-data="…" names
  * the component it needs. The home page does not pay for the product page.

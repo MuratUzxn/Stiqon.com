@@ -25,9 +25,14 @@ async function cart(page) {
 }
 
 test.describe('product page', () => {
-    test('a card of the gallery opens the product with its material chosen', async ({ page }) => {
+    test('a card of the gallery leads to the product with its material chosen', async ({ page, isMobile }) => {
         await page.goto('/sticker/');
         await page.locator('[data-card]').filter({ hasText: 'Runde Sticker' }).filter({ hasText: 'Kraftpapier' }).getByRole('link').click();
+
+        // A wide screen shows the card large first; from there it is one more click.
+        if (!isMobile) {
+            await page.getByRole('dialog').getByRole('link', { name: 'Produkt ansehen' }).click();
+        }
 
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Runde Sticker');
         await expect(option(page, 'Kraftpapier')).toBeChecked();

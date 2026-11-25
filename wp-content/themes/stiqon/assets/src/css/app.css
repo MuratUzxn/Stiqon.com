@@ -230,6 +230,23 @@
     vertical-align: -0.2em;
 }
 
+/* The quick view of a gallery: a sheet over the dimmed page. While it is open
+   the page behind it does not scroll, and keeps its width. */
+@layer components {
+    .quick-view::backdrop {
+        background-color: rgb(20 20 20 / 0.55);
+    }
+
+    /* Where scrollbars take up room, that room is kept, or the page would jump
+       sideways. The strip shows the colour of the root element – given here the
+       colour the dimmed page has, or it would stand out as a white stripe. */
+    html:has(.quick-view[open]) {
+        overflow: hidden;
+        scrollbar-gutter: stable;
+        background-color: #7e7e7e;
+    }
+}
+
 /*
  | Markup that WooCommerce and Germanized print themselves. It carries their
  | class names, not this theme's, so it is styled here by those names. Their

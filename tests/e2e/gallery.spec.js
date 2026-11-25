@@ -114,6 +114,7 @@ test.describe('gallery', () => {
         // Top left corner of the drawing's surface – far from the title.
         await card.click({ position: { x: 12, y: 12 } });
 
+        // The product's address – as its page on a phone, as the quick view on a wide screen.
         await expect(page).toHaveURL(/\/produkt\/quadratische-sticker\/\?attribute_pa_material=transparent$/);
         expect(size.width).toBeGreaterThan(100);
     });
