@@ -11,6 +11,10 @@
  * without a name, so it is not sent with the form. The page's script passes a
  * choice made on the pills on to it.
  *
+ * Every pill can be chosen. Where a value does not go with the rest of the
+ * choice, the page's script moves the rest to a combination that exists and
+ * says so below the options.
+ *
  * @version 11.1.0
  */
 
@@ -38,11 +42,11 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
                         <?php foreach ($group['values'] as $value => $label) : ?>
                             <label class="relative">
                                 <input
-                                    type="radio" class="peer absolute inset-0 cursor-pointer opacity-0 disabled:cursor-default"
+                                    type="radio" class="peer absolute inset-0 cursor-pointer opacity-0"
                                     name="<?php echo esc_attr($group['name']); ?>" value="<?php echo esc_attr($value); ?>"
-                                    data-select="<?php echo esc_attr($group['key']); ?>" <?php checked($group['chosen'], (string) $value); ?>
+                                    data-select="<?php echo esc_attr($group['key']); ?>" data-group="<?php echo esc_attr($group['label']); ?>" data-label="<?php echo esc_attr($label); ?>" <?php checked($group['chosen'], (string) $value); ?>
                                 >
-                                <span class="text-action inline-flex h-11 items-center rounded-full bg-ink/8 px-4 transition-colors duration-200 ease-soft peer-checked:bg-ink peer-checked:text-paper peer-hover:bg-ink/14 peer-checked:peer-hover:bg-ink peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-ink peer-disabled:text-muted peer-disabled:line-through peer-disabled:opacity-60">
+                                <span class="text-action inline-flex h-11 items-center rounded-full bg-ink/8 px-4 transition-colors duration-200 ease-soft peer-checked:bg-ink peer-checked:text-paper peer-hover:bg-ink/14 peer-checked:peer-hover:bg-ink peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-ink">
                                     <?php echo esc_html($label); ?>
                                 </span>
                             </label>
@@ -57,6 +61,10 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
                     </select>
                 </fieldset>
             <?php endforeach; ?>
+
+            <?php // What the script chose along with the visitor's own choice: to read, and – from a region that is there from the start – to hear. ?>
+            <p class="text-label -mt-2 text-muted" x-show="note" x-text="note" style="display: none" data-options-note></p>
+            <p class="sr-only" role="status" x-text="note"></p>
         </div>
 
         <div class="reset_variations_alert screen-reader-text" role="alert" aria-live="polite" aria-relevant="all"></div>

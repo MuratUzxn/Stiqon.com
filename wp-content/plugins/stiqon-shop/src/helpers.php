@@ -66,11 +66,14 @@ function stiqon_product_view(WC_Product $product, array $chosen = [], array $opt
  * drawing (a sticker on each material), for a product page that switches
  * between them. A product that always looks the same comes back as one view.
  *
+ * The shop draws the values that can be bought. With $ticked, every value set
+ * on the product is drawn – for its editor, where variations may not exist yet.
+ *
  * @return array{key: ?string, views: list<array{value: string, name: string, html: string}>}  "key" names the option as in a request ("attribute_pa_material")
  */
-function stiqon_product_views(WC_Product $product): array
+function stiqon_product_views(WC_Product $product, bool $ticked = false): array
 {
-    $visible = ProductView::visible($product);
+    $visible = ProductView::visible($product, $ticked);
 
     if ($visible === null) {
         return ['key' => null, 'views' => [['value' => '', 'name' => '', 'html' => stiqon_product_view($product)]]];
@@ -92,16 +95,17 @@ function stiqon_product_views(WC_Product $product): array
 
 /**
  * Which options of a product the current request chooses – always a complete
- * choice, see Catalog\Choice – and the variation that makes.
+ * choice, see Catalog\Choice – the variation that makes, and what the product
+ * offers per option ("pa_material" => values that can be bought).
  *
- * @return array{chosen: array<string, string>, variation: ?WC_Product_Variation}
+ * @return array{chosen: array<string, string>, variation: ?WC_Product_Variation, offered: array<string, list<string>>}
  */
 function stiqon_product_choice(WC_Product $product): array
 {
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- options of a public page; values are only compared with what the product offers.
     $chosen = Choice::of($product, wp_unslash($_REQUEST));
 
-    return ['chosen' => $chosen, 'variation' => Choice::variation($product, $chosen)];
+    return ['chosen' => $chosen, 'variation' => Choice::variation($product, $chosen), 'offered' => Choice::offered($product)];
 }
 
 /**
@@ -116,6 +120,17 @@ function stiqon_gallery(string $category): array
 
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- filters of a public page; values are only compared with known ones.
     return $gallery + ['selection' => Gallery::selection($gallery, wp_unslash($_GET))];
+}
+
+/**
+ * Other products of the same area, each as its first card – for "more of
+ * these" on a product page. Cards as stiqon_gallery() returns them.
+ *
+ * @return list<array>
+ */
+function stiqon_products_beside(WC_Product $product, string $category, int $limit = 4): array
+{
+    return Gallery::beside($product, $category, $limit);
 }
 
 /**

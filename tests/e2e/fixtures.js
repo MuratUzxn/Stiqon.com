@@ -28,6 +28,18 @@ export function cli(...args) {
     return execFileSync('bash', [wp, ...args], { env: { ...process.env, STIQON_SITE: 'e2e' }, encoding: 'utf8' }).trim();
 }
 
+/** What is in the visitor's cart, as WooCommerce's own interface reports it. */
+export async function cart(page) {
+    const response = await page.request.get('/wp-json/wc/store/v1/cart');
+
+    return (await response.json()).items.map((item) => ({
+        name: item.name,
+        options: item.variation.map((entry) => entry.value).join(', '),
+        quantity: item.quantity,
+        price: Number(item.prices.price) / 100,
+    }));
+}
+
 /** Logs the page's browser in as the site's administrator. */
 export async function logInAsAdministrator(page) {
     const { ADMIN_USER, ADMIN_PASSWORD } = siteSettings();

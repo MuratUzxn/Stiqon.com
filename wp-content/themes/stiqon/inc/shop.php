@@ -43,7 +43,8 @@ add_action('init', function (): void {
  * WooCommerce has list pages of its own: the shop page, one per category, tag
  * and option. The shop's lists are the area pages, so those addresses lead
  * there – a category to its area, everything else to the home page, which
- * shows both areas. A search for products keeps WooCommerce's page.
+ * shows both areas. A search for products goes to the shop's one search
+ * (inc/search.php).
  */
 add_action('template_redirect', function (): void {
     if (! function_exists('is_shop') || is_search()) {
@@ -72,10 +73,14 @@ add_action('template_redirect', function (): void {
  */
 function stiqon_product_area(WC_Product $product): ?array
 {
-    $slugs = wp_get_post_terms($product->get_id(), 'product_cat', ['fields' => 'slugs']);
+    // The product's categories and everything above them: an area page also
+    // shows what is filed under a sub-category of its category.
+    $categories = array_map('intval', wc_get_product_cat_ids($product->get_id()));
 
     foreach (stiqon_required_pages() as $slug => $label) {
-        if (is_array($slugs) && in_array($slug, $slugs, true)) {
+        $category = get_term_by('slug', $slug, 'product_cat');
+
+        if ($category instanceof WP_Term && in_array($category->term_id, $categories, true)) {
             return ['slug' => $slug, 'label' => $label, 'url' => stiqon_page_url($slug)];
         }
     }
@@ -216,13 +221,7 @@ function stiqon_product_siblings(): void
         return;
     }
 
-    $cards = [];
-
-    foreach (stiqon_gallery($area['slug'])['cards'] as $card) {
-        if ($card['slug'] !== $product->get_slug() && ! isset($cards[$card['slug']])) {
-            $cards[$card['slug']] = $card;
-        }
-    }
+    $cards = stiqon_products_beside($product, $area['slug'], 4);
 
     if ($cards === []) {
         return;
@@ -232,7 +231,7 @@ function stiqon_product_siblings(): void
     echo '<h2 id="weitere" class="text-title">Weitere '.esc_html($area['label']).'</h2>';
     echo '<ul class="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 md:grid-cols-3 lg:grid-cols-4">';
 
-    foreach (array_slice($cards, 0, 4) as $card) {
+    foreach ($cards as $card) {
         echo stiqon_product_card($card); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- finished markup
     }
 
@@ -248,12 +247,19 @@ function stiqon_product_siblings(): void
  */
 function stiqon_product_option_groups(WC_Product $product, array $attributes): array
 {
-    $chosen = stiqon_product_choice($product)['chosen'];
+    $choice = stiqon_product_choice($product);
+    $chosen = $choice['chosen'];
     $groups = [];
 
     foreach ($attributes as $attribute => $offered) {
         $key = sanitize_title($attribute);
         $name = 'attribute_'.$key;
+
+        // WooCommerce lists every value a variation uses, also of variations that
+        // are switched off or have no price. The plugin knows what can be bought.
+        if (is_array($choice['offered'] ?? null)) {
+            $offered = array_values(array_intersect(array_map('strval', $offered), $choice['offered'][$key] ?? []));
+        }
 
         // value => what is shown for it, in the order set for the attribute.
         $values = [];

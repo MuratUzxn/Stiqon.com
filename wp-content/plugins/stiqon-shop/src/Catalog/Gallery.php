@@ -23,14 +23,7 @@ final class Gallery
      */
     public static function of(string $category): array
     {
-        $products = wc_get_products([
-            'category' => [$category],
-            'status' => 'publish',
-            'visibility' => 'catalog',
-            'limit' => -1,
-            'orderby' => 'menu_order',
-            'order' => 'ASC',
-        ]);
+        $products = self::products($category);
 
         $gallery = ['products' => [], 'axis' => null, 'cards' => [], 'examples' => false];
         $axes = [];
@@ -64,6 +57,46 @@ final class Gallery
         }
 
         return $gallery;
+    }
+
+    /**
+     * The first cards of other products of the same area, for "more of these"
+     * beside a product. Only as many products are read as cards are wanted.
+     *
+     * @return list<array{key: string, product: WC_Product, slug: string, title: string, summary: string, option: ?string, subtitle: ?string, chosen: array<string, string>, url: string, price: ?float}>
+     */
+    public static function beside(WC_Product $product, string $category, int $limit = 4): array
+    {
+        $cards = [];
+
+        foreach (self::products($category, ['limit' => max(1, $limit), 'exclude' => [$product->get_id()]]) as $other) {
+            $cards[] = self::cards($other, ProductView::visible($other))[0];
+        }
+
+        return $cards;
+    }
+
+    /**
+     * The products of an area, in the shop's order: published, listed in the
+     * catalogue, and open to everyone – a product behind a password is for
+     * whoever was given its address.
+     *
+     * @param  array<string, mixed>  $more  further arguments for wc_get_products()
+     * @return list<WC_Product>
+     */
+    private static function products(string $category, array $more = []): array
+    {
+        $products = wc_get_products($more + [
+            'category' => [$category],
+            'status' => 'publish',
+            'visibility' => 'catalog',
+            'has_password' => false,
+            'limit' => -1,
+            'orderby' => 'menu_order',
+            'order' => 'ASC',
+        ]);
+
+        return is_array($products) ? array_values($products) : [];
     }
 
     /**

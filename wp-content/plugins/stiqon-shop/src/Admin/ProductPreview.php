@@ -119,7 +119,7 @@ final class ProductPreview
             ? 'Automatisch – erkannt: '.$made
             : 'Automatisch – nichts erkannt'.($drawn !== '' ? ', gezeichnet wird: '.$drawn : '');
 
-        $views = $product->get_id() > 0 && $type !== null ? stiqon_product_views($product) : ['key' => null, 'views' => []];
+        $views = $product->get_id() > 0 && $type !== null ? stiqon_product_views($product, true) : ['key' => null, 'views' => []];
         ?>
         <div id="<?php echo esc_attr(self::PANEL); ?>" class="panel woocommerce_options_panel hidden" data-type="<?php echo esc_attr((string) $guessedType); ?>">
             <style>

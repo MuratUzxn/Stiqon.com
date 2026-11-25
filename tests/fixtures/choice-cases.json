@@ -1,0 +1,106 @@
+{
+    "about": "Which choice of options a product settles on when not every combination exists as a variation. The plugin (Stiqon\\Shop\\Catalog\\Choice::closest) and the product page's script (variation-match.js) follow the same rule; both are held to these cases.",
+    "cases": [
+        {
+            "why": "a choice that exists stays as it is",
+            "combinations": [
+                {"format": "a6", "papier": "135"},
+                {"format": "a6", "papier": "250"},
+                {"format": "a5", "papier": "135"}
+            ],
+            "wanted": {"format": "a6", "papier": "250"},
+            "fixed": ["papier"],
+            "expect": {"format": "a6", "papier": "250"}
+        },
+        {
+            "why": "the option just chosen stays, the other one moves",
+            "combinations": [
+                {"format": "a6", "papier": "250"},
+                {"format": "a5", "papier": "135"}
+            ],
+            "wanted": {"format": "a5", "papier": "250"},
+            "fixed": ["format"],
+            "expect": {"format": "a5", "papier": "135"}
+        },
+        {
+            "why": "the same wish with the other option held: now the format moves",
+            "combinations": [
+                {"format": "a6", "papier": "250"},
+                {"format": "a5", "papier": "135"}
+            ],
+            "wanted": {"format": "a5", "papier": "250"},
+            "fixed": ["papier"],
+            "expect": {"format": "a6", "papier": "250"}
+        },
+        {
+            "why": "nothing held and two variations equally near: the first in the product's order",
+            "combinations": [
+                {"format": "a6", "papier": "250"},
+                {"format": "a5", "papier": "135"}
+            ],
+            "wanted": {"format": "a5", "papier": "250"},
+            "fixed": [],
+            "expect": {"format": "a6", "papier": "250"}
+        },
+        {
+            "why": "of the variations with the held value, the one that keeps most of the rest",
+            "combinations": [
+                {"material": "vinyl", "groesse": "5", "auflage": "100"},
+                {"material": "kraft", "groesse": "5", "auflage": "250"},
+                {"material": "kraft", "groesse": "10", "auflage": "250"},
+                {"material": "vinyl", "groesse": "10", "auflage": "100"}
+            ],
+            "wanted": {"material": "kraft", "groesse": "10", "auflage": "100"},
+            "fixed": ["material"],
+            "expect": {"material": "kraft", "groesse": "10", "auflage": "250"}
+        },
+        {
+            "why": "one held option outweighs all the others together",
+            "combinations": [
+                {"material": "vinyl", "groesse": "10", "auflage": "100"},
+                {"material": "kraft", "groesse": "5", "auflage": "250"}
+            ],
+            "wanted": {"material": "kraft", "groesse": "10", "auflage": "100"},
+            "fixed": ["material"],
+            "expect": {"material": "kraft", "groesse": "5", "auflage": "250"}
+        },
+        {
+            "why": "a variation that leaves an option open takes any value of it",
+            "combinations": [
+                {"material": "vinyl", "groesse": ""},
+                {"material": "kraft", "groesse": "5"}
+            ],
+            "wanted": {"material": "kraft", "groesse": "10"},
+            "fixed": ["groesse"],
+            "expect": {"material": "vinyl", "groesse": "10"}
+        },
+        {
+            "why": "a held value that no variation has cannot stay",
+            "combinations": [
+                {"material": "vinyl", "groesse": "5"},
+                {"material": "kraft", "groesse": "10"}
+            ],
+            "wanted": {"material": "holo", "groesse": "10"},
+            "fixed": ["material"],
+            "expect": {"material": "kraft", "groesse": "10"}
+        },
+        {
+            "why": "two held options that do not go together: the first variation that keeps one of them",
+            "combinations": [
+                {"format": "a6", "papier": "250", "oberflaeche": "matt"},
+                {"format": "a5", "papier": "135", "oberflaeche": "glanz"},
+                {"format": "a5", "papier": "135", "oberflaeche": "matt"}
+            ],
+            "wanted": {"format": "a5", "papier": "250", "oberflaeche": "matt"},
+            "fixed": ["format", "papier"],
+            "expect": {"format": "a6", "papier": "250", "oberflaeche": "matt"}
+        },
+        {
+            "why": "without variations there is nothing to move to",
+            "combinations": [],
+            "wanted": {"format": "a5", "papier": "250"},
+            "fixed": ["format"],
+            "expect": {"format": "a5", "papier": "250"}
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-import { test, expect, accessibilityViolations, fixture } from './fixtures.js';
+import { test, expect, accessibilityViolations, cart, fixture } from './fixtures.js';
 
 /**
  * The product page: the product drawn large, its options as pills, the price of
@@ -11,18 +11,6 @@ const price = (page) => page.locator('.summary p.price:not(.wc-gzd-additional-in
 const net = (page) => page.locator('[data-net-price]');
 const shownView = (page) => page.locator('[data-product-stage] [data-view]:not([hidden])');
 const option = (page, name) => page.getByRole('radio', { name, exact: true });
-
-/** What is in the visitor's cart, as WooCommerce's own interface reports it. */
-async function cart(page) {
-    const response = await page.request.get('/wp-json/wc/store/v1/cart');
-
-    return (await response.json()).items.map((item) => ({
-        name: item.name,
-        options: item.variation.map((entry) => entry.value).join(', '),
-        quantity: item.quantity,
-        price: Number(item.prices.price) / 100,
-    }));
-}
 
 test.describe('product page', () => {
     test('a card of the gallery leads to the product with its material chosen', async ({ page, isMobile }) => {
@@ -65,6 +53,11 @@ test.describe('product page', () => {
         await option(page, '500 Stück').check();
         await expect(price(page)).toHaveText('119,90 €');
         await expect(net(page)).toHaveText('100,76 € netto');
+
+        // Every combination of this product exists: nothing else had to move along.
+        await expect(page.getByRole('radio', { checked: true })).toHaveCount(3);
+        await expect(option(page, 'Holografische Folie')).toBeChecked();
+        await expect(page.locator('[data-options-note]')).toBeHidden();
 
         // WooCommerce's own script has followed: it knows the variation.
         await expect(page.locator('input.variation_id')).not.toHaveValue('0');
@@ -124,8 +117,10 @@ test.describe('product page', () => {
 
         const others = page.getByRole('region', { name: 'Weitere Flyer' }).or(page.locator('section[aria-labelledby="weitere"]'));
 
-        await expect(others.locator('[data-card]')).toHaveCount(4);
-        await expect(others.locator('[data-card]').filter({ hasText: 'Flyer DIN A6' })).toHaveCount(0);
+        // The first four of the area in the shop's order, without the product itself, each on its first paper.
+        await expect(others.locator('[data-card] h3')).toHaveText(['Flyer DIN A5', 'Flyer DIN A4', 'Flyer DIN lang', 'Flyer Quadrat']);
+        await expect(others.locator('[data-card]').first()).toContainText('135 g Bilderdruck');
+        await expect(others.locator('[data-card]').first()).toContainText('ab 25,90 €');
 
         await others.getByRole('link', { name: 'Flyer DIN A5' }).click();
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Flyer DIN A5');

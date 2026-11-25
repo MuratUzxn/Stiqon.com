@@ -44,13 +44,20 @@ final class ProductView
 
         $options = [];
 
+        // Where nothing is asked for, the product is drawn the way it opens: with
+        // its preselected options, moved to a combination that can be bought.
+        $opens = Choice::of($parent);
+
         foreach ($parent->get_attributes() as $key => $attribute) {
             if (! $attribute instanceof WC_Product_Attribute) {
                 continue;
             }
 
-            // In this order: what is asked for, what the product preselects, its first option.
-            $wanted = array_filter([$chosen[$key] ?? $chosen['attribute_'.$key] ?? null, $parent->get_default_attributes()[$key] ?? null], 'is_string');
+            // In this order: what is asked for, what the product opens with, what it preselects, its first option.
+            $wanted = array_filter(
+                [$chosen[$key] ?? $chosen['attribute_'.$key] ?? null, $opens['attribute_'.$key] ?? null, $parent->get_default_attributes()[$key] ?? null],
+                static fn (mixed $value): bool => is_string($value) && $value !== '',
+            );
             $option = self::option($parent, $attribute, array_values($wanted));
 
             if ($option !== null) {
@@ -78,9 +85,14 @@ final class ProductView
      * one used for variations whose values change it – a sticker's material, a
      * flyer's paper. Null for a product that looks the same whatever is chosen.
      *
+     * The shop shows the values that can be bought (see Choice::offered()): a
+     * material ticked on the product without a variation for sale gets no card
+     * and no drawing. The product's editor passes $ticked to see every value
+     * that is set, also before any variation exists.
+     *
      * @return array{key: string, name: string, label: string, options: list<array{slug: string, name: string, stored: array<string, mixed>}>}|null
      */
-    public static function visible(WC_Product $product): ?array
+    public static function visible(WC_Product $product, bool $ticked = false): ?array
     {
         $view = self::resolve($product);
 
@@ -96,14 +108,21 @@ final class ProductView
             $options = self::options($product, $attribute);
 
             foreach ($options as $option) {
-                if (Guess::option($view['type'], $option['name']) !== [] || Spec::known($view['type'], $option['stored']) !== []) {
-                    return [
-                        'key' => (string) $key,
-                        'name' => $attribute->get_name(),
-                        'label' => wc_attribute_label($attribute->get_name(), $product),
-                        'options' => $options,
-                    ];
+                if (Guess::option($view['type'], $option['name']) === [] && Spec::known($view['type'], $option['stored']) === []) {
+                    continue;
                 }
+
+                if (! $ticked) {
+                    $offered = Choice::offered($product)[(string) $key] ?? [];
+                    $options = array_values(array_filter($options, static fn (array $option): bool => in_array($option['slug'], $offered, true)));
+                }
+
+                return $options === [] ? null : [
+                    'key' => (string) $key,
+                    'name' => $attribute->get_name(),
+                    'label' => wc_attribute_label($attribute->get_name(), $product),
+                    'options' => $options,
+                ];
             }
         }
 

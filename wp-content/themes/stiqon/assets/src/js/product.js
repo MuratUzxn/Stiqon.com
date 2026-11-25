@@ -1,3 +1,5 @@
+import { closest } from './variation-match.js';
+
 /**
  * Behaviour of the product page. Loaded only on product pages (see app.js).
  */
@@ -5,11 +7,14 @@ export default function register(Alpine) {
     /**
      * The product page. Its options are radio buttons that work on their own;
      * this keeps what surrounds them in step with the choice: the drawing, the
-     * price without VAT, which options can still be combined – and WooCommerce's
+     * price without VAT, a choice that exists as a variation – and WooCommerce's
      * own script, which reads a select element per option.
      */
     Alpine.data('productOptions', () => ({
         form: null,
+
+        /** What was changed besides the visitor's own choice, in words. */
+        note: '',
 
         init() {
             this.form = this.$root.querySelector('form.variations_form');
@@ -20,32 +25,51 @@ export default function register(Alpine) {
 
             this.form.addEventListener('change', (event) => {
                 if (event.target.matches('input[type="radio"][data-select]')) {
-                    this.pass(event.target);
+                    this.settle(event.target);
+                    this.pass();
                     this.follow();
                 }
             });
 
+            this.listen();
+
             // A page restored from the browser's memory may come back with other pills
             // checked than the page was sent with.
-            this.form.querySelectorAll('input[type="radio"][data-select]:checked').forEach((radio) => this.pass(radio));
+            this.pass();
             this.follow();
         },
 
-        /** Hands a choice on to the select that WooCommerce's script listens to. */
-        pass(radio) {
-            const select = this.form.querySelector(`select[data-attribute_name="${CSS.escape(radio.name)}"]`);
+        /**
+         * WooCommerce's script says which variation a choice makes – found in the
+         * list it has in the page or, for a product with many variations, asked of
+         * the server. The price without VAT follows what it says. Its events are
+         * jQuery's own, which an ordinary listener never hears.
+         */
+        listen() {
+            const net = this.$root.querySelector('[data-net-price]');
 
-            if (select && select.value !== radio.value) {
-                select.value = radio.value;
-                select.dispatchEvent(new Event('change', { bubbles: true }));
+            if (!net || !window.jQuery) {
+                return;
             }
+
+            const show = (text) => {
+                net.innerHTML = text ?? '';
+                net.hidden = !text;
+            };
+
+            window.jQuery(this.form)
+                .on('found_variation.stiqon', (event, variation) => show(variation?.stiqon_net_price))
+                .on('reset_data.stiqon', () => show(''));
+        },
+
+        /** The pills of all options. */
+        radios() {
+            return [...this.form.querySelectorAll('input[type="radio"][data-select]')];
         },
 
         /** What is chosen now: { attribute_pa_material: 'vinyl', … }. */
         chosen() {
-            const radios = this.form.querySelectorAll('input[type="radio"][data-select]:checked');
-
-            return Object.fromEntries([...radios].map((radio) => [radio.name, radio.value]));
+            return Object.fromEntries(this.radios().filter((radio) => radio.checked).map((radio) => [radio.name, radio.value]));
         },
 
         /** The variations WooCommerce wrote into the form – or none, when it loads them on demand. */
@@ -59,16 +83,70 @@ export default function register(Alpine) {
             }
         },
 
-        /** Whether a variation fits a choice; an empty value on a variation means "any". */
-        fits(variation, chosen) {
-            return Object.entries(variation.attributes).every(([name, value]) => value === '' || chosen[name] === value);
-        },
-
-        follow() {
-            const chosen = this.chosen();
+        /**
+         * Not every combination of options exists. When the pill just chosen does
+         * not go with the rest of the choice, the rest moves to the nearest
+         * combination that does: every value of every option stays within reach,
+         * and the page always shows something that can be bought.
+         */
+        settle(radio) {
             const variations = this.variations();
 
-            // The drawing for the chosen material or paper.
+            this.note = '';
+
+            // Loaded on demand: WooCommerce asks the server, and says so if nothing fits.
+            if (variations.length === 0) {
+                return;
+            }
+
+            const wanted = this.chosen();
+            const settled = closest(variations.map((variation) => variation.attributes), wanted, [radio.name]);
+            const moved = [];
+
+            for (const other of this.radios()) {
+                if (settled[other.name] === other.value && wanted[other.name] !== other.value) {
+                    other.checked = true;
+                    moved.push(`${other.dataset.group} ${other.dataset.label}`);
+                }
+            }
+
+            if (moved.length > 0) {
+                this.note = `Passend dazu gewählt: ${moved.join(', ')}.`;
+            }
+        },
+
+        /**
+         * Hands the choice on to the selects WooCommerce's script listens to, all
+         * at once: one change at a time would pass through combinations that do not
+         * exist, and that script empties a select whose value does not fit the others.
+         */
+        pass() {
+            const chosen = this.chosen();
+            let changed = null;
+
+            for (const select of this.form.querySelectorAll('select[data-attribute_name]')) {
+                const value = chosen[select.dataset.attribute_name];
+
+                if (value === undefined || select.value === value) {
+                    continue;
+                }
+
+                // That script keeps in a select only what goes with the other selects'
+                // values, and rebuilds the list at every change.
+                if (![...select.options].some((option) => option.value === value)) {
+                    select.add(new Option(value, value));
+                }
+
+                select.value = value;
+                changed = select;
+            }
+
+            changed?.dispatchEvent(new Event('change', { bubbles: true }));
+        },
+
+        /** Shows the drawing for the chosen material or paper. */
+        follow() {
+            const chosen = this.chosen();
             const stage = this.$root.querySelector('[data-product-stage]');
 
             if (stage && stage.dataset.option && chosen[stage.dataset.option] !== undefined) {
@@ -76,26 +154,6 @@ export default function register(Alpine) {
                     view.hidden = view.dataset.view !== chosen[stage.dataset.option];
                 });
             }
-
-            if (variations.length === 0) {
-                return;
-            }
-
-            // The price without VAT of the chosen variation.
-            const variation = variations.find((candidate) => this.fits(candidate, chosen));
-            const net = this.$root.querySelector('[data-net-price]');
-
-            if (net && variation) {
-                net.innerHTML = variation.stiqon_net_price ?? '';
-                net.hidden = !variation.stiqon_net_price;
-            }
-
-            // An option that no variation offers together with the rest of the choice.
-            this.form.querySelectorAll('input[type="radio"][data-select]').forEach((radio) => {
-                const tried = { ...chosen, [radio.name]: radio.value };
-
-                radio.disabled = !radio.checked && !variations.some((candidate) => this.fits(candidate, tried));
-            });
         },
     }));
 }
