@@ -131,7 +131,7 @@ fetch "https://downloads.wordpress.org/plugin/woocommerce-germanized.$GERMANIZED
 if [ "$FRESH" = "1" ]; then
     say "Removing site \"$SITE_NAME\""
     db_admin -e "DROP DATABASE IF EXISTS \`$DB_NAME\`"
-    rm -rf "$SITE_DIR" "$SITE_ENV"
+    rm -rf "$SITE_DIR" "$SITE_ENV" "$SITE_MAILS"
 fi
 
 # --- Settings and passwords: generated once per site, kept next to it, never in the repository
@@ -180,10 +180,10 @@ EOF
 
 # --- WordPress --------------------------------------------------------------------
 
-mkdir -p "$SITE_DIR"
+mkdir -p "$SITE_DIR" "$SITE_MAILS"
 
 if [ "$(id -u)" = "0" ]; then
-    chown "$WP_USER": "$SITE_DIR"
+    chown "$WP_USER": "$SITE_DIR" "$SITE_MAILS"
 fi
 
 # The version the site's files are, read from the files themselves.
@@ -293,6 +293,10 @@ link_into_site() { # source target
 
 link_into_site "$REPO/wp-content/themes/stiqon" "$SITE_DIR/wp-content/themes/stiqon"
 link_into_site "$REPO/wp-content/plugins/stiqon-shop" "$SITE_DIR/wp-content/plugins/stiqon-shop"
+
+# A local site sends no mail: what it would send is written to $SITE_MAILS instead.
+as_site_user mkdir -p "$SITE_DIR/wp-content/mu-plugins"
+link_into_site "$REPO/tools/dev/mu-plugins/stiqon-dev-mail.php" "$SITE_DIR/wp-content/mu-plugins/stiqon-dev-mail.php"
 
 [ -f "$REPO/wp-content/themes/stiqon/assets/build/manifest.json" ] || fail "The theme is not built yet. Run: npm ci && npm run build"
 

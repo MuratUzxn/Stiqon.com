@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import AxeBuilder from '@axe-core/playwright';
@@ -10,15 +10,46 @@ export function fixture(name) {
     return fileURLToPath(new URL(`../fixtures/${name}`, import.meta.url));
 }
 
+/** Where the local sites live (see tools/dev/lib.sh). */
+const sites = `${process.env.STIQON_WP_ROOT ?? (process.getuid?.() === 0 ? '/srv/stiqon-wp' : `${homedir()}/.stiqon-wp`)}/sites`;
+
 /**
  * Settings of the site the tests run against, as written by
  * tools/dev/setup-wordpress.sh (address, generated administrator password).
  */
 export function siteSettings() {
-    const root = process.env.STIQON_WP_ROOT ?? (process.getuid?.() === 0 ? '/srv/stiqon-wp' : `${homedir()}/.stiqon-wp`);
-    const lines = readFileSync(`${root}/sites/e2e.env`, 'utf8').split('\n').filter((line) => line.includes('='));
+    const lines = readFileSync(`${sites}/e2e.env`, 'utf8').split('\n').filter((line) => line.includes('='));
 
     return Object.fromEntries(lines.map((line) => [line.slice(0, line.indexOf('=')), line.slice(line.indexOf('=') + 1)]));
+}
+
+/**
+ * The e-mails the test site would have sent, oldest first. A local site sends
+ * none: each is written to a file instead (tools/dev/mu-plugins/stiqon-dev-mail.php).
+ *
+ * @returns {Array<{to: string[], subject: string, message: string, headers: string}>}
+ */
+export function mails() {
+    const directory = `${sites}/e2e.mails`;
+
+    if (!existsSync(directory)) {
+        return [];
+    }
+
+    return readdirSync(directory)
+        .filter((name) => name.endsWith('.json'))
+        .sort()
+        .map((name) => JSON.parse(readFileSync(`${directory}/${name}`, 'utf8')))
+        .map((mail) => ({ ...mail, to: [mail.to].flat() }));
+}
+
+/** Throws the kept e-mails away, so a test reads only what it caused itself. */
+export function forgetMails() {
+    const directory = `${sites}/e2e.mails`;
+
+    for (const name of existsSync(directory) ? readdirSync(directory) : []) {
+        rmSync(`${directory}/${name}`, { force: true });
+    }
 }
 
 /** Runs WP-CLI in the test site and returns what it printed. */
