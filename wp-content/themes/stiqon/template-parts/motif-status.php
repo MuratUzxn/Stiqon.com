@@ -1,11 +1,19 @@
 <?php
 /**
  * Reports the chosen motif at the bottom of the screen and offers to remove it.
+ *
+ * On a product page with two columns the bar keeps to the column of the
+ * drawing. In the middle of the screen it would sit on the button that puts
+ * the product into the cart.
  */
 
 defined('ABSPATH') || exit;
+
+$beside = function_exists('is_product') && is_product();
 ?>
-<div x-data="motifStatus" data-needs-script class="pointer-events-none fixed inset-x-0 bottom-5 z-50 flex flex-col items-center gap-2 px-4">
+<div x-data="motifStatus" data-needs-script class="pointer-events-none fixed inset-x-0 bottom-5 z-50">
+<div class="<?php echo esc_attr(stiqon_classes(['wrap', 'lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-14' => $beside])); ?>" data-motif-bar>
+<div class="flex flex-col items-center gap-2">
     <?php
     // What happened, for screen readers. Both regions are part of the page from the
     // start and only their text changes: a region that first appears together with
@@ -40,4 +48,6 @@ defined('ABSPATH') || exit;
             class="text-action inline-flex h-10 shrink-0 items-center rounded-full bg-paper px-4 text-sm text-ink transition-colors hover:bg-mist-deep"
         >Entfernen</button>
     </div>
+</div>
+</div>
 </div>

@@ -1,4 +1,4 @@
-import { test, expect, accessibilityViolations } from './fixtures.js';
+import { test, expect, accessibilityViolations, fixture } from './fixtures.js';
 
 /**
  * The product page: the product drawn large, its options as pills, the price of
@@ -147,6 +147,32 @@ test.describe('product page', () => {
             expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
         });
     }
+
+    test('the bar that reports the own motif keeps clear of the cart button', async ({ page, isMobile }) => {
+        test.skip(isMobile, 'On a phone the page is one column, and the bar passes over it while scrolling.');
+
+        // At these heights the button sits where the bar would be, were it in the middle of the screen.
+        for (const height of [900, 860, 940]) {
+            await page.setViewportSize({ width: 1440, height });
+            await page.goto('/produkt/runde-sticker/');
+            await page.locator('input[type="file"]').first().setInputFiles(fixture('motif.png'));
+
+            const bar = page.getByRole('group', { name: 'Ihr Motiv' });
+
+            await expect(bar).toHaveCSS('opacity', '1');
+
+            const [barBox, buttonBox] = [await bar.boundingBox(), await page.getByRole('button', { name: 'In den Warenkorb' }).boundingBox()];
+            const apart = barBox.x + barBox.width <= buttonBox.x || buttonBox.x + buttonBox.width <= barBox.x
+                || barBox.y + barBox.height <= buttonBox.y || buttonBox.y + buttonBox.height <= barBox.y;
+
+            expect(apart, `at ${height} px the bar (${JSON.stringify(barBox)}) lies on the button (${JSON.stringify(buttonBox)})`).toBe(true);
+            // It stands under the drawing, in the drawing's column.
+            const stage = await page.locator('[data-product-stage]').boundingBox();
+
+            expect(barBox.x).toBeGreaterThanOrEqual(stage.x);
+            expect(barBox.x + barBox.width).toBeLessThanOrEqual(stage.x + stage.width);
+        }
+    });
 
     test('the options can be chosen with the keyboard', async ({ page, isMobile }) => {
         test.skip(isMobile, 'Keyboard navigation is checked on the desktop viewport.');
