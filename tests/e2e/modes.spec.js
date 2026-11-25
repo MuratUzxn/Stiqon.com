@@ -1,4 +1,4 @@
-import { test, expect, cli, logInAsAdministrator } from './fixtures.js';
+import { test, expect, accessibilityViolations, cli, logInAsAdministrator } from './fixtures.js';
 
 /**
  * The theme's own pages leave out stylesheets and scripts they do not use. Some
@@ -36,26 +36,50 @@ test.describe('"coming soon" for the whole site', () => {
         set('woocommerce_store_pages_only', 'yes');
     });
 
-    for (const path of ['/', '/sticker/']) {
-        test(`${path} shows WooCommerce's page with the styles it is built from`, async ({ page }) => {
+    for (const path of ['/', '/sticker/', '/warenkorb/', '/mein-konto/']) {
+        test(`${path} announces the shop in the theme's own words and look`, async ({ page, baseURL }) => {
             await page.goto(path);
 
-            // WooCommerce draws this page from blocks, on the addresses of the theme's own pages.
+            // WooCommerce decides that the announcement is shown; the theme says what it says.
             await expect(page.locator('meta[name="woo-coming-soon-page"]')).toBeAttached();
-            await expect(page.getByRole('heading', { name: /demnächst verfügbar/ })).toBeVisible();
+            await expect(page.getByRole('heading', { level: 1 })).toHaveText('Stiqon öffnet bald.');
+            await expect(page.getByRole('img', { name: 'Stiqon' })).toBeVisible();
+            expect(await stylesheets(page)).toContain('stiqon-css');
 
-            const ids = await stylesheets(page);
-
-            expect(ids).toContain('wp-block-library-inline-css');
-            expect(ids).toContain('global-styles-inline-css');
-
-            // Without the block styles everything sits in the top left corner.
-            const heading = await page.getByRole('heading', { name: /demnächst verfügbar/ }).boundingBox();
-            const width = page.viewportSize().width;
+            // In the middle of the page, not in its top left corner.
+            const heading = await page.getByRole('heading', { level: 1 }).boundingBox();
+            const { width, height } = page.viewportSize();
 
             expect(Math.abs(heading.x + heading.width / 2 - width / 2)).toBeLessThan(width * 0.1);
+            expect(heading.y).toBeGreaterThan(height * 0.2);
+
+            // Nothing of the shop, and nothing of WooCommerce's stand-in page: no log-in
+            // button, no icons of networks the shop is not on. Every link stays on the site.
+            await expect(page.locator('[data-card], [data-mockup], [data-cart-count]')).toHaveCount(0);
+            await expect(page.getByRole('link', { name: /Anmelden|Log in/ })).toHaveCount(0);
+
+            const links = await page.getByRole('link').evaluateAll((all) => all.map((link) => link.href));
+
+            expect(links.filter((href) => !href.startsWith(baseURL))).toEqual([]);
+            expect(await accessibilityViolations(page)).toEqual([]);
+            expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
         });
     }
+
+    test('who runs the site and how it treats data stays readable', async ({ page }) => {
+        await page.goto('/');
+
+        for (const [name, heading] of [['Impressum', 'Impressum'], ['Datenschutzerklärung', 'Datenschutzerklärung']]) {
+            await page.getByRole('link', { name }).click();
+            await expect(page.getByRole('heading', { level: 1 })).toHaveText(heading);
+            await expect(page.locator('meta[name="woo-coming-soon-page"]')).toHaveCount(0);
+            await page.goBack();
+        }
+
+        // The other legal pages belong to a shop that is not open yet.
+        await page.goto('/agb/');
+        await expect(page.getByRole('heading', { level: 1 })).toHaveText('Stiqon öffnet bald.');
+    });
 
     test('search tells visitors nothing the announcement does not', async ({ request }) => {
         const response = await request.get('/wp-json/stiqon/v1/suchindex');
@@ -90,16 +114,27 @@ test.describe('"coming soon" for the shop pages only', () => {
         set('woocommerce_coming_soon', 'no');
     });
 
-    test('the home page is the shop\'s own, the shop page announces itself inside the theme', async ({ page }) => {
+    test('the home page is the shop\'s own, the pages of the shop announce it inside the theme', async ({ page }) => {
         await page.goto('/');
         await expect(page.getByRole('heading', { level: 1, name: 'Werbemittel, die haften bleiben.' })).toBeVisible();
 
-        // WooCommerce prints its announcement between this theme's header and footer.
-        await page.goto('/produkt/runde-sticker/');
-        await expect(page.locator('header nav[aria-label="Hauptnavigation"]').first()).toBeAttached();
-        await expect(page.getByRole('button', { name: 'In den Warenkorb' })).toHaveCount(0);
-        await expect(page.locator('main [data-mockup]')).toHaveCount(0);
-        expect(await stylesheets(page)).toContain('wp-block-library-inline-css');
+        // Products are shown on the area pages, so they count as pages of the shop –
+        // like the product, the cart and the checkout, which WooCommerce knows as such.
+        for (const path of ['/sticker/', '/flyer/', '/produkt/runde-sticker/', '/warenkorb/']) {
+            await page.goto(path);
+            await expect(page.getByRole('heading', { level: 1 }), path).toHaveText('Der Shop öffnet bald.');
+            await expect(page.locator('header nav[aria-label="Hauptnavigation"]').first(), path).toBeAttached();
+            await expect(page.locator('footer nav[aria-labelledby="footer-legal"]'), path).toBeAttached();
+            await expect(page.getByRole('button', { name: 'In den Warenkorb' }), path).toHaveCount(0);
+            await expect(page.locator('main [data-mockup], main [data-card]'), path).toHaveCount(0);
+            await expect(page.getByRole('main'), path).not.toContainText('€');
+        }
+
+        expect(await accessibilityViolations(page)).toEqual([]);
+
+        // Pages that sell nothing stay what they are.
+        await page.goto('/impressum/');
+        await expect(page.getByRole('heading', { level: 1 })).toHaveText('Impressum');
     });
 
     test('search finds nothing for visitors while the products are not on show', async ({ page }) => {
