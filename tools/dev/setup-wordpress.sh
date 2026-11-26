@@ -186,6 +186,10 @@ if [ "$(id -u)" = "0" ]; then
     chown "$WP_USER": "$SITE_DIR" "$SITE_MAILS"
 fi
 
+# What the site would have sent holds names, addresses and links that set a
+# password: for the site's own user (and whoever administers the machine).
+chmod 700 "$SITE_MAILS"
+
 # The version the site's files are, read from the files themselves.
 core_version() {
     [ -f "$SITE_DIR/wp-includes/version.php" ] || return 0
