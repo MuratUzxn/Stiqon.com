@@ -35,6 +35,18 @@ function stiqon_is_woocommerce_page(): bool
 }
 
 /**
+ * Whether a page written in the editor holds something WooCommerce or
+ * Germanized draws – one of their shortcodes or blocks. Such a page needs
+ * what they load; a page of plain text does not (stiqon_declare_written_page()).
+ */
+function stiqon_page_holds_shop_content(): bool
+{
+    $content = (string) get_post_field('post_content', get_queried_object_id());
+
+    return (bool) preg_match('~\[(?:woocommerce|wc_|product|add_to_cart|shop_messages|gzd_|eu_owb|revocation|payment_methods)|<!-- wp:(?:woocommerce|woocommerce-germanized|vendidero)[/-]~', $content);
+}
+
+/**
  * The inside of a message from WooCommerce, laid out as the shop shows it: the
  * sentence – as one piece, however many links and bold words it holds – and
  * beside it the button that belongs to it ("Warenkorb anzeigen"), which

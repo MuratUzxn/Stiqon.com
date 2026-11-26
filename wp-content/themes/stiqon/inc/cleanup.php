@@ -72,17 +72,37 @@ function stiqon_is_shop_page(): bool
 }
 
 /**
+ * A "written" page comes from the editor and holds nothing of WooCommerce's:
+ * the legal texts, for instance. It keeps the stylesheets for editor content
+ * and, like a lean page, does without what WooCommerce loads on every page of
+ * a site – more stylesheet and script than the checkout gets, for a page of
+ * text. Its template says so before it prints the header.
+ */
+function stiqon_declare_written_page(): void
+{
+    $GLOBALS['stiqon_written_page'] = true;
+}
+
+function stiqon_is_written_page(): bool
+{
+    return ! empty($GLOBALS['stiqon_written_page']);
+}
+
+/**
  * What a lean page leaves out: the stylesheets for editor content, and the
- * scripts and styles WooCommerce loads on every page of a site.
+ * scripts and styles WooCommerce loads on every page of a site. A written
+ * page leaves out the latter only.
  */
 add_action('wp_enqueue_scripts', function (): void {
-    if (! stiqon_is_lean_page()) {
+    if (! stiqon_is_lean_page() && ! stiqon_is_written_page()) {
         return;
     }
 
-    wp_dequeue_style('wp-block-library');
-    wp_dequeue_style('classic-theme-styles');
-    wp_dequeue_style('global-styles');
+    if (stiqon_is_lean_page()) {
+        wp_dequeue_style('wp-block-library');
+        wp_dequeue_style('classic-theme-styles');
+        wp_dequeue_style('global-styles');
+    }
 
     // The store notice is printed hidden on every page; WooCommerce's script
     // reveals it and its stylesheet places it. With the notice switched on,

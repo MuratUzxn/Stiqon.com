@@ -207,6 +207,14 @@ Seiten doch den Block, weist die Verwaltung darauf hin.
   von einem Seiten-Cache ausgeliefert. Jede Seite trägt deshalb WooCommerces Prüfsumme des
   Warenkorbs, mit dem sie entstand; weicht die des Browsers ab, holt das Skript die Zahl neu
   (`assets/src/js/app.js`).
+- **Solange die ganze Website angekündigt ist,** stehen Impressum und Datenschutzerklärung im
+  schmalen Rahmen der Ankündigung (`header-announcement.php`, `footer-announcement.php`): Der
+  Kopf des Shops böte Bereiche, Suche und Warenkorb an, die alle zur Ankündigung zurückführen.
+- **Geschriebene Seiten** – die Rechtstexte – laden nichts von WooCommerce, solange ihr Text
+  keinen Kurzbefehl und keinen Block von WooCommerce oder Germanized enthält
+  (`stiqon_declare_written_page()` in `inc/cleanup.php`). Die Ankündigung der ganzen Website
+  ebenso. Auf den Seiten des Shops lädt die Ankündigung dagegen weiter, was WooCommerce dort
+  lädt: Ihr Kopf ist schon gedruckt, wenn feststeht, dass sie erscheint.
 - **Ohne das Plugin „Stiqon Shop-Funktionen“** zeigen Warenkorb und Kasse ihre Zeilen ohne
   Zeichnung; **ohne WooCommerce** nennt der Fuß weiter Impressum, Datenschutzerklärung und die
   übrigen Rechtsseiten. Beides prüft `tests/integration/plugins-off.php`.

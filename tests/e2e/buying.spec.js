@@ -242,6 +242,39 @@ test.describe('checkout', () => {
         await expect(page.locator('#billing_country_field')).toContainText('Deutschland');
     });
 
+    test('a product the shop cannot draw keeps the picture WooCommerce has for it', async ({ page }) => {
+        // A sample set, a voucher: a simple product with a photo – here WooCommerce's stand-in.
+        const id = Number(cli('eval', `
+            $product = new WC_Product_Simple();
+            $product->set_name('Musterset zur Prüfung');
+            $product->set_sku('test-musterset');
+            $product->set_regular_price('5.00');
+            $product->set_status('publish');
+            $product->set_catalog_visibility('hidden');
+            echo $product->save();
+        `));
+
+        try {
+            await page.goto(`/?add-to-cart=${id}`);
+            await add(page, '/produkt/runde-sticker/');
+            await openCheckout(page);
+
+            const sample = review(page).locator('.cart_item').filter({ hasText: 'Musterset zur Prüfung' });
+            const sticker = review(page).locator('.cart_item').filter({ hasText: 'Runde Sticker' });
+            const [photo, drawing, cell] = [await sample.locator('.wc-gzd-cart-item-thumbnail img').boundingBox(), await sticker.locator('.stiqon-order-drawing').boundingBox(), await sample.locator('td.product-name').boundingBox()];
+
+            // In the place a drawing has in the other row: in front of the name, the same width.
+            expect(photo).not.toBeNull();
+            expect(Math.round(photo.x)).toBe(Math.round(cell.x));
+            expect(Math.round(photo.x)).toBe(Math.round(drawing.x));
+            expect(Math.round(photo.width)).toBe(Math.round(drawing.width));
+            // Where a drawing follows, Germanized's own picture stays away.
+            await expect(sticker.locator('.wc-gzd-cart-item-thumbnail')).toBeHidden();
+        } finally {
+            cli('eval', `wp_delete_post(${id}, true);`);
+        }
+    });
+
     test('it says what is missing: at each field, and in a list that leads there', async ({ page }) => {
         await add(page, '/produkt/flyer-din-a6/');
         await openCheckout(page);

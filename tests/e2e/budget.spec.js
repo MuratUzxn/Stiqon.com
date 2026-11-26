@@ -26,6 +26,10 @@ const pages = {
     // Every page carries about 0.3 kB for a header that knows when it is older than
     // the cart (the Back button, a cache in front of the shop) and asks again.
     '/sticker/': { document: 11.3, total: 138, elements: 900 },
+    // A page of text from the editor – the legal pages. It carries the styles for
+    // editor content in its document and nothing of WooCommerce: no stylesheet, no
+    // script, no jQuery (it used to load 180 kB of each).
+    '/impressum/': { document: 9, total: 113, elements: 160 },
     // The pages WooCommerce draws, measured with a product in the cart. They bring
     // what its cart and checkout run on: jQuery (30 kB), the script behind the
     // select fields (21 kB), its own scripts and Germanized's. The classic pages,

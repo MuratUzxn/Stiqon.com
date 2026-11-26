@@ -18,8 +18,16 @@ defined('ABSPATH') || exit;
  * not on. This theme says the same in its own look. On the pages of the shop
  * it stands between the theme's header and footer; for the whole site it is
  * the page, and names what has to stay reachable on any site that is online.
+ *
+ * The block is answered before WordPress renders it: what WooCommerce put
+ * inside – a cover, a row of social icons – is then never built, and brings
+ * none of its stylesheets.
  */
-add_filter('render_block_woocommerce/coming-soon', static function (mixed $html, mixed $block): string {
+add_filter('pre_render_block', static function (mixed $rendered, mixed $block): mixed {
+    if (! is_array($block) || ($block['blockName'] ?? '') !== 'woocommerce/coming-soon') {
+        return $rendered;
+    }
+
     if (! empty($block['attrs']['storeOnly'])) {
         return '<section class="wrap py-24 text-center sm:py-32">'
             .'<h1 class="text-title">Der Shop öffnet bald.</h1>'
@@ -27,11 +35,10 @@ add_filter('render_block_woocommerce/coming-soon', static function (mixed $html,
             .'</section>';
     }
 
-    $links = '';
-
-    foreach (stiqon_legal_links(['imprint', 'data_security']) as $link) {
-        $links .= '<a href="'.esc_url($link['url']).'" class="rounded-sm underline underline-offset-4 transition-colors hover:text-ink">'.esc_html($link['label']).'</a>';
-    }
+    // The page for the whole site is built before its head is printed, and it is all the
+    // theme's own markup: it does without what WooCommerce loads on every page (inc/cleanup.php).
+    // On the pages of the shop the head is out already when the announcement is built.
+    stiqon_declare_lean_page();
 
     return '<div class="flex min-h-svh flex-col bg-paper text-ink">'
         .'<header class="wrap py-6">'.stiqon_logo().'</header>'
@@ -39,11 +46,50 @@ add_filter('render_block_woocommerce/coming-soon', static function (mixed $html,
         .'<h1 class="text-title">Stiqon öffnet bald.</h1>'
         .'<p class="text-lead mt-4 max-w-xl text-muted">Sticker und Flyer mit Ihrem Motiv – erst ansehen, dann bestellen. Wir richten gerade alles ein.</p>'
         .'</main>'
-        .'<footer class="wrap text-label flex flex-wrap justify-center gap-x-6 gap-y-2 py-8 text-muted">'
-        .'<span>© '.esc_html(wp_date('Y')).' Stiqon</span>'.$links
-        .'</footer>'
+        .'<footer class="wrap text-label flex flex-wrap justify-center gap-x-6 gap-y-2 py-8 text-muted">'.stiqon_announcement_footer().'</footer>'
         .'</div>';
 }, 10, 2);
+
+/**
+ * What stands at the foot of the announcement: the year, and the two pages
+ * that stay readable.
+ */
+function stiqon_announcement_footer(): string
+{
+    $html = '<span>© '.esc_html(wp_date('Y')).' Stiqon</span>';
+
+    foreach (stiqon_legal_links(['imprint', 'data_security']) as $link) {
+        $html .= '<a href="'.esc_url($link['url']).'" class="rounded-sm underline underline-offset-4 transition-colors hover:text-ink">'.esc_html($link['label']).'</a>';
+    }
+
+    return $html;
+}
+
+/**
+ * Whether the whole site is announced to this visitor: WooCommerce's "coming
+ * soon" for every page, and the visitor is none of those it lets in – who
+ * manages the shop, or holds its private link. (For the pages of the shop
+ * only, WooCommerce decides page by page; nothing here needs to know.)
+ */
+function stiqon_site_is_announced(): bool
+{
+    if (get_option('woocommerce_coming_soon') !== 'yes' || get_option('woocommerce_store_pages_only') === 'yes' || current_user_can('manage_woocommerce')) {
+        return false;
+    }
+
+    $key = (string) get_option('woocommerce_share_key');
+
+    if (get_option('woocommerce_private_link') === 'yes' && $key !== '') {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- compared with the key WooCommerce keeps.
+        foreach ([$_GET['woo-share'] ?? null, $_COOKIE['woo-share'] ?? null] as $shown) {
+            if (is_string($shown) && hash_equals($key, wp_unslash($shown))) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
 
 /**
  * Imprint and privacy policy are never replaced by the announcement: a site

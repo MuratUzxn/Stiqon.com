@@ -12,9 +12,15 @@ $shop = stiqon_is_woocommerce_page();
 
 if ($shop) {
     stiqon_declare_shop_page();
+} elseif (! stiqon_page_holds_shop_content()) {
+    stiqon_declare_written_page();
 }
 
-get_header();
+// While the whole site is announced, the pages that stay readable – imprint and
+// privacy policy – stand in the announcement's frame, not in the shop's.
+$frame = ! $shop && stiqon_site_is_announced() ? 'announcement' : null;
+
+get_header($frame);
 ?>
 <div class="wrap pt-8 pb-16 lg:pt-14 lg:pb-28">
     <?php while (have_posts()) : ?>
@@ -28,4 +34,4 @@ get_header();
     <?php endwhile; ?>
 </div>
 <?php
-get_footer();
+get_footer($frame);

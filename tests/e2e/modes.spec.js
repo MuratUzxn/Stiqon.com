@@ -25,6 +25,31 @@ test.describe('the theme\'s own pages', () => {
     }
 });
 
+test.describe('a page of text', () => {
+    test('/impressum/ keeps the styles for editor content and loads nothing of WooCommerce', async ({ page }) => {
+        const scripts = [];
+
+        page.on('request', (request) => {
+            if (request.resourceType() === 'script') {
+                scripts.push(new URL(request.url()).pathname);
+            }
+        });
+
+        await page.goto('/impressum/');
+        await expect(page.getByRole('heading', { level: 1 })).toHaveText('Impressum');
+
+        const ids = await stylesheets(page);
+
+        expect(ids).toContain('stiqon-css');
+        expect(ids.filter((id) => /woocommerce|wc-/.test(id))).toEqual([]);
+        // jQuery comes with WooCommerce's scripts, and goes with them.
+        expect(scripts.filter((path) => /\/plugins\/|jquery/.test(path))).toEqual([]);
+
+        // The cart in the header works all the same: it is the theme's own.
+        await expect(page.locator('header [data-cart-count]')).toHaveAccessibleName('Warenkorb, leer');
+    });
+});
+
 test.describe('"coming soon" for the whole site', () => {
     test.beforeAll(() => {
         set('woocommerce_coming_soon', 'yes');
@@ -73,6 +98,15 @@ test.describe('"coming soon" for the whole site', () => {
             await page.getByRole('link', { name }).click();
             await expect(page.getByRole('heading', { level: 1 })).toHaveText(heading);
             await expect(page.locator('meta[name="woo-coming-soon-page"]')).toHaveCount(0);
+
+            // In the frame of the announcement: nothing here offers a shop that is not open.
+            // Every way on leads to the announcement or to the other of these two pages.
+            await expect(page.locator('[data-cart-count], [data-search-open], nav[aria-label="Hauptnavigation"]')).toHaveCount(0);
+            expect(await page.getByRole('link').evaluateAll((links) => links.map((link) => link.textContent.trim() || link.getAttribute('aria-label')))).toEqual(
+                ['Zum Inhalt springen', 'Stiqon – zur Startseite', 'Impressum', 'Datenschutzerklärung'],
+            );
+            expect(await accessibilityViolations(page)).toEqual([]);
+
             await page.goBack();
         }
 
