@@ -229,11 +229,9 @@ vorhandene Produkte. Lieferantenartikelnummern, Preise und Varianten werden beim
 gesetzt. Der Import nutzt die im Plugin hinterlegte Übersicht der öffentlichen Sortimente.
 Ein Live-Abgleich und die Auftragsübergabe brauchen eine separate Anbindung.
 
-Auf der Startseite zeigt der Abschnitt „Sortimente der Druckanbieter“ dieselben Produktfamilien,
-zu sieben Kategorien gruppiert (`src/Catalog/SupplierCategories.php` im Plugin,
-`template-parts/supplier-categories.php` im Theme). Jede Kategorie öffnet sich wie die Fragen
-weiter unten und nennt je Familie den Anbieter und, wo vorhanden, die Schnittstelle. Eine neue
-Produktfamilie braucht dort einen Eintrag; ein Unit-Test schlägt sonst fehl.
+Die Übersicht ist für die Verwaltung gedacht. Auf den Seiten des Shops steht sie nicht: Kunden
+sollen nicht erfahren, bei welchen Druckereien eingekauft wird (`tests/e2e/home.spec.js` hält
+das für die Startseite fest).
 
 ## Gestaltung
 

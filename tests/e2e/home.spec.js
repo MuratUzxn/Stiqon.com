@@ -164,6 +164,22 @@ test.describe('home page', () => {
     });
 });
 
+test.describe('print suppliers', () => {
+    test('stay behind the scenes: the home page neither names them nor links to them', async ({ page, baseURL }) => {
+        await page.goto('/');
+
+        // Who prints is the shop's business. The overview of suppliers is a page of the administration.
+        await expect(page.locator('body')).not.toContainText(/Druckanbieter|Schnittstelle/);
+
+        const elsewhere = await page.locator('a[href]').evaluateAll(
+            (links, origin) => links.map((link) => link.href).filter((href) => /^https?:/.test(href) && new URL(href).origin !== origin),
+            new URL(baseURL).origin,
+        );
+
+        expect(elsewhere).toEqual([]);
+    });
+});
+
 test.describe('without JavaScript', () => {
     test('nothing is offered that could not work', async ({ browser, baseURL, isMobile }) => {
         const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: isMobile ? { width: 390, height: 844 } : { width: 1440, height: 900 } });
