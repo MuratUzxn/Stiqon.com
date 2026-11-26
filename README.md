@@ -192,7 +192,24 @@ Seiten doch den Block, weist die Verwaltung darauf hin.
   Website oder nur auf den Seiten des Shops. Wer die Ankündigung sieht, entscheidet WooCommerce;
   wie sie aussieht, das Theme (`inc/announcement.php`): im eigenen Look statt mit WooCommerces
   Platzhalter-Seite. Zu den Seiten des Shops zählen hier auch die Bereichsseiten. Impressum und
-  Datenschutzerklärung bleiben immer erreichbar.
+  Datenschutzerklärung bleiben immer erreichbar. WooCommerces privater Link („Mit Link
+  teilen“) lässt seinen Inhaber auch dann herein, wenn nur die Shop-Seiten angekündigt sind: Er
+  führt auf WooCommerces Shop-Seite, und das Theme reicht den Schlüssel von dort an eine
+  Bereichsseite weiter (`inc/shop.php`).
+- **Was die Ankündigung nicht verbirgt:** Sie ersetzt Seiten, nicht Schnittstellen. WooCommerce
+  beantwortet auch während der Ankündigung Anfragen an seine Programmierschnittstellen
+  (`/wp-json/wc/store/v1/products`, `/wp-json/wp/v2/product`) mit Sortiment und Preisen, legt per
+  Adresse (`?add-to-cart=…`) in den Warenkorb und nimmt über die Store-API Bestellungen an. Das
+  ist WooCommerces Verhalten, nicht das des Themes. Wer Sortiment und Preise bis zur Eröffnung
+  wirklich zurückhalten will, lässt die Produkte bis dahin unveröffentlicht.
+- **Zähler im Kopf:** Die Zahl der Artikel schreibt der Server in jede Seite. Eine Seite kann
+  älter sein als der Warenkorb – von der Zurück-Taste aus dem Speicher des Browsers geholt oder
+  von einem Seiten-Cache ausgeliefert. Jede Seite trägt deshalb WooCommerces Prüfsumme des
+  Warenkorbs, mit dem sie entstand; weicht die des Browsers ab, holt das Skript die Zahl neu
+  (`assets/src/js/app.js`).
+- **Ohne das Plugin „Stiqon Shop-Funktionen“** zeigen Warenkorb und Kasse ihre Zeilen ohne
+  Zeichnung; **ohne WooCommerce** nennt der Fuß weiter Impressum, Datenschutzerklärung und die
+  übrigen Rechtsseiten. Beides prüft `tests/integration/plugins-off.php`.
 - **Vorlagen aktuell halten:** Jede Vorlage unter `woocommerce/` nennt im Kopf (`@version`) die
   Fassung von WooCommerces Vorlage, aus der sie entstand. `tests/integration/templates.php`
   meldet, wenn WooCommerce eine davon geändert hat.

@@ -67,19 +67,38 @@ add_filter('woocommerce_cart_item_remove_link', static function (mixed $link): m
  * "Sendung", thinking of an order that leaves in several parcels; for the one
  * parcel an order of this shop is, the word customers look for is "Versand".
  */
-add_filter('woocommerce_shipping_package_name', static function (mixed $name, mixed $index = 0): mixed {
-    return (int) $index === 0 && count(WC()->shipping()->get_packages()) < 2 ? 'Versand' : $name;
-}, 10, 2);
+add_filter('woocommerce_shipping_package_name', static function (mixed $name, mixed $id = 0, mixed $package = [], mixed $parcels = 1): mixed {
+    // An order split into several parcels keeps WooCommerce's "Sendung 1", "Sendung 2".
+    return (int) $parcels === 1 ? 'Versand' : $name;
+}, 10, 4);
 
 /**
  * Below the way of shipping the cart adds that the options "will be updated
  * during checkout" – before an address is known, other countries may cost
  * otherwise. A shop that delivers to one country has nothing to add there.
- * The marker lets the stylesheet take the empty line away.
+ * The marker lets the stylesheet take the empty line away. Unless a way of
+ * shipping is set for a part of the country only – islands, say, by their
+ * postcodes: then the price can still change once the address is known, and
+ * WooCommerce's sentence stays.
  */
 add_filter('woocommerce_shipping_estimate_html', static function (mixed $html): mixed {
-    return count(WC()->countries->get_shipping_countries()) === 1 ? '<span class="stiqon-nothing-to-add"></span>' : $html;
+    return count(WC()->countries->get_shipping_countries()) === 1 && ! stiqon_shipping_differs_within_a_country()
+        ? '<span class="stiqon-nothing-to-add"></span>'
+        : $html;
 });
+
+function stiqon_shipping_differs_within_a_country(): bool
+{
+    foreach (WC_Shipping_Zones::get_zones() as $zone) {
+        foreach ((array) ($zone['zone_locations'] ?? []) as $location) {
+            if (in_array($location->type ?? '', ['postcode', 'state'], true)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 
 /**
  * The line at the checkout that opens the field for a voucher. WooCommerce
@@ -135,6 +154,10 @@ add_action('init', function (): void {
     remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20);
     add_action('woocommerce_after_single_product_summary', 'stiqon_product_description', 10);
     add_action('woocommerce_after_single_product_summary', 'stiqon_product_siblings', 20);
+
+    // In the cart WooCommerce lists the "cross-sells" of what is in it: its own cards with
+    // product photos, which this shop does not have – above the sums, pushing them down.
+    remove_action('woocommerce_cart_collaterals', 'woocommerce_cross_sell_display');
 });
 
 /**
@@ -158,7 +181,20 @@ add_action('template_redirect', function (): void {
     }
 
     if (is_shop() || is_product_taxonomy()) {
-        wp_safe_redirect(home_url('/'), 302);
+        $target = home_url('/');
+
+        // While the shop is announced, WooCommerce can hand out a private link that lets its
+        // holder in. The link leads to WooCommerce's shop page, and its key is read on pages
+        // of the shop only – which the home page is not. So the key travels on to an area page.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a key WooCommerce compares with its own.
+        $key = isset($_GET['woo-share']) && is_string($_GET['woo-share']) ? sanitize_text_field(wp_unslash($_GET['woo-share'])) : '';
+        $area = array_key_first(stiqon_required_pages());
+
+        if ($key !== '' && is_string($area)) {
+            $target = add_query_arg('woo-share', rawurlencode($key), stiqon_page_url($area));
+        }
+
+        wp_safe_redirect($target, 302);
         exit;
     }
 });
@@ -404,9 +440,26 @@ function stiqon_product_option_groups(WC_Product $product, array $attributes): a
  * drawing's own description names; at the checkout it is decoration beside
  * the name.
  */
-add_filter('woocommerce_cart_item_thumbnail', static function (mixed $thumbnail, mixed $item): mixed {
+function stiqon_cart_item_view(mixed $item): string
+{
     $product = is_array($item) ? ($item['data'] ?? null) : null;
-    $view = $product instanceof WC_Product ? stiqon_product_view($product) : '';
+
+    // Without the plugin there is nothing to draw with. Its stand-ins (inc/plugin-missing.php)
+    // exist once a page is being drawn; WooCommerce answers its own requests – the overview
+    // the checkout fetches after loading, for one – before that.
+    if (! $product instanceof WC_Product || ! function_exists('stiqon_product_view')) {
+        return '';
+    }
+
+    // A variation can leave an option open ("beliebig"). What the customer chose
+    // for it is in the row of the cart, not in the variation.
+    $chosen = is_array($item['variation'] ?? null) ? array_filter($item['variation'], 'is_string') : [];
+
+    return stiqon_product_view($product, $chosen);
+}
+
+add_filter('woocommerce_cart_item_thumbnail', static function (mixed $thumbnail, mixed $item): mixed {
+    $view = stiqon_cart_item_view($item);
 
     if ($view === '') {
         return $thumbnail;
@@ -429,8 +482,7 @@ add_filter('woocommerce_cart_item_thumbnail', static function (mixed $thumbnail,
  * ends up inside it.
  */
 add_filter('woocommerce_checkout_cart_item_quantity', static function (mixed $html, mixed $item): mixed {
-    $product = is_array($item) ? ($item['data'] ?? null) : null;
-    $view = $product instanceof WC_Product ? stiqon_product_view($product) : '';
+    $view = stiqon_cart_item_view($item);
 
     return $view === '' || ! is_string($html) ? $html : $html.'<span class="stiqon-order-drawing" aria-hidden="true">'.$view.'</span>';
 }, 0, 2);
@@ -452,15 +504,20 @@ function stiqon_email_logo(mixed $image): mixed
  * WooCommerce puts a small picture of each product into its e-mails. The
  * products of this shop are drawn, not photographed, and a drawing cannot be
  * sent in a mail – what would show is WooCommerce's grey stand-in. The rows
- * do without.
+ * do without – in the mails about an order and in Germanized's about a
+ * withdrawal, which list their rows through a filter of their own.
  */
-add_filter('woocommerce_email_order_items_args', static function (mixed $args): mixed {
+function stiqon_email_rows_without_pictures(mixed $args): mixed
+{
     if (is_array($args)) {
         $args['show_image'] = false;
     }
 
     return $args;
-});
+}
+
+add_filter('woocommerce_email_order_items_args', 'stiqon_email_rows_without_pictures');
+add_filter('eu_owb_woocommerce_email_withdrawal_items_args', 'stiqon_email_rows_without_pictures');
 
 /**
  * Germanized prints the button for withdrawing from a contract after the

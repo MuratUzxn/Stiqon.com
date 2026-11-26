@@ -328,25 +328,80 @@ window.addEventListener('popstate', () => {
 
 /**
  * The header says how many articles are in the cart – a number the server
- * writes with every page. On the cart page WooCommerce's script takes articles
- * out and puts them back without loading a new page; it announces that with an
- * event of jQuery's own. The number then follows what the page shows.
+ * writes with every page.
  */
 const cartLink = document.querySelector('[data-cart-count]');
 
+function showCartCount(count) {
+    const badge = cartLink.querySelector('span');
+
+    cartLink.dataset.cartCount = String(count);
+    cartLink.setAttribute('aria-label', count === 0 ? 'Warenkorb, leer' : `Warenkorb, ${count} Artikel`);
+
+    if (badge) {
+        badge.textContent = String(count);
+        badge.hidden = count === 0;
+    }
+}
+
+/** WooCommerce's fingerprint of the cart as the browser has it now; empty for an empty cart. */
+function cartHashNow() {
+    const kept = document.cookie.split('; ').find((entry) => entry.startsWith('woocommerce_cart_hash='));
+
+    return kept ? decodeURIComponent(kept.slice(kept.indexOf('=') + 1)) : '';
+}
+
+/**
+ * A page can be older than the cart: the Back button shows it as the browser
+ * kept it, and a cache in front of the shop may hand out a page written for
+ * someone else. The page carries the fingerprint of the cart it was written
+ * with. Where the browser's differs, the number is put right – asked for again,
+ * or simply none for a cart that has been emptied.
+ */
+async function checkCartCount() {
+    const now = cartHashNow();
+
+    if (now === (cartLink.dataset.cartHash ?? '')) {
+        return;
+    }
+
+    cartLink.dataset.cartHash = now;
+
+    if (now === '') {
+        showCartCount(0);
+
+        return;
+    }
+
+    try {
+        const response = await fetch(cartLink.dataset.cartSource, { credentials: 'same-origin', cache: 'no-store', headers: { Accept: 'application/json' } });
+
+        if (response.ok) {
+            showCartCount(Number((await response.json()).items_count) || 0);
+        }
+    } catch {
+        // The number stays as the page had it.
+    }
+}
+
+if (cartLink) {
+    checkCartCount();
+
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            checkCartCount();
+        }
+    });
+}
+
+// On the cart page WooCommerce's script takes articles out and puts them back without loading
+// a new page; it announces that with an event of jQuery's own. The number then follows the page.
 if (cartLink && window.jQuery && document.body.classList.contains('woocommerce-cart')) {
     window.jQuery(document.body).on('updated_wc_div wc_cart_emptied', () => {
         const numbers = [...document.querySelectorAll('.woocommerce-cart-form .cart_item .qty')];
-        const count = numbers.reduce((sum, field) => sum + (Number(field.value) || 0), 0);
-        const badge = cartLink.querySelector('span');
 
-        cartLink.dataset.cartCount = String(count);
-        cartLink.setAttribute('aria-label', count === 0 ? 'Warenkorb, leer' : `Warenkorb, ${count} Artikel`);
-
-        if (badge) {
-            badge.textContent = String(count);
-            badge.hidden = count === 0;
-        }
+        showCartCount(numbers.reduce((sum, field) => sum + (Number(field.value) || 0), 0));
+        cartLink.dataset.cartHash = cartHashNow();
     });
 }
 

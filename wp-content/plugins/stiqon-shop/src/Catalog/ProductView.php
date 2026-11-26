@@ -25,7 +25,7 @@ final class ProductView
      * @param  array<string, string>  $chosen  attribute => value, keyed the way WooCommerce keys
      *                                         them in a request ("pa_material" or "attribute_pa_material"),
      *                                         valued by term slug (or by the text of a custom attribute)
-     * @return array{type: string, spec: array<string, string|bool>, options: list<string>}|null
+     * @return array{type: string, spec: array<string, string|bool>, options: list<string>, name: string}|null  "name" is the product's, also for a variation
      */
     public static function resolve(WC_Product $product, array $chosen = []): ?array
     {
@@ -38,8 +38,9 @@ final class ProductView
                 return null;
             }
 
-            // A variation is a choice already; anything passed in refines it.
-            $chosen += array_filter($product->get_attributes(), 'is_string');
+            // A variation is a choice already. Where it leaves an option open
+            // ("beliebig", stored as an empty value), what is passed in decides.
+            $chosen = array_filter($product->get_attributes(), static fn (mixed $value): bool => is_string($value) && $value !== '') + $chosen;
         }
 
         $options = [];
@@ -55,7 +56,7 @@ final class ProductView
 
             // In this order: what is asked for, what the product opens with, what it preselects, its first option.
             $wanted = array_filter(
-                [$chosen[$key] ?? $chosen['attribute_'.$key] ?? null, $opens['attribute_'.$key] ?? null, $parent->get_default_attributes()[$key] ?? null],
+                [$chosen[$key] ?? null, $chosen['attribute_'.$key] ?? null, $opens['attribute_'.$key] ?? null, $parent->get_default_attributes()[$key] ?? null],
                 static fn (mixed $value): bool => is_string($value) && $value !== '',
             );
             $option = self::option($parent, $attribute, array_values($wanted));
@@ -77,7 +78,7 @@ final class ProductView
             $options,
         );
 
-        return $resolved === null ? null : $resolved + ['options' => array_column($options, 'name')];
+        return $resolved === null ? null : $resolved + ['options' => array_column($options, 'name'), 'name' => $parent->get_name()];
     }
 
     /**

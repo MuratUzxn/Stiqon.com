@@ -54,7 +54,8 @@ function stiqon_product_view(WC_Product $product, array $chosen = [], array $opt
     }
 
     $spec = array_intersect_key($options, ['peel' => true, 'stack' => true]) + $resolved['spec'];
-    $spec['label'] = $options['label'] ?? implode(', ', array_filter([$product->get_name(), $resolved['options'][0] ?? null]));
+    // Named after the product: a variation's own name may repeat its options.
+    $spec['label'] = $options['label'] ?? implode(', ', array_filter([$resolved['name'], $resolved['options'][0] ?? null]));
 
     return $resolved['type'] === 'sticker'
         ? stiqon_sticker($spec, $options['class'] ?? '')

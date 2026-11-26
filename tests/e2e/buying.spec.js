@@ -107,6 +107,36 @@ test.describe('cart', () => {
         await expect(page.getByRole('heading', { level: 1, name: 'Werbemittel, die haften bleiben.' })).toBeVisible();
     });
 
+    test('a page the browser kept shows the cart as it is now, not as it was', async ({ page }) => {
+        await page.goto('/sticker/');
+        await page.goto('/produkt/runde-sticker/?attribute_pa_material=kraftpapier');
+        await expect(cartLink(page)).toHaveAccessibleName('Warenkorb, leer');
+
+        await page.getByRole('button', { name: 'In den Warenkorb' }).click();
+        await expect(page.getByText('wurde Ihrem Warenkorb hinzugefügt')).toBeVisible();
+        await expect(cartLink(page)).toHaveAccessibleName('Warenkorb, 1 Artikel');
+
+        // "Back" shows pages as the browser kept them: written for an empty cart.
+        await page.goBack();
+        await expect(page.getByText('wurde Ihrem Warenkorb hinzugefügt')).toHaveCount(0);
+        await expect(cartLink(page)).toHaveAccessibleName('Warenkorb, 1 Artikel');
+        await expect(cartLink(page).locator('span')).toHaveText('1');
+        await page.goBack();
+        await expect(page).toHaveURL(/\/sticker\/$/);
+        await expect(cartLink(page)).toHaveAccessibleName('Warenkorb, 1 Artikel');
+
+        // The other way round: a page written for a full cart, seen again after the cart was emptied.
+        await page.goto('/flyer/');
+        await expect(cartLink(page)).toHaveAccessibleName('Warenkorb, 1 Artikel');
+        await page.goto('/warenkorb/');
+        await rows(page).locator('a.remove').click();
+        await expect(page.getByText('Ihr Warenkorb ist derzeit leer.')).toBeVisible();
+        await page.goBack();
+        await expect(page).toHaveURL(/\/flyer\/$/);
+        await expect(cartLink(page)).toHaveAccessibleName('Warenkorb, leer');
+        await expect(cartLink(page).locator('span')).toBeHidden();
+    });
+
     test('it lists what was chosen, drawn as chosen, with the sums a customer has to see', async ({ page }) => {
         await add(page, '/produkt/runde-sticker/?attribute_pa_material=kraftpapier');
         await add(page, '/produkt/flyer-din-a5/');

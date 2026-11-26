@@ -1,0 +1,35 @@
+/*
+ | WooCommerce's shop notice ("Shop-Mitteilung", switched on in the Customizer):
+ | one line above the page, in the shop's look.
+ |
+ | WooCommerce prints the notice hidden on every page and its script shows it,
+ | unless the visitor has put it away. Its own stylesheet would lay it over the
+ | page in WooCommerce's purple – and is not loaded on product pages or on the
+ | pages of buying. This file is loaded only while the notice is switched on
+ | (inc/assets.php), after app.css, whose tokens it uses. Its rules are a step
+ | more specific than WooCommerce's, so they hold where both are loaded.
+ */
+body .woocommerce-store-notice,
+body p.demo_store {
+    position: static;
+    display: none;
+    margin: 0;
+    box-shadow: none;
+    background-color: var(--color-night);
+    padding: 0.625rem 1.25rem;
+    width: auto;
+    color: var(--color-on-night);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    text-align: center;
+}
+
+body .woocommerce-store-notice a,
+body p.demo_store a {
+    margin-left: 0.5rem;
+    border-radius: 0.125rem;
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}

@@ -73,7 +73,13 @@ function stiqon_navigation(): array
  * The cart, for the header: where it is and how much is in it. Null without
  * WooCommerce.
  *
- * @return array{url: string, count: int, label: string}|null
+ * "hash" is WooCommerce's fingerprint of the cart, the one it also keeps in a
+ * cookie; "source" is where the number can be asked for again. With the two,
+ * the page's script notices a page that is older than the cart – taken from the
+ * browser's memory by "Back", or kept by a cache in front of the shop – and
+ * puts the number right (assets/src/js/app.js).
+ *
+ * @return array{url: string, count: int, label: string, hash: string, source: string}|null
  */
 function stiqon_cart_link(): ?array
 {
@@ -91,6 +97,8 @@ function stiqon_cart_link(): ?array
             1 => 'Warenkorb, 1 Artikel',
             default => "Warenkorb, {$count} Artikel",
         },
+        'hash' => WC()->cart ? (string) WC()->cart->get_cart_hash() : '',
+        'source' => rest_url('wc/store/v1/cart'),
     ];
 }
 
@@ -123,14 +131,12 @@ function stiqon_legal_links(array $purposes = ['terms', 'revocation', 'shipping_
  */
 function stiqon_legal_pages(array $purposes): array
 {
-    if (! function_exists('wc_get_page_id')) {
-        return [];
-    }
-
     $pages = [];
 
     foreach ($purposes as $purpose) {
-        $id = (int) wc_get_page_id($purpose);
+        // Which page serves a purpose is a plain setting. It is read directly while WooCommerce
+        // is switched off: a site that is online names who runs it and how it treats data.
+        $id = function_exists('wc_get_page_id') ? (int) wc_get_page_id($purpose) : (int) get_option("woocommerce_{$purpose}_page_id");
 
         if ($id <= 0 && $purpose === 'data_security') {
             $id = (int) get_option('wp_page_for_privacy_policy');

@@ -114,6 +114,33 @@ test.describe('"coming soon" for the shop pages only', () => {
         set('woocommerce_coming_soon', 'no');
     });
 
+    test('WooCommerce\'s private link lets its holder into the shop', async ({ page, browser, baseURL }) => {
+        set('woocommerce_private_link', 'yes');
+        set('woocommerce_share_key', 'ein-schluessel-zum-testen');
+
+        try {
+            // The link WooCommerce offers to copy leads to its own shop page. This shop sends that
+            // page on – and the key with it, to a page where WooCommerce looks for it.
+            await page.goto('/shop/?woo-share=ein-schluessel-zum-testen');
+            await expect(page).toHaveURL(/\/sticker\//);
+            await expect(page.locator('[data-card]').first()).toBeVisible();
+
+            // From then on the holder moves about the shop.
+            await page.goto('/produkt/runde-sticker/');
+            await expect(page.getByRole('button', { name: 'In den Warenkorb' })).toBeVisible();
+
+            // A wrong key opens nothing.
+            const stranger = await browser.newContext({ baseURL });
+            const other = await stranger.newPage();
+
+            await other.goto('/shop/?woo-share=falsch');
+            await expect(other.getByRole('heading', { level: 1 })).toHaveText('Der Shop öffnet bald.');
+            await stranger.close();
+        } finally {
+            set('woocommerce_private_link', 'no');
+        }
+    });
+
     test('the home page is the shop\'s own, the pages of the shop announce it inside the theme', async ({ page }) => {
         await page.goto('/');
         await expect(page.getByRole('heading', { level: 1, name: 'Werbemittel, die haften bleiben.' })).toBeVisible();
@@ -162,14 +189,42 @@ test.describe('store notice', () => {
         cli('option', 'delete', 'woocommerce_demo_store_notice');
     });
 
-    for (const path of ['/', '/sticker/']) {
+    // The theme's own pages, a product page, and a page of buying – which leaves
+    // WooCommerce's stylesheets out, the one that would place the notice among them.
+    for (const path of ['/', '/sticker/', '/produkt/runde-sticker/', '/warenkorb/']) {
         // WooCommerce prints the notice hidden on every page; its own script reveals it.
-        test(`${path} shows it`, async ({ page }) => {
+        test(`${path} shows it, as a line of the shop's own above the page`, async ({ page }) => {
             await page.goto(path);
 
-            await expect(page.getByText('Betriebsferien bis 6. Januar.')).toBeVisible();
+            const notice = page.locator('.woocommerce-store-notice');
+
+            await expect(notice).toBeVisible();
+            await expect(notice).toContainText('Betriebsferien bis 6. Januar.');
+            expect(await stylesheets(page)).toContain('stiqon-notice-css');
+
+            // In the page, not laid over it; dark like the footer, not WooCommerce's purple.
+            const look = await notice.evaluate((element) => {
+                const style = getComputedStyle(element);
+
+                return { position: style.position, background: style.backgroundColor, align: style.textAlign, top: element.getBoundingClientRect().top + window.scrollY };
+            });
+
+            expect(look).toEqual({ position: 'static', background: 'rgb(20, 20, 20)', align: 'center', top: 0 });
+            await expect(notice.getByRole('button', { name: 'Verwerfen' })).toBeVisible();
+            expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
         });
     }
+
+    test('without the notice no page pays for it', async ({ page }) => {
+        set('woocommerce_demo_store', 'no');
+
+        try {
+            await page.goto('/warenkorb/');
+            expect(await stylesheets(page)).not.toContain('stiqon-notice-css');
+        } finally {
+            set('woocommerce_demo_store', 'yes');
+        }
+    });
 });
 
 test.describe('order attribution switched on by the owner', () => {

@@ -19,9 +19,13 @@ export STIQON_SITE="${STIQON_SITE:-e2e}"
 
 # The installation as the setup script left it comes first: the later checks
 # switch things off and on.
-for check in environment templates catalogue supplier-catalogue search setup-problems defaults activation-order; do
+for check in environment templates catalogue supplier-catalogue buying search setup-problems defaults activation-order; do
     wp eval-file "$REPO/tests/integration/$check.php" "$WORDPRESS_VERSION" "$WOOCOMMERCE_VERSION" "$GERMANIZED_VERSION"
 done
+
+# The theme while a plugin it builds on is switched off – for this one command only.
+wp --skip-plugins=stiqon-shop eval-file "$REPO/tests/integration/plugins-off.php" shop-plugin
+wp --skip-plugins=woocommerce,woocommerce-germanized,stiqon-shop eval-file "$REPO/tests/integration/plugins-off.php" woocommerce
 
 log="$SITE_DIR/wp-content/debug.log"
 noise="$(grep -v -E '^[[:space:]]*(#|$)' "$REPO/tests/integration/log-noise.txt")"

@@ -785,9 +785,25 @@
     padding: 0.375rem;
 }
 
-/* Where Germanized would set a picture of its own. */
-.woocommerce .wc-gzd-cart-item-thumbnail {
+/* Where Germanized sets a picture of its own. The drawing takes its place – the
+   marker says that one follows (inc/shop.php). A product the shop cannot draw
+   keeps its picture, in the drawing's place. */
+.woocommerce .wc-gzd-cart-item-thumbnail:has(.stiqon-drawing-follows) {
     display: none;
+}
+
+.woocommerce-checkout-review-order-table .wc-gzd-cart-item-thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3.5rem;
+}
+
+.woocommerce-checkout-review-order-table .wc-gzd-cart-item-thumbnail img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-control);
 }
 
 .woocommerce-checkout-review-order-table .product-quantity {

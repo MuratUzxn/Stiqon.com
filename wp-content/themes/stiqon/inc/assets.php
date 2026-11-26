@@ -52,6 +52,11 @@ add_action('wp_enqueue_scripts', function (): void {
     if (stiqon_is_shop_page() && ($style = stiqon_built_asset('assets/src/css/shop.css'))) {
         wp_enqueue_style('stiqon-shop', $style, ['stiqon'], null);
     }
+
+    // WooCommerce's shop notice, while the owner has it switched on: a line above every page.
+    if (function_exists('is_store_notice_showing') && is_store_notice_showing() && ($style = stiqon_built_asset('assets/src/css/notice.css'))) {
+        wp_enqueue_style('stiqon-notice', $style, ['stiqon'], null);
+    }
 }, 20);
 
 /**

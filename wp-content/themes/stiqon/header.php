@@ -57,6 +57,7 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
             <?php if ($cart !== null) : ?>
                 <a
                     href="<?php echo esc_url($cart['url']); ?>" aria-label="<?php echo esc_attr($cart['label']); ?>" data-cart-count="<?php echo esc_attr((string) $cart['count']); ?>"
+                    data-cart-hash="<?php echo esc_attr($cart['hash']); ?>" data-cart-source="<?php echo esc_url($cart['source']); ?>"
                     class="relative inline-flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ease-soft hover:bg-ink/8"
                 >
                     <?php echo stiqon_icon('bag'); ?>
