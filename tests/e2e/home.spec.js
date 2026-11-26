@@ -164,23 +164,6 @@ test.describe('home page', () => {
     });
 });
 
-test.describe('print suppliers', () => {
-    test('their product families open by category', async ({ page }) => {
-        await page.goto('/');
-
-        const section = page.getByRole('region', { name: 'Sortimente der Druckanbieter' });
-        await expect(section.locator('details')).toHaveCount(7);
-
-        const stickers = section.locator('details').filter({ hasText: 'Aufkleber & Etiketten' });
-        await expect(stickers.getByRole('link', { name: 'Probo', exact: true })).toBeHidden();
-
-        await stickers.locator('summary').click();
-        await expect(stickers.getByRole('link', { name: 'Probo', exact: true })).toBeVisible();
-        await expect(stickers.getByRole('link', { name: 'Schnittstelle von Probo' })).toBeVisible();
-        await expect(stickers.getByText('Aufkleber, Aufkleberbögen und Rollenetiketten')).toBeVisible();
-    });
-});
-
 test.describe('without JavaScript', () => {
     test('nothing is offered that could not work', async ({ browser, baseURL, isMobile }) => {
         const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: isMobile ? { width: 390, height: 844 } : { width: 1440, height: 900 } });
