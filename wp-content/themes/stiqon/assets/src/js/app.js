@@ -376,7 +376,14 @@ function reloadOnce(hash) {
     window.location.reload();
 }
 
-async function checkCartCount() {
+/** Whether the page was shown again by the Back or Forward button. */
+function cameBack() {
+    const [entry] = performance.getEntriesByType('navigation');
+
+    return entry?.type === 'back_forward';
+}
+
+async function checkCartCount(fromHistory = cameBack()) {
     const now = cartHashNow();
 
     if (now === (cartLink.dataset.cartHash ?? '')) {
@@ -386,8 +393,10 @@ async function checkCartCount() {
     cartLink.dataset.cartHash = now;
 
     // The cart page is as old as its number: shown again by the Back button after
-    // something was taken out, it would still list it. It is loaded anew instead.
-    if (document.body.classList.contains('woocommerce-cart')) {
+    // something was taken out, it would still list it. It is loaded anew instead –
+    // only then: WooCommerce counts the totals into its checksum, so on an ordinary
+    // visit the page's and the browser's may differ although the page is fresh.
+    if (fromHistory && document.body.classList.contains('woocommerce-cart')) {
         reloadOnce(now);
 
         return;
@@ -415,7 +424,7 @@ if (cartLink) {
 
     window.addEventListener('pageshow', (event) => {
         if (event.persisted) {
-            checkCartCount();
+            checkCartCount(true);
         }
     });
 }
