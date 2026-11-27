@@ -20,7 +20,10 @@ const KB = 1024;
 // asked for, and its markup stays a PHP template like the rest. Its script and
 // the list it searches are fetched only when a visitor opens it.
 const pages = {
-    '/': { document: 12.5, total: 130, elements: 1500 },
+    // The home page's assortment: ten pictures of together 53 kB. The test's browser fetches them
+    // with the page – without a known connection type Chromium loads lazy pictures up to about
+    // 5000 px ahead – where a phone on 4G waits until they are about 1250 px away.
+    '/': { document: 14, total: 175, elements: 1500, image: 80, requests: 17 },
     // Twenty cards, each an inline drawing: about 800 elements. On top of what the
     // home page loads come the gallery's own script and the serif face of the samples.
     // Every page carries about 0.3 kB for a header that knows when it is older than
