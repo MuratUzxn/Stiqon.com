@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.js';
+import { test, expect, accessibilityViolations } from './fixtures.js';
 
 test.describe('home page', () => {
     test('leads with one action and offers both areas', async ({ page }) => {
@@ -252,5 +252,30 @@ test.describe('mobile navigation', () => {
         await expect(link).toBeVisible();
         // Links are set in the text colour. (A type style once shared its name with a colour and greyed them.)
         await expect(link).toHaveCSS('color', await page.evaluate(() => getComputedStyle(document.body).color));
+    });
+});
+
+test.describe('the assortment', () => {
+    test('every range has its picture; what the shop sells leads there, the rest to an enquiry', async ({ page }) => {
+        await page.goto('/');
+
+        const section = page.locator('section[aria-labelledby="werbemittel"]');
+
+        await expect(section.getByRole('heading', { name: 'Unser Sortiment' })).toBeVisible();
+        await expect(section.getByRole('listitem')).toHaveCount(10);
+
+        for (const image of await section.locator('img').all()) {
+            await image.scrollIntoViewIfNeeded();
+            await expect(image).toHaveAttribute('alt', /Stiqon-Logo/);
+            expect(await image.evaluate(async (element) => {
+                await element.decode();
+
+                return element.naturalWidth;
+            })).toBe(400);
+        }
+
+        await expect(section.getByRole('link', { name: 'Aufkleber' })).toHaveAttribute('href', /\/sticker\/$/);
+        await expect(section.getByRole('link', { name: 'Anfrage per E-Mail' })).toHaveAttribute('href', /^mailto:/);
+        expect(await accessibilityViolations(page)).toEqual([]);
     });
 });

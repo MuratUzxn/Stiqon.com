@@ -189,6 +189,9 @@ get_header();
     </ul>
 </section>
 
+<?php // The assortment beyond stickers and flyers, in the pictures Stiqon supplied ?>
+<?php get_template_part('template-parts/assortment'); ?>
+
 <?php // How it works ?>
 <section class="bg-mist py-16 lg:py-28" aria-labelledby="ablauf">
     <div class="wrap">
