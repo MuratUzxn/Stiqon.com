@@ -12,7 +12,7 @@ use Stiqon\Shop\Template;
  * DIN A proportion (1 : 1.414) and are cropped from the centre for the long
  * and the square format.
  */
-final class Flyer
+final class Flyer implements Kind
 {
     public const FORMATS = [
         'a6' => ['label' => 'DIN A6', 'width' => 74.0, 'height' => 104.6],
@@ -58,6 +58,40 @@ final class Flyer
         ];
 
         $this->tilt = $stack ? -4.0 : -2.0;
+    }
+
+    public static function label(): string
+    {
+        return 'Flyer';
+    }
+
+    public static function keys(): array
+    {
+        return ['format' => array_keys(self::FORMATS), 'motif' => self::motifs(), 'stack' => null, 'heavy' => null, 'gloss' => null];
+    }
+
+    public static function form(): array
+    {
+        return ['key' => 'format', 'label' => 'Format', 'values' => array_map(static fn (array $format): string => $format['label'], self::FORMATS)];
+    }
+
+    /**
+     * Format from the product's name. Whether the paper is drawn as the
+     * stiffer sheet follows from its grammage (see Catalog\Guess::option()).
+     */
+    public static function names(): array
+    {
+        return [
+            'form' => [
+                'lang' => 'din ?lang|\bdl\b|lang',
+                'quadrat' => 'quadrat|square',
+                'a6' => '\ba ?6\b',
+                'a5' => '\ba ?5\b',
+                'a4' => '\ba ?4\b',
+            ],
+            'options' => [],
+            'switches' => ['gloss' => ['gl[aä]nz|gloss', 'matt']],
+        ];
     }
 
     /**

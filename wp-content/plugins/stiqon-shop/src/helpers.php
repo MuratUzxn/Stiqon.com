@@ -8,6 +8,7 @@ use Stiqon\Shop\Catalog\Gallery;
 use Stiqon\Shop\Catalog\ProductView;
 use Stiqon\Shop\Content\References;
 use Stiqon\Shop\Mockup\Flyer;
+use Stiqon\Shop\Mockup\Kinds;
 use Stiqon\Shop\Mockup\Stage;
 use Stiqon\Shop\Mockup\Sticker;
 use Stiqon\Shop\Plugin;
@@ -38,9 +39,22 @@ function stiqon_flyer(array $spec = [], string $class = ''): string
 }
 
 /**
- * A product of the shop as inline SVG, with a choice of its options – a sticker
- * or a flyer, whichever the product is. Empty when nothing says what kind of
- * product it is.
+ * Any kind of product the shop draws, as inline SVG: "sticker", "flyer",
+ * "card", "mug" … (see Mockup\Kinds). An unknown kind is treated like an
+ * unknown shape: in development the page stops, on a live shop the drawing is
+ * left out.
+ *
+ * @param  array<string, mixed>  $spec  what the kind understands (see Mockup\Kind::keys()), and "label" for screen readers
+ * @param  string  $class  extra classes; a width class replaces the full-width default
+ */
+function stiqon_mockup(string $type, array $spec = [], string $class = ''): string
+{
+    return stiqon_shop_render(static fn (): string => Kinds::draw($type, $spec, $class));
+}
+
+/**
+ * A product of the shop as inline SVG, with a choice of its options – drawn as
+ * whatever kind of product it is. Empty when nothing says what kind that is.
  *
  * @param  array<string, string>  $chosen  attribute => chosen value, as in a request ("attribute_pa_material" => "kraftpapier")
  * @param  array{class?: string, label?: string, peel?: bool, stack?: bool}  $options  "label" names the drawing for screen readers
@@ -57,9 +71,7 @@ function stiqon_product_view(WC_Product $product, array $chosen = [], array $opt
     // Named after the product: a variation's own name may repeat its options.
     $spec['label'] = $options['label'] ?? implode(', ', array_filter([$resolved['name'], $resolved['options'][0] ?? null]));
 
-    return $resolved['type'] === 'sticker'
-        ? stiqon_sticker($spec, $options['class'] ?? '')
-        : stiqon_flyer($spec, $options['class'] ?? '');
+    return stiqon_mockup($resolved['type'], $spec, $options['class'] ?? '');
 }
 
 /**
@@ -110,7 +122,7 @@ function stiqon_product_choice(WC_Product $product): array
 }
 
 /**
- * The cards of an area of the shop ("sticker", "flyer"), with what its filters
+ * The cards of an area of the shop ("sticker", "visitenkarten" …), with what its filters
  * offer and which of them the current request asks for. See Catalog\Gallery.
  *
  * @return array{products: list<array{slug: string, name: string}>, axis: ?array, cards: list<array>, selection: array{produkt: ?string, option: ?string}}
@@ -177,7 +189,7 @@ function stiqon_references_url(): ?string
 /**
  * The card surface around a mockup.
  *
- * @param  string  $content  markup from stiqon_sticker() or stiqon_flyer()
+ * @param  string  $content  markup from stiqon_mockup(), stiqon_sticker() or stiqon_flyer()
  */
 function stiqon_stage(string $content, string $tone = 'mist', string $class = '', string $ratio = 'square'): string
 {

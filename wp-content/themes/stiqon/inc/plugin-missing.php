@@ -27,6 +27,11 @@ add_action('template_redirect', function (): void {
         return '';
     }
 
+    function stiqon_mockup(string $type, array $spec = [], string $class = ''): string
+    {
+        return '';
+    }
+
     function stiqon_stage(string $content, string $tone = 'mist', string $class = '', string $ratio = 'square'): string
     {
         return '';

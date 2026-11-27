@@ -12,9 +12,15 @@ use Stiqon\Shop\Template;
  * room around it for the CSS shadow. The printed area shows a sample motif
  * and, on top of it, the visitor's own motif once one is chosen in the browser.
  */
-final class Sticker
+final class Sticker implements Kind
 {
     public const SHAPES = ['circle', 'square', 'rect', 'oval', 'contour'];
+
+    /** The shapes by their German names, for the administration. */
+    public const SHAPE_NAMES = ['circle' => 'Rund', 'square' => 'Quadratisch', 'rect' => 'Rechteckig', 'oval' => 'Oval', 'contour' => 'Konturschnitt'];
+
+    /** The materials by their German names, for the administration. */
+    public const MATERIAL_NAMES = ['vinyl' => 'weißes Vinyl', 'clear' => 'transparente Folie', 'holo' => 'holografische Folie', 'kraft' => 'Kraftpapier'];
 
     public const MATERIALS = ['vinyl', 'clear', 'holo', 'kraft'];
 
@@ -73,6 +79,49 @@ final class Sticker
 
         // Only shapes with a straight bottom-right corner can show a peeled corner.
         $this->peel = $peel && in_array($shape, ['square', 'rect'], true);
+    }
+
+    public static function label(): string
+    {
+        return 'Sticker';
+    }
+
+    public static function keys(): array
+    {
+        return ['shape' => self::SHAPES, 'material' => self::MATERIALS, 'finish' => self::FINISHES, 'motif' => self::motifs(), 'peel' => null];
+    }
+
+    public static function form(): array
+    {
+        return ['key' => 'shape', 'label' => 'Form', 'values' => self::SHAPE_NAMES];
+    }
+
+    /**
+     * Shape from the product's name, material from the names of its options.
+     * Whether the surface is matte or glossy follows rules of its own (see
+     * Catalog\Guess::option()): kraft paper does not shine, whatever it is called.
+     */
+    public static function names(): array
+    {
+        return [
+            // Checked in this order: a rectangle "mit abgerundeten Ecken" is not round.
+            'form' => [
+                'contour' => 'kontur|freiform|formgestanzt|die[ -]?cut',
+                'oval' => 'oval|ellip',
+                'rect' => 'rechteck|rectang',
+                'square' => 'quadrat|square',
+                'circle' => 'rund|kreis|round|circle',
+            ],
+            'options' => [
+                'material' => [
+                    'holo' => 'holo|regenbogen|irisierend',
+                    'clear' => 'transparent|durchsichtig|glasklar|clear',
+                    'kraft' => 'kraft|naturpapier|graspapier',
+                    'vinyl' => 'vinyl|weiß|weiss|white',
+                ],
+            ],
+            'switches' => [],
+        ];
     }
 
     /**
