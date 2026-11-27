@@ -504,6 +504,7 @@ if (searchControls.length > 0) {
     });
 }
 
-// What stands in for the script where there is none – the price range of a
-// product with options – leaves the page once the script runs.
+// What stands in for the script where there is none – the line on a product
+// page that its price is the one of the choice shown – leaves the page once the
+// script runs.
 document.querySelectorAll('[data-without-script]').forEach((element) => element.remove());

@@ -544,10 +544,9 @@ test.describe('an order by payment in advance', () => {
         const email = `rechnungseingangbuchhaltung${testInfo.project.name.replace(/\W/g, '')}${Date.now()}@example.com`;
 
         await add(page, '/produkt/ovale-sticker/');
-        // Nothing follows a change of choice without script: the price says what the options cost, and
-        // the line without VAT, which would hold the first choice only, is left out.
-        expect(await page.locator('p.price').first().innerText()).toMatch(/–|ab /);
-        await expect(page.locator('[data-net-price]')).toBeHidden();
+        // Nothing follows a change of choice without script: a line says that the price is the one of
+        // the choice shown, and what the options cost.
+        await expect(page.getByText('Dieser Preis gilt für die angezeigte Auswahl; je nach Optionen kostet das Produkt')).toBeVisible();
         await page.goto('/warenkorb/');
         await expect(rows(page)).toHaveCount(1);
         await page.getByRole('link', { name: 'Weiter zur Kasse' }).click();

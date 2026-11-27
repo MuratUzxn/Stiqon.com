@@ -374,9 +374,14 @@ function stiqon_product_net_price(): void
     $priced = stiqon_product_choice($product)['variation'] ?? $product;
     $net = stiqon_net_price_text($priced);
 
-    // Without the page's script nothing follows a change of choice, so the line
-    // would keep the first choice's price for all of them: it is left out there.
-    echo '<p class="text-label mt-1 text-muted" data-net-price'.(stiqon_price_depends_on_choice($product) ? ' data-needs-script' : '').($net === '' ? ' hidden' : '').'>'.wp_kses_post($net).'</p>';
+    echo '<p class="text-label mt-1 text-muted" data-net-price'.($net === '' ? ' hidden' : '').'>'.wp_kses_post($net).'</p>';
+
+    // Without the page's script nothing follows a change of choice: the prices above
+    // are those of the choice the page was opened with. Where the options cost
+    // differently, a line says so – shown only then (data-without-script, header.php).
+    if (stiqon_price_depends_on_choice($product)) {
+        echo '<p class="text-label mt-2 text-muted" data-without-script style="display: none">'.sprintf('Dieser Preis gilt für die angezeigte Auswahl; je nach Optionen kostet das Produkt %s. Nach „In den Warenkorb“ sehen Sie hier den Preis Ihrer Wahl.', wp_kses_post(wp_strip_all_tags($product->get_price_html()))).'</p>';
+    }
 }
 
 /**

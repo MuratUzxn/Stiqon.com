@@ -19,7 +19,7 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
     <?php wp_head(); ?>
     <?php // Controls that only work with the page's script are not offered without it. ?>
     <?php // What stands in for them is shown only then (data-without-script, otherwise hidden by an inline style). ?>
-    <noscript><style>[data-needs-script] { display: none !important; } [data-without-script] { display: inline !important; }</style></noscript>
+    <noscript><style>[data-needs-script] { display: none !important; } [data-without-script] { display: revert !important; }</style></noscript>
 </head>
 <body <?php body_class('flex min-h-screen flex-col'); ?>>
 <?php wp_body_open(); ?>
