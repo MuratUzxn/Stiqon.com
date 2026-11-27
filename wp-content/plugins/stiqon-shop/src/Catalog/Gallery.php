@@ -86,6 +86,11 @@ final class Gallery
      */
     private static function products(string $category, array $more = []): array
     {
+        // Without WooCommerce – an update that failed, a plugin switched off – there is nothing to show.
+        if (! function_exists('wc_get_products')) {
+            return [];
+        }
+
         $products = wc_get_products($more + [
             'category' => [$category],
             'status' => 'publish',

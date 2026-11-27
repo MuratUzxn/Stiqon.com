@@ -240,7 +240,7 @@ final class Index
      * pages do. Whoever WooCommerce lets see the shop – its managers, and
      * visitors who were given the private link – can search it too.
      */
-    private static function concealed(): bool
+    public static function concealed(): bool
     {
         if (get_option('woocommerce_coming_soon') !== 'yes' || current_user_can('manage_woocommerce')) {
             return false;

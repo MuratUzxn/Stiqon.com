@@ -184,6 +184,8 @@ test.describe('"coming soon" for the shop pages only', () => {
         for (const path of ['/sticker/', '/flyer/', '/produkt/runde-sticker/', '/warenkorb/']) {
             await page.goto(path);
             await expect(page.getByRole('heading', { level: 1 }), path).toHaveText('Der Shop öffnet bald.');
+            // Not to be found under the page's own name while the announcement stands in for it.
+            await expect(page, path).toHaveTitle('Stiqon öffnet bald');
             await expect(page.locator('header nav[aria-label="Hauptnavigation"]').first(), path).toBeAttached();
             await expect(page.locator('footer nav[aria-labelledby="footer-legal"]'), path).toBeAttached();
             await expect(page.getByRole('button', { name: 'In den Warenkorb' }), path).toHaveCount(0);
@@ -200,7 +202,9 @@ test.describe('"coming soon" for the shop pages only', () => {
 
     test('search finds nothing for visitors while the products are not on show', async ({ page }) => {
         await page.goto('/?s=sticker');
-        await expect(page.getByRole('main')).toContainText('Zu „sticker“ haben wir nichts gefunden.');
+        await expect(page.getByRole('main')).toContainText('Der Shop öffnet bald.');
+        // The cart would lead to the announcement as well; the header leaves it out.
+        await expect(page.locator('header [data-cart-count]')).toHaveCount(0);
         await expect(page.locator('[data-card]')).toHaveCount(0);
 
         await page.locator('header [data-search-open]').click();
@@ -208,7 +212,17 @@ test.describe('"coming soon" for the shop pages only', () => {
         const field = page.getByRole('dialog', { name: 'Suche' }).getByRole('combobox');
 
         await field.fill('sticker');
-        await expect(page.getByRole('dialog', { name: 'Suche' })).toContainText('Dazu haben wir nichts gefunden.');
+        await expect(page.getByRole('dialog', { name: 'Suche' })).toContainText('Der Shop öffnet bald.');
+    });
+
+    test('the notice for whoever runs the shop keeps its look on pages that load little', async ({ page }) => {
+        await logInAsAdministrator(page);
+        await page.goto('/sticker/');
+
+        const banner = page.locator('#coming-soon-footer-banner');
+
+        await expect(banner).toBeVisible();
+        expect(await banner.evaluate((element) => getComputedStyle(element).position)).toBe('fixed');
     });
 });
 

@@ -29,6 +29,9 @@ if (wp_get_environment_type() !== 'local') {
 $options = [
     'woocommerce_default_country' => 'DE',
     'woocommerce_currency' => 'EUR',
+    // The theme shows no reviews; taking them in nonetheless would only invite spam,
+    // and WooCommerce's account form would speak of them.
+    'woocommerce_enable_reviews' => 'no',
     // "29,90 €", not "€29.90".
     'woocommerce_currency_pos' => 'right_space',
     'woocommerce_price_thousand_sep' => '.',

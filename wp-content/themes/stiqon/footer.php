@@ -60,7 +60,9 @@ $legal = $links !== [] || $withdrawal !== null;
 
         <div class="text-label mt-14 flex flex-col gap-2 border-t border-white/14 pt-6 text-on-night-muted sm:flex-row sm:justify-between">
             <p>© <?php echo esc_html(wp_date('Y')); ?> Stiqon</p>
-            <p>Vorschau – der Shop ist noch im Aufbau.</p>
+            <?php if (get_option('woocommerce_coming_soon') === 'yes') : ?>
+                <p>Vorschau – der Shop ist noch im Aufbau.</p>
+            <?php endif; ?>
         </div>
     </div>
 </footer>

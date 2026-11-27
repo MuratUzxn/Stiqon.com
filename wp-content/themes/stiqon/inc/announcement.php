@@ -122,3 +122,23 @@ add_filter('woocommerce_store_pages', static function (mixed $pages): mixed {
 
     return $pages;
 });
+
+/**
+ * While WooCommerce shows the announcement in place of a page, the page is not
+ * to be found under its own name: search engines are asked to leave it out,
+ * and its title is the announcement's. WooCommerce draws the announcement from
+ * within the filter "template_include" (ComingSoonRequestHandler) – that is
+ * how it is told apart from the page itself.
+ */
+function stiqon_announcement_is_shown(): bool
+{
+    return doing_filter('template_include') && get_option('woocommerce_coming_soon') === 'yes';
+}
+
+add_filter('wp_robots', static function (mixed $robots): mixed {
+    return is_array($robots) && stiqon_announcement_is_shown() ? wp_robots_no_robots($robots) : $robots;
+});
+
+add_filter('pre_get_document_title', static function (mixed $title): mixed {
+    return stiqon_announcement_is_shown() ? get_bloginfo('name').' öffnet bald' : $title;
+});

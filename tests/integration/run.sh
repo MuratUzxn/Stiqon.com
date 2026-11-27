@@ -25,7 +25,8 @@ done
 
 # The theme while a plugin it builds on is switched off – for this one command only.
 wp --skip-plugins=stiqon-shop eval-file "$REPO/tests/integration/plugins-off.php" shop-plugin
-wp --skip-plugins=woocommerce,woocommerce-germanized,stiqon-shop eval-file "$REPO/tests/integration/plugins-off.php" woocommerce
+# WooCommerce gone, the shop plugin still on – as WordPress leaves it after a failed update.
+wp --skip-plugins=woocommerce,woocommerce-germanized eval-file "$REPO/tests/integration/plugins-off.php" woocommerce
 
 log="$SITE_DIR/wp-content/debug.log"
 noise="$(grep -v -E '^[[:space:]]*(#|$)' "$REPO/tests/integration/log-noise.txt")"

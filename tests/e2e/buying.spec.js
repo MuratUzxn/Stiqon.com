@@ -137,6 +137,23 @@ test.describe('cart', () => {
         await expect(cartLink(page).locator('span')).toBeHidden();
     });
 
+    test('the cart page shown again by the Back button lists what is in the cart now', async ({ page }) => {
+        await add(page, '/produkt/runde-sticker/');
+        await add(page, '/produkt/flyer-din-a5/');
+        await page.goto('/warenkorb/');
+        await expect(rows(page)).toHaveCount(2);
+
+        await rows(page).filter({ hasText: 'Flyer' }).locator('a.remove').click();
+        await expect(rows(page)).toHaveCount(1);
+
+        await rows(page).first().locator('td.product-name a').first().click();
+        await page.waitForURL(/\/produkt\//);
+        await page.goBack();
+
+        await expect(rows(page)).toHaveCount(1);
+        await expect(cartLink(page)).toHaveAttribute('data-cart-count', '1');
+    });
+
     test('it lists what was chosen, drawn as chosen, with the sums a customer has to see', async ({ page }) => {
         await add(page, '/produkt/runde-sticker/?attribute_pa_material=kraftpapier');
         await add(page, '/produkt/flyer-din-a5/');
@@ -485,6 +502,8 @@ test.describe('an order by payment in advance', () => {
         await order.locator('a.view').click();
         await expect(page.locator('.woocommerce-order-details')).toContainText('Flyer DIN A5');
         await expect(page.locator('.woocommerce-order-details')).toContainText('250 g Bilderdruck');
+        // Paid in advance and not yet paid: the account names the bank details, too.
+        await expect(page.locator('.woocommerce-bacs-bank-details')).toContainText('DE00 0000 0000 0000 0000 00');
         // Number, date and status stand out by weight, not on the browser's yellow.
         expect(await page.locator('.woocommerce-MyAccount-content mark').first().evaluate((mark) => getComputedStyle(mark).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
 
@@ -496,6 +515,10 @@ test.describe('an order by payment in advance', () => {
         await expect(page.locator('button[name="save_address"]')).toBeVisible();
         expect(await page.locator('button[name="save_address"]').evaluate((button) => getComputedStyle(button).backgroundColor)).toBe('rgb(20, 20, 20)');
         expect(await page.locator('.woocommerce-address-fields').evaluate((form) => form.getBoundingClientRect().width)).toBeLessThanOrEqual(512);
+
+        // The shop shows no reviews, and the account does not speak of them.
+        await page.goto('/mein-konto/edit-account/');
+        await expect(page.locator('#account_display_name_description')).not.toContainText('Rezensionen');
 
         // Two e-mails: the welcome with the way to a password, and the confirmation.
         const sent = sentTo(email);
@@ -521,6 +544,10 @@ test.describe('an order by payment in advance', () => {
         const email = `rechnungseingangbuchhaltung${testInfo.project.name.replace(/\W/g, '')}${Date.now()}@example.com`;
 
         await add(page, '/produkt/ovale-sticker/');
+        // Nothing follows a change of choice without script: the price says what the options cost, and
+        // the line without VAT, which would hold the first choice only, is left out.
+        expect(await page.locator('p.price').first().innerText()).toMatch(/–|ab /);
+        await expect(page.locator('[data-net-price]')).toBeHidden();
         await page.goto('/warenkorb/');
         await expect(rows(page)).toHaveCount(1);
         await page.getByRole('link', { name: 'Weiter zur Kasse' }).click();
@@ -550,7 +577,18 @@ test.describe('an order by payment in advance', () => {
 });
 
 test.describe('the account', () => {
-    test('whoever is not logged in can log in or open an account', async ({ page }) => {
+    test('every page leads to the account', async ({ page, isMobile }) => {
+        await page.goto('/sticker/');
+
+        if (isMobile) {
+            await page.locator('header details > summary').click();
+        }
+
+        await page.getByRole('link', { name: 'Kundenkonto' }).click();
+        await expect(page).toHaveURL(/\/mein-konto\/$/);
+    });
+
+    test('whoever is not logged in can log in or open an account', async ({ page }, testInfo) => {
         await page.goto('/mein-konto/');
 
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ihr Konto');
@@ -578,11 +616,55 @@ test.describe('the account', () => {
         expect(await eye.evaluate((button) => getComputedStyle(button, '::before').maskImage)).not.toBe(closed);
         await eye.click();
 
-        // A wrong password is answered in the look of the shop, without saying which part was wrong.
-        await page.locator('#username').fill('niemand@example.com');
-        await page.locator('#password').fill('falsch');
+        // A failed login is answered in the look of the shop, and in the same words whether or not
+        // the address belongs to an account: nobody finds out by trying who shops here.
+        const customer = `kundin${testInfo.project.name.replace(/\W/g, '')}${Date.now()}@example.com`;
+        const answers = [];
+
+        cli('user', 'create', customer.split('@')[0], customer, '--role=customer', `--user_pass=Richtig-${Date.now()}`);
+
+        for (const username of ['niemand@example.com', customer]) {
+            await page.locator('#username').fill(username);
+            await page.locator('#password').fill('falsch');
+            await page.getByRole('button', { name: 'Anmelden', exact: true }).click();
+            await expect(page.locator('ul.woocommerce-error')).toBeVisible();
+            answers.push(await page.locator('ul.woocommerce-error').innerText());
+        }
+
+        expect(answers[1]).toBe(answers[0]);
+        expect(answers[0]).not.toContain(customer);
+    });
+});
+
+test.describe('a returning customer', () => {
+    test('logging in at the checkout says so when articles of an earlier visit join the cart', async ({ page }, testInfo) => {
+        const login = `rueckkehr${testInfo.project.name.replace(/\W/g, '')}${Date.now()}`;
+        const password = `Geheim-${Date.now()}`;
+
+        cli('user', 'create', login, `${login}@example.com`, '--role=customer', `--user_pass=${password}`);
+
+        // An earlier visit, logged in: something stays in the cart.
+        await page.goto('/mein-konto/');
+        await page.locator('#username').fill(login);
+        await page.locator('#password').fill(password);
         await page.getByRole('button', { name: 'Anmelden', exact: true }).click();
-        await expect(page.locator('ul.woocommerce-error')).toBeVisible();
+        await expect(page.locator('.woocommerce-MyAccount-navigation')).toBeVisible();
+        await add(page, '/produkt/ovale-sticker/');
+        await page.context().clearCookies();
+
+        // Now as a guest: one article, then logging in at the checkout.
+        await add(page, '/produkt/runde-sticker/');
+        await openCheckout(page);
+        await page.locator('a.showlogin').click();
+
+        const form = page.locator('form.woocommerce-form-login');
+
+        await form.locator('#username').fill(login);
+        await form.locator('#password').fill(password);
+        await form.locator('button[name="login"]').click();
+
+        await expect(page.getByText('Aus Ihrem letzten Besuch lagen noch Artikel in Ihrem Warenkorb')).toBeVisible();
+        await expect(review(page).locator('.cart_item')).toHaveCount(2);
     });
 });
 
@@ -593,6 +675,8 @@ test.describe('what the law asks of every page', () => {
         const legal = page.locator('footer nav[aria-labelledby="footer-legal"]');
 
         await expect(legal.locator('ul a')).toHaveText(['AGB', 'Widerrufsbelehrung', 'Versand und Zahlung', 'Datenschutzerklärung', 'Impressum']);
+        // The shop is open on this site: the footer no longer says it is being built.
+        await expect(page.locator('footer')).not.toContainText('noch im Aufbau');
 
         // One button for withdrawing, the theme's – Germanized's own is not printed besides.
         await expect(page.getByRole('link', { name: 'Vertrag widerrufen' })).toHaveCount(1);
@@ -600,6 +684,12 @@ test.describe('what the law asks of every page', () => {
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Vertrag widerrufen');
         await expect(page.locator('main form')).toBeVisible();
         expect(await accessibilityViolations(page)).toEqual([]);
+    });
+
+    test('the form for withdrawing from a contract is kept out of caches', async ({ page }) => {
+        const response = await page.goto('/vertrag-widerrufen/');
+
+        expect(response.headers()['cache-control']).toMatch(/no-cache|no-store/);
     });
 
     test('a price comes with what belongs to it: VAT, shipping costs, how long delivery takes', async ({ page }) => {

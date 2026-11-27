@@ -129,6 +129,11 @@ add_action('wp_enqueue_scripts', function (): void {
     }
 
     foreach (wp_styles()->queue as $handle) {
+        // WooCommerce's notice for whoever runs the shop while it is announced keeps its look.
+        if ($handle === 'woocommerce-coming-soon') {
+            continue;
+        }
+
         if (str_starts_with($handle, 'wc-') || str_starts_with($handle, 'woocommerce')) {
             wp_dequeue_style($handle);
         }
@@ -146,7 +151,18 @@ add_action('wp_enqueue_scripts', function (): void {
         return;
     }
 
-    foreach (['wp-block-library', 'classic-theme-styles', 'global-styles', 'woocommerce-general', 'woocommerce-layout', 'woocommerce-smallscreen', 'woocommerce-inline', 'woocommerce-gzd-layout'] as $handle) {
+    foreach (['wp-block-library', 'classic-theme-styles', 'global-styles'] as $handle) {
         wp_dequeue_style($handle);
+    }
+
+    // WooCommerce's and Germanized's are emptied rather than taken out of the
+    // queue: a stylesheet that depends on one of them – a payment plugin's, or
+    // WooCommerce's own for its blocks – would otherwise bring it back.
+    foreach (['woocommerce-general', 'woocommerce-layout', 'woocommerce-smallscreen', 'woocommerce-inline', 'woocommerce-gzd-layout'] as $handle) {
+        if (wp_style_is($handle, 'registered')) {
+            wp_dequeue_style($handle);
+            wp_deregister_style($handle);
+            wp_register_style($handle, false);
+        }
     }
 }, 100);

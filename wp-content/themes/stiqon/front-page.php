@@ -70,8 +70,12 @@ $questions = [
     ['question' => 'Wird mein Bild dabei hochgeladen?', 'answer' => 'Nein. Für die Vorschau bleibt das Bild in Ihrem Browser. Es verlässt Ihr Gerät nicht.'],
     ['question' => 'Welche Dateien eignen sich für die Vorschau?', 'answer' => 'Bilder im Format PNG, JPEG oder WebP. Ein freigestelltes PNG zeigt am besten, wie ein Sticker mit Konturschnitt wirkt.'],
     ['question' => 'Welche Formen und Materialien zeigt die Vorschau?', 'answer' => 'Runde, quadratische, rechteckige und ovale Sticker sowie Sticker mit Konturschnitt – auf weißem Vinyl, transparenter und holografischer Folie und auf Kraftpapier. Flyer von DIN A6 bis DIN A4, DIN lang und quadratisch.'],
-    ['question' => 'Kann ich schon bestellen?', 'answer' => 'Noch nicht. Der Shop wird gerade aufgebaut; die Bestellung folgt.'],
 ];
+
+// Asked only while WooCommerce announces the shop; once it is open, the answer is the shop.
+if (get_option('woocommerce_coming_soon') === 'yes') {
+    $questions[] = ['question' => 'Kann ich schon bestellen?', 'answer' => 'Noch nicht. Der Shop wird gerade aufgebaut; die Bestellung folgt.'];
+}
 
 $mockup = static fn (array $card, string $class = ''): string => isset($card['sticker'])
     ? stiqon_sticker($card['sticker'], $class)

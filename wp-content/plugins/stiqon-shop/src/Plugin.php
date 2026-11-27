@@ -22,6 +22,7 @@ final class Plugin
         Catalog\Names::register();
         Catalog\SupplierCataloguePage::register();
         Search\Index::register();
+        Security\LoginMessages::register();
         Content\References::register();
 
         if (is_admin()) {

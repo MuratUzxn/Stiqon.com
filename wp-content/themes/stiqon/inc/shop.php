@@ -30,9 +30,32 @@ function stiqon_is_woocommerce_page(): bool
         return false;
     }
 
-    return is_cart() || is_checkout() || is_account_page()
-        || (function_exists('eu_owb_get_withdrawal_page_id') && is_page() && get_queried_object_id() === (int) eu_owb_get_withdrawal_page_id());
+    return is_cart() || is_checkout() || is_account_page() || stiqon_is_withdrawal_page();
 }
+
+/**
+ * Whether the page being shown is the one with Germanized's form for
+ * withdrawing from a contract.
+ */
+function stiqon_is_withdrawal_page(): bool
+{
+    return function_exists('eu_owb_get_withdrawal_page_id') && is_page() && get_queried_object_id() === (int) eu_owb_get_withdrawal_page_id();
+}
+
+/**
+ * Opened with the link from an order's e-mail, Germanized's withdrawal form
+ * fills in that customer's name and e-mail address. Like WooCommerce's own
+ * pages for one customer, the page is kept out of caches and search engines.
+ */
+add_action('template_redirect', static function (): void {
+    if (stiqon_is_withdrawal_page()) {
+        nocache_headers();
+    }
+});
+
+add_filter('wp_robots', static function (mixed $robots): mixed {
+    return is_array($robots) && stiqon_is_withdrawal_page() ? wp_robots_no_robots($robots) : $robots;
+});
 
 /**
  * Whether a page written in the editor holds something WooCommerce or
@@ -41,9 +64,58 @@ function stiqon_is_woocommerce_page(): bool
  */
 function stiqon_page_holds_shop_content(): bool
 {
-    $content = (string) get_post_field('post_content', get_queried_object_id());
+    return stiqon_content_holds_shop_content((string) get_post_field('post_content', get_queried_object_id()));
+}
 
-    return (bool) preg_match('~\[(?:woocommerce|wc_|product|add_to_cart|shop_messages|gzd_|eu_owb|revocation|payment_methods)|<!-- wp:(?:woocommerce|woocommerce-germanized|vendidero)[/-]~', $content);
+/**
+ * The test behind it, for a piece of editor content. Shortcodes are asked of
+ * WordPress instead of being recognised by name: every registered one whose
+ * function belongs to WooCommerce or Germanized counts – [sale_products] as
+ * much as [woocommerce_cart]. A synced pattern counts as well: what it holds
+ * is kept elsewhere, so the page may need it.
+ */
+function stiqon_content_holds_shop_content(string $content): bool
+{
+    if (preg_match('~<!-- wp:(?:(?:woocommerce|woocommerce-germanized|vendidero)[/-]|block\s)~', $content)) {
+        return true;
+    }
+
+    if (! str_contains($content, '[')) {
+        return false;
+    }
+
+    foreach ($GLOBALS['shortcode_tags'] ?? [] as $tag => $callback) {
+        if (has_shortcode($content, (string) $tag) && stiqon_is_shop_plugin_callback($callback)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Whether a callback is defined in WooCommerce or in Germanized.
+ */
+function stiqon_is_shop_plugin_callback(mixed $callback): bool
+{
+    if (is_string($callback) && str_contains($callback, '::')) {
+        $callback = explode('::', $callback, 2);
+    }
+
+    try {
+        $reflection = match (true) {
+            is_array($callback) && count($callback) === 2 && (is_object($callback[0]) || is_string($callback[0])) && is_string($callback[1]) => new ReflectionMethod($callback[0], $callback[1]),
+            is_string($callback), $callback instanceof Closure => new ReflectionFunction($callback),
+            is_object($callback) && method_exists($callback, '__invoke') => new ReflectionMethod($callback, '__invoke'),
+            default => null,
+        };
+    } catch (ReflectionException) {
+        return false;
+    }
+
+    $file = $reflection?->getFileName();
+
+    return is_string($file) && (bool) preg_match('~/plugins/woocommerce(?:-germanized)?/~', wp_normalize_path($file));
 }
 
 /**
@@ -302,13 +374,24 @@ function stiqon_product_net_price(): void
     $priced = stiqon_product_choice($product)['variation'] ?? $product;
     $net = stiqon_net_price_text($priced);
 
-    echo '<p class="text-label mt-1 text-muted" data-net-price'.($net === '' ? ' hidden' : '').'>'.wp_kses_post($net).'</p>';
+    // Without the page's script nothing follows a change of choice, so the line
+    // would keep the first choice's price for all of them: it is left out there.
+    echo '<p class="text-label mt-1 text-muted" data-net-price'.(stiqon_price_depends_on_choice($product) ? ' data-needs-script' : '').($net === '' ? ' hidden' : '').'>'.wp_kses_post($net).'</p>';
 }
 
 /**
  * "20,92 € netto" – or nothing for a product without a price, or one whose
  * displayed price is the net price already.
  */
+/**
+ * Whether what a product costs depends on the options chosen: a product with
+ * options whose prices differ.
+ */
+function stiqon_price_depends_on_choice(mixed $product): bool
+{
+    return $product instanceof WC_Product_Variable && $product->get_variation_price('min', true) !== $product->get_variation_price('max', true);
+}
+
 function stiqon_net_price_text(WC_Product $product): string
 {
     if ($product->get_price() === '') {
@@ -560,3 +643,76 @@ add_filter('body_class', static function (mixed $classes): mixed {
 
     return $classes;
 });
+
+/**
+ * Logging in brings back what the customer left in the cart on an earlier
+ * visit and adds it to what is in it now – also at the checkout, where the
+ * total then grows without a word. When that happens, the customer is told.
+ */
+add_action('woocommerce_load_cart_from_session', static function (): void {
+    if (is_user_logged_in() && WC()->session && get_user_meta(get_current_user_id(), '_woocommerce_load_saved_cart_after_login', true)) {
+        $GLOBALS['stiqon_cart_before_login'] = count((array) WC()->session->get('cart', []));
+    }
+});
+
+add_action('woocommerce_cart_loaded_from_session', static function (mixed $cart): void {
+    if (! isset($GLOBALS['stiqon_cart_before_login']) || ! $cart instanceof WC_Cart) {
+        return;
+    }
+
+    $before = (int) $GLOBALS['stiqon_cart_before_login'];
+    unset($GLOBALS['stiqon_cart_before_login']);
+
+    if ($before > 0 && count($cart->get_cart_contents()) > $before) {
+        wc_add_notice(sprintf('Aus Ihrem letzten Besuch lagen noch Artikel in Ihrem Warenkorb; sie sind jetzt dazugekommen. Bitte prüfen Sie, was Sie bestellen. <a href="%s" class="button">Warenkorb ansehen</a>', esc_url(wc_get_cart_url())), 'notice');
+    }
+});
+
+/**
+ * A customer who keeps a delivery address of its own in the account gets it
+ * at the checkout: the box for it starts ticked. WooCommerce starts it empty
+ * and sends the order to the billing address.
+ */
+add_filter('woocommerce_ship_to_different_address_checked', static function (mixed $checked): mixed {
+    $customer = function_exists('WC') ? WC()->customer : null;
+
+    if ($checked || ! is_user_logged_in() || ! $customer instanceof WC_Customer || $customer->get_shipping_address_1() === '') {
+        return $checked;
+    }
+
+    foreach (['first_name', 'last_name', 'company', 'address_1', 'address_2', 'postcode', 'city', 'country'] as $field) {
+        if ((string) $customer->{"get_shipping_{$field}"}() !== (string) $customer->{"get_billing_{$field}"}()) {
+            return true;
+        }
+    }
+
+    return $checked;
+});
+
+/**
+ * An order paid in advance that still waits for the money shows the bank
+ * details in the account, too – not only on the confirmation and in the mail.
+ */
+add_action('woocommerce_view_order', static function (mixed $id): void {
+    $order = wc_get_order($id);
+
+    if (! $order instanceof WC_Order || $order->get_payment_method() !== 'bacs' || ! $order->has_status('on-hold')) {
+        return;
+    }
+
+    $gateway = WC()->payment_gateways()->payment_gateways()['bacs'] ?? null;
+
+    if ($gateway instanceof WC_Gateway_BACS) {
+        $gateway->thankyou_page($order->get_id());
+    }
+}, 5);
+
+/**
+ * Whether WooCommerce keeps the shop from this visitor ("coming soon"), judged
+ * as the search judges it. Announced on the pages of the shop only, the theme's
+ * own pages then offer neither a cart nor search results that lead nowhere.
+ */
+function stiqon_shop_is_concealed(): bool
+{
+    return class_exists(\Stiqon\Shop\Search\Index::class) && \Stiqon\Shop\Search\Index::concealed();
+}

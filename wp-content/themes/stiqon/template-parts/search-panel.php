@@ -64,8 +64,13 @@ $key = 'inline-flex h-6 min-w-6 items-center justify-center rounded-md bg-paper 
             </div>
 
             <div class="px-5 py-7 text-center" x-show="nothing">
-                <p class="font-semibold">Dazu haben wir nichts gefunden.</p>
-                <p class="text-label mx-auto mt-1 max-w-sm text-muted">Versuchen Sie es mit einer Form, einem Format oder einem Material – etwa „rund“, „DIN A5“ oder „Kraftpapier“.</p>
+                <?php if (stiqon_shop_is_concealed()) : ?>
+                    <p class="font-semibold">Der Shop öffnet bald.</p>
+                    <p class="text-label mx-auto mt-1 max-w-sm text-muted">Bis dahin finden Sie hier noch keine Sticker und Flyer.</p>
+                <?php else : ?>
+                    <p class="font-semibold">Dazu haben wir nichts gefunden.</p>
+                    <p class="text-label mx-auto mt-1 max-w-sm text-muted">Versuchen Sie es mit einer Form, einem Format oder einem Material – etwa „rund“, „DIN A5“ oder „Kraftpapier“.</p>
+                <?php endif; ?>
             </div>
 
             <p class="text-label px-5 py-5 text-muted" x-show="unavailable">

@@ -6,7 +6,7 @@
  * answers itself, and what the footer of every page needs.
  *
  *   tools/dev/wp.sh --skip-plugins=stiqon-shop eval-file tests/integration/plugins-off.php shop-plugin
- *   tools/dev/wp.sh --skip-plugins=woocommerce,woocommerce-germanized,stiqon-shop eval-file tests/integration/plugins-off.php woocommerce
+ *   tools/dev/wp.sh --skip-plugins=woocommerce,woocommerce-germanized eval-file tests/integration/plugins-off.php woocommerce
  */
 
 $problems = [];
@@ -38,8 +38,16 @@ if ($state === 'shop-plugin') {
         $problems[] = 'Without the shop plugin a row of the cart ends the request: '.$error->getMessage();
     }
 } elseif ($state === 'woocommerce') {
-    if (function_exists('WC')) {
-        WP_CLI::error('Run this with --skip-plugins=woocommerce,woocommerce-germanized,stiqon-shop.');
+    if (function_exists('WC') || ! function_exists('stiqon_product_view')) {
+        WP_CLI::error('Run this with --skip-plugins=woocommerce,woocommerce-germanized: WooCommerce off, the shop plugin on.');
+    }
+
+    // WordPress keeps the shop plugin active when WooCommerce's folder is gone. An
+    // area page asks it for its products; there are none to show, and no error.
+    try {
+        $expect(is_array(stiqon_gallery('sticker')), 'Without WooCommerce the shop plugin hands an area page no gallery.');
+    } catch (Throwable $error) {
+        $problems[] = 'Without WooCommerce an area page ends in an error: '.$error->getMessage();
     }
 
     // Who runs the site and how it treats data has to stay within reach on every page.

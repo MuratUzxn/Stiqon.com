@@ -261,3 +261,16 @@ add_action('template_redirect', function (): void {
  * WordPress' toolbar for logged-in users would sit on top of what is being judged there.
  */
 add_filter('show_admin_bar', static fn (bool $show): bool => is_page('musterbogen') ? false : $show);
+
+/**
+ * Where a customer finds the account – or null without WooCommerce or without
+ * an account page.
+ */
+function stiqon_account_url(): ?string
+{
+    if (! function_exists('wc_get_page_id') || wc_get_page_id('myaccount') <= 0) {
+        return null;
+    }
+
+    return (string) get_permalink(wc_get_page_id('myaccount'));
+}

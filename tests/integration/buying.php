@@ -44,6 +44,27 @@ $expect(str_contains($atCheckout, 'Runde Sticker, Kraftpapier'), 'At the checkou
 $expect(apply_filters('woocommerce_available_variation', false, $kraft->get_parent_id() ? wc_get_product($kraft->get_parent_id()) : null, $kraft) === false, 'A variation another plugin dropped with false breaks or comes back.');
 $expect(! array_key_exists('stiqon_net_price', (array) apply_filters('woocommerce_available_variation', [], null, $kraft)), 'A variation another plugin emptied comes back with a net price.');
 
+// What counts as shop content on a written page: every shortcode and block of WooCommerce or Germanized.
+foreach (['[sale_products]', '[featured_products limit="4"]', '[woocommerce_cart]', '<!-- wp:woocommerce/cart /-->', '<!-- wp:block {"ref":12} /-->'] as $content) {
+    $expect(stiqon_content_holds_shop_content($content), "Not taken for shop content: {$content}");
+}
+
+foreach (['Nur Text.', '[gallery ids="1"]', '[sale]'] as $content) {
+    $expect(! stiqon_content_holds_shop_content($content), "Taken for shop content: {$content}");
+}
+
+// A customer whose account keeps a delivery address of its own gets it at the checkout.
+$keep = [WC()->customer, get_current_user_id()];
+wp_set_current_user((int) (get_users(['role' => 'administrator', 'number' => 1, 'fields' => 'ID'])[0] ?? 0));
+WC()->customer = new WC_Customer();
+WC()->customer->set_billing_address_1('Musterstraße 1');
+WC()->customer->set_shipping_address_1('Paketweg 9');
+$expect((bool) apply_filters('woocommerce_ship_to_different_address_checked', 0), 'A delivery address of its own, kept in the account, is not used at the checkout.');
+WC()->customer->set_shipping_address_1('Musterstraße 1');
+$expect(! apply_filters('woocommerce_ship_to_different_address_checked', 0), 'The box for a delivery address is ticked although it is the billing address.');
+[WC()->customer, $user] = $keep;
+wp_set_current_user($user);
+
 // Mails keep emoji as text instead of pictures from WordPress.org.
 $expect(has_filter('wp_mail', 'wp_staticize_emoji_for_email') === false, 'Emoji in mails become pictures loaded from WordPress.org.');
 
@@ -83,6 +104,17 @@ try {
 } finally {
     $islands->delete();
 }
+
+// On a page of the shop, a stylesheet that depends on WooCommerce's does not bring WooCommerce's back.
+$GLOBALS['stiqon_shop_page'] = true;
+wp_register_style('stiqon-probe', false, ['woocommerce-general']);
+wp_enqueue_style('stiqon-probe');
+do_action('wp_enqueue_scripts');
+ob_start();
+wp_print_styles();
+$printed = (string) ob_get_clean();
+unset($GLOBALS['stiqon_shop_page']);
+$expect(isset(wp_styles()->registered['woocommerce-general']) && ! str_contains($printed, 'woocommerce.css'), 'On a page of the shop a stylesheet that depends on WooCommerce\'s brings WooCommerce\'s back.');
 
 if ($problems !== []) {
     WP_CLI::error_multi_line($problems);

@@ -18,7 +18,8 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>
     <?php // Controls that only work with the page's script are not offered without it. ?>
-    <noscript><style>[data-needs-script] { display: none !important; }</style></noscript>
+    <?php // What stands in for them is shown only then (data-without-script, otherwise hidden by an inline style). ?>
+    <noscript><style>[data-needs-script] { display: none !important; } [data-without-script] { display: inline !important; }</style></noscript>
 </head>
 <body <?php body_class('flex min-h-screen flex-col'); ?>>
 <?php wp_body_open(); ?>
@@ -54,7 +55,14 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
             </a>
             <?php echo stiqon_motif_button('Eigenes Motiv', ['variant' => 'secondary', 'class' => 'max-sm:hidden']); ?>
 
-            <?php if ($cart !== null) : ?>
+            <?php if (($account = stiqon_account_url()) !== null) : ?>
+                <a href="<?php echo esc_url($account); ?>" aria-label="Kundenkonto" class="inline-flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ease-soft hover:bg-ink/8 max-md:hidden">
+                    <?php echo stiqon_icon('user'); ?>
+                </a>
+            <?php endif; ?>
+
+            <?php // Announced on the pages of the shop only, a visitor's cart would lead to the announcement. ?>
+            <?php if ($cart !== null && ! stiqon_shop_is_concealed()) : ?>
                 <a
                     href="<?php echo esc_url($cart['url']); ?>" aria-label="<?php echo esc_attr($cart['label']); ?>" data-cart-count="<?php echo esc_attr((string) $cart['count']); ?>"
                     data-cart-hash="<?php echo esc_attr($cart['hash']); ?>" data-cart-source="<?php echo esc_url($cart['source']); ?>"
@@ -81,6 +89,9 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
                                 class="<?php echo esc_attr(stiqon_classes(['text-action flex h-12 items-center rounded-control px-4 text-lg', 'bg-mist' => $area['current'], 'hover:bg-mist' => ! $area['current']])); ?>"
                             ><?php echo esc_html($area['label']); ?></a>
                         <?php endforeach; ?>
+                        <?php if ($account !== null) : ?>
+                            <a href="<?php echo esc_url($account); ?>" class="text-action flex h-12 items-center rounded-control px-4 text-lg hover:bg-mist">Kundenkonto</a>
+                        <?php endif; ?>
                         <?php echo stiqon_motif_button('Eigenes Motiv ausprobieren', ['variant' => 'secondary', 'class' => 'mt-3 w-full sm:hidden']); ?>
                     </nav>
                 </div>

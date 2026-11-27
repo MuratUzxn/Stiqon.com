@@ -201,7 +201,29 @@ Seiten doch den Block, weist die Verwaltung darauf hin.
   (`/wp-json/wc/store/v1/products`, `/wp-json/wp/v2/product`) mit Sortiment und Preisen, legt per
   Adresse (`?add-to-cart=…`) in den Warenkorb und nimmt über die Store-API Bestellungen an. Das
   ist WooCommerces Verhalten, nicht das des Themes. Wer Sortiment und Preise bis zur Eröffnung
-  wirklich zurückhalten will, lässt die Produkte bis dahin unveröffentlicht.
+  wirklich zurückhalten will, lässt die Produkte bis dahin unveröffentlicht. Ebenso offen bleiben
+  WordPress' Suche (`/wp-json/wp/v2/search`), Kategorien, Merkmale und Preisspanne
+  (`/wp-json/wp/v2/product_cat`, `/wp-json/wc/store/v1/products/collection-data` und
+  Verwandte), oEmbed und Feed einzelner Produkte, die Weiterleitung von `/?p=<id>` und – solange
+  Suchmaschinen zugelassen sind – WordPress' Sitemap mit den Produktadressen; wenn nur die
+  Shop-Seiten angekündigt sind, außerdem Kundenkonto und „Vertrag widerrufen“. Was das Theme
+  schließen kann, schließt es: Eine Seite, an deren Stelle die Ankündigung steht, bittet
+  Suchmaschinen, sie nicht aufzunehmen, und heißt „Stiqon öffnet bald“; sind nur die
+  Shop-Seiten angekündigt, bieten die übrigen Seiten keinen Warenkorb an, und die Suche sagt,
+  dass der Shop bald öffnet.
+- **Anmeldung:** Eine fehlgeschlagene Anmeldung sagt nicht, ob es zu Adresse oder Name ein Konto
+  gibt (`src/Security/LoginMessages.php` im Plugin). Registrierung und „Passwort vergessen“
+  verraten es weiterhin – so arbeitet WooCommerce. Meldet sich ein Kunde an, während schon
+  Artikel im Warenkorb liegen, und kommen dabei Artikel eines früheren Besuchs dazu, sagt der
+  Shop es ihm.
+- **„Vertrag widerrufen“** füllt Name und E-Mail-Adresse aus, wenn die Seite mit dem Link aus
+  einer Bestellmail geöffnet wird (Germanized; der Schlüssel der Bestellung genügt). Das Theme
+  hält die Seite deshalb aus Caches und Suchmaschinen heraus.
+- **Einstellungen ohne Wirkung:** Germanizeds Darstellungsoptionen (etwa „Produkttabelle
+  Farbe“) wirken mit diesem Theme nicht – Germanizeds Stylesheet entfällt. WooCommerces Wahl,
+  Pflichtfelder nicht mit Sternchen zu markieren, gilt dagegen. Bewertungen zeigt das Theme
+  nicht; unter WooCommerce › Einstellungen › Produkte sollten sie aus sein (die Einrichtung
+  der lokalen Seiten schaltet sie ab).
 - **Zähler im Kopf:** Die Zahl der Artikel schreibt der Server in jede Seite. Eine Seite kann
   älter sein als der Warenkorb – von der Zurück-Taste aus dem Speicher des Browsers geholt oder
   von einem Seiten-Cache ausgeliefert. Jede Seite trägt deshalb WooCommerces Prüfsumme des
@@ -217,7 +239,9 @@ Seiten doch den Block, weist die Verwaltung darauf hin.
   lädt: Ihr Kopf ist schon gedruckt, wenn feststeht, dass sie erscheint.
 - **Ohne das Plugin „Stiqon Shop-Funktionen“** zeigen Warenkorb und Kasse ihre Zeilen ohne
   Zeichnung; **ohne WooCommerce** nennt der Fuß weiter Impressum, Datenschutzerklärung und die
-  übrigen Rechtsseiten. Beides prüft `tests/integration/plugins-off.php`.
+  übrigen Rechtsseiten, und die Bereichsseiten zeigen keine Karten statt eines Fehlers – auch
+  wenn das Plugin dabei eingeschaltet bleibt, wie WordPress es nach einem misslungenen Update
+  von WooCommerce lässt. Beides prüft `tests/integration/plugins-off.php`.
 - **Vorlagen aktuell halten:** Jede Vorlage unter `woocommerce/` nennt im Kopf (`@version`) die
   Fassung von WooCommerces Vorlage, aus der sie entstand. `tests/integration/templates.php`
   meldet, wenn WooCommerce eine davon geändert hat.

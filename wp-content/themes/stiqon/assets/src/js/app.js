@@ -358,6 +358,24 @@ function cartHashNow() {
  * with. Where the browser's differs, the number is put right – asked for again,
  * or simply none for a cart that has been emptied.
  */
+/**
+ * Loads the page anew – once for a given state of the cart, so that a page that
+ * cannot be brought in step is not loaded again and again.
+ */
+function reloadOnce(hash) {
+    try {
+        if (window.sessionStorage.getItem('stiqon-cart-reloaded') === hash) {
+            return;
+        }
+
+        window.sessionStorage.setItem('stiqon-cart-reloaded', hash);
+    } catch {
+        return;
+    }
+
+    window.location.reload();
+}
+
 async function checkCartCount() {
     const now = cartHashNow();
 
@@ -366,6 +384,14 @@ async function checkCartCount() {
     }
 
     cartLink.dataset.cartHash = now;
+
+    // The cart page is as old as its number: shown again by the Back button after
+    // something was taken out, it would still list it. It is loaded anew instead.
+    if (document.body.classList.contains('woocommerce-cart')) {
+        reloadOnce(now);
+
+        return;
+    }
 
     if (now === '') {
         showCartCount(0);
@@ -477,3 +503,7 @@ if (searchControls.length > 0) {
         }
     });
 }
+
+// What stands in for the script where there is none – the price range of a
+// product with options – leaves the page once the script runs.
+document.querySelectorAll('[data-without-script]').forEach((element) => element.remove());
