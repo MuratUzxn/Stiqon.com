@@ -125,6 +125,7 @@ CORE_ZIP="$DOWNLOADS/wordpress-$WORDPRESS_VERSION.zip"
 fetch "https://downloads.wordpress.org/release/wordpress-$WORDPRESS_VERSION.zip" "$CORE_ZIP" sha256 "$WORDPRESS_SHA256"
 fetch "https://downloads.wordpress.org/plugin/woocommerce.$WOOCOMMERCE_VERSION.zip" "$DOWNLOADS/woocommerce.$WOOCOMMERCE_VERSION.zip" sha256 "$WOOCOMMERCE_SHA256"
 fetch "https://downloads.wordpress.org/plugin/woocommerce-germanized.$GERMANIZED_VERSION.zip" "$DOWNLOADS/woocommerce-germanized.$GERMANIZED_VERSION.zip" sha256 "$GERMANIZED_SHA256"
+fetch "https://downloads.wordpress.org/plugin/mollie-payments-for-woocommerce.$MOLLIE_VERSION.zip" "$DOWNLOADS/mollie-payments-for-woocommerce.$MOLLIE_VERSION.zip" sha256 "$MOLLIE_SHA256"
 
 # --- Start over, if asked ---------------------------------------------------------
 
@@ -283,6 +284,7 @@ install_plugin() { # slug version
 
 install_plugin woocommerce "$WOOCOMMERCE_VERSION"
 install_plugin woocommerce-germanized "$GERMANIZED_VERSION"
+install_plugin mollie-payments-for-woocommerce "$MOLLIE_VERSION"
 
 # --- This repository's theme and plugin -------------------------------------------
 

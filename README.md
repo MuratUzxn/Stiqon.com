@@ -12,7 +12,7 @@ Dieses Repository enthält, was den Shop von einer Standard-Installation untersc
 | `tools/brand` | Logo-Original und das Skript, das daraus die Logo-Dateien des Themes erzeugt |
 | `tests` | Browser-Tests (`e2e`), Unit-Tests des Plugins (`php`), Prüfungen in der Installation (`integration`) |
 
-WordPress selbst, WooCommerce und Germanized gehören nicht ins Repository. Welche Versionen
+WordPress selbst, WooCommerce, Germanized und Mollie gehören nicht ins Repository. Welche Versionen
 verwendet und getestet werden, steht in `tools/dev/versions.env`.
 
 Die frühere Fassung des Shops als eigene Laravel-Anwendung liegt in der Git-Historie (bis Commit
@@ -41,14 +41,14 @@ tools/dev/serve.sh
 ```
 
 Das Einrichtungsskript baut unter `~/.stiqon-wp` (als root: `/srv/stiqon-wp`) eine vollständige
-Installation auf: WordPress, WooCommerce und Germanized in den festgelegten Versionen, auf Deutsch,
+Installation auf: WordPress, WooCommerce, Germanized und Mollie in den festgelegten Versionen, auf Deutsch,
 mit Theme und Plugin aus diesem Repository als Verknüpfung. Der Shop läuft danach unter
 `http://127.0.0.1:8200`. Benutzer und Passwort der lokalen Verwaltung stehen in
 `sites/dev.env` neben der Installation – nie im Repository.
 
 Gut zu wissen:
 
-- WordPress, WooCommerce, Germanized und WP-CLI kommen von festen Adressen und werden gegen die
+- WordPress, WooCommerce, Germanized, Mollie und WP-CLI kommen von festen Adressen und werden gegen die
   Prüfsummen in `tools/dev/versions.env` geprüft; ein Paket, das nicht passt, wird gelöscht und
   abgelehnt. Nicht festlegbar sind die Sprachpakete: Sie werden ohne neue Versionsnummer
   überarbeitet.

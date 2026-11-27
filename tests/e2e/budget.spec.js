@@ -38,7 +38,9 @@ const pages = {
     // select fields (21 kB), its own scripts and Germanized's. The classic pages,
     // that is – the ones built from blocks weighed 1,5 MB each.
     '/warenkorb/': { withCart: true, document: 10.5, total: 222, elements: 330, stylesheet: 17.5, script: 96, requests: 22 },
-    '/kasse/': { withCart: true, document: 13.2, total: 234, elements: 520, stylesheet: 17.5, script: 102, requests: 25 },
+    // Mollie adds three small files of its own to the checkout (2 kB): the styles of its card fields
+    // and payment icons, and a script for surcharges. With an API key its card fields come on top (W4a).
+    '/kasse/': { withCart: true, document: 13.2, total: 234, elements: 520, stylesheet: 18.5, script: 105, requests: 28 },
 };
 
 // Scripts: the theme's own script with Alpine bundled in.
