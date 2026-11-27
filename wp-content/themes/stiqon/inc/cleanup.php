@@ -10,7 +10,9 @@ add_action('init', function (): void {
     // Emoji: a script that swaps emoji for images loaded from a WordPress.org server.
     remove_action('wp_head', 'print_emoji_detection_script', 7);
     remove_action('wp_print_styles', 'print_emoji_styles');
-    remove_action('wp_enqueue_scripts', 'wp_enqueue_emoji_styles');
+    remove_action('wp_enqueue_scripts', 'wp_enqueue_emoji_styles');    // Mails, too: WordPress would turn an emoji in a name or a note into a
+    // picture loaded from WordPress.org, which opening the mail would contact.
+    remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
 
     // Links for services the shop does not offer: feeds, remote editing, embedding.
     remove_action('wp_head', 'feed_links', 2);

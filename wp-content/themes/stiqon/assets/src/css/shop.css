@@ -44,7 +44,7 @@
 .woocommerce .woocommerce-form-register__submit,
 .woocommerce .woocommerce-Button,
 .woocommerce form.edit-account button[type='submit'],
-.woocommerce form.woocommerce-address-fields button[type='submit'] {
+.woocommerce button[name='save_address'] {
     background-color: var(--color-ink);
     color: var(--color-paper);
 }
@@ -57,7 +57,7 @@
 .woocommerce .woocommerce-form-register__submit:hover,
 .woocommerce .woocommerce-Button:hover,
 .woocommerce form.edit-account button[type='submit']:hover,
-.woocommerce form.woocommerce-address-fields button[type='submit']:hover {
+.woocommerce button[name='save_address']:hover {
     background-color: var(--color-ink-soft);
 }
 
@@ -88,6 +88,12 @@
     text-decoration: none;
 }
 
+/* The owner's choice not to mark required fields (Customizer › WooCommerce ›
+   Kasse): WooCommerce applies it in an inline stylesheet the theme leaves out. */
+.stiqon-required-unmarked .woocommerce form .form-row .required {
+    visibility: hidden;
+}
+
 .woocommerce .optional {
     color: var(--color-muted);
     font-weight: 400;
@@ -104,6 +110,9 @@
     display: block;
     width: 100%;
     min-height: 3rem;
+    /* The edge in the token meant for it (3.5:1): the grey surface alone can
+       hardly be told from the page. */
+    border: 1px solid var(--color-control);
     border-radius: var(--radius-control);
     background-color: var(--color-mist);
     padding: 0.625rem 0.875rem;
@@ -128,15 +137,17 @@
     opacity: 1;
 }
 
-/* A field the visitor has to look at again, and what is wrong with it. */
+/* A field the visitor has to look at again, and what is wrong with it. The red
+   is the field's own edge, so the focus ring still shows where the cursor is. */
 .woocommerce .woocommerce-invalid .input-text,
 .woocommerce .woocommerce-invalid select,
 .woocommerce .woocommerce-invalid textarea {
-    outline: 2px solid var(--color-alert);
-    outline-offset: 0;
+    border-color: var(--color-alert);
+    box-shadow: inset 0 0 0 1px var(--color-alert);
 }
 
-.woocommerce .checkout-inline-error-message {
+.woocommerce .checkout-inline-error-message,
+.woocommerce .coupon-error-notice {
     margin-top: 0.375rem;
     color: var(--color-alert);
     font-size: 0.875rem;
@@ -147,10 +158,53 @@
 .woocommerce select.country_to_state--single {
     min-height: 0;
     appearance: none;
+    border: 0;
     background-color: transparent;
     padding: 0;
     font-weight: 600;
     pointer-events: none;
+}
+
+/* With more than one country to sell to, WooCommerce turns the country field
+   into select2's box: it gets the look of the other fields. */
+.woocommerce .select2-container {
+    display: block;
+    width: 100% !important;
+}
+
+.woocommerce .select2-container .select2-selection--single {
+    height: 3rem;
+    border: 1px solid var(--color-control);
+    border-radius: var(--radius-control);
+    background-color: var(--color-mist);
+}
+
+.woocommerce .select2-container .select2-selection--single .select2-selection__rendered {
+    padding-inline: 0.875rem 2.5rem;
+    color: var(--color-ink);
+    line-height: calc(3rem - 2px);
+}
+
+.woocommerce .select2-container .select2-selection--single .select2-selection__arrow {
+    top: 0;
+    right: 0.75rem;
+    height: calc(3rem - 2px);
+}
+
+.woocommerce .woocommerce-invalid .select2-container .select2-selection--single {
+    border-color: var(--color-alert);
+    box-shadow: inset 0 0 0 1px var(--color-alert);
+}
+
+.select2-container .select2-dropdown {
+    overflow: hidden;
+    border-color: var(--color-control);
+    border-radius: var(--radius-control);
+}
+
+.select2-container.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container.select2-container--default .select2-results__option--highlighted[data-selected] {
+    background-color: var(--color-ink);
 }
 
 .woocommerce input[type='checkbox'],
@@ -300,8 +354,9 @@
     font-weight: 650;
 }
 
-/* WooCommerce adds the tax in brackets; Germanized lists it in a row of its own. */
-.woocommerce table.shop_table .order-total .includes_tax {
+/* WooCommerce adds the tax in brackets; Germanized lists it in a row of its own.
+   Only where that row is there: without Germanized the brackets are all there is. */
+.woocommerce table.shop_table:has(.order-tax) .order-total .includes_tax {
     display: none;
 }
 
@@ -643,6 +698,13 @@
     margin-top: 1rem;
 }
 
+/* WooCommerce's script keeps the delivery address closed until it is asked for.
+   Without the script the fields stood open, and what was typed into them was
+   dropped unless the box above them was ticked. Now they open with the box. */
+.woocommerce .woocommerce-shipping-fields:has(#ship-to-different-address-checkbox:not(:checked)) .shipping_address {
+    display: none;
+}
+
 /* A voucher, an account: lines that open a field or two. */
 .woocommerce-form-coupon-toggle .shop-notice,
 .woocommerce-form-login-toggle .shop-notice {
@@ -660,6 +722,21 @@
 .woocommerce-checkout form.woocommerce-form-login .input-text,
 .woocommerce form.checkout_coupon .input-text {
     background-color: var(--color-paper);
+}
+
+/* Without script the two lines cannot open their forms, so the forms stand open
+   instead, as WooCommerce's own stylesheet has it. */
+.woocommerce-no-js form.woocommerce-form-coupon {
+    display: block !important;
+}
+
+.woocommerce-no-js form.woocommerce-form-login {
+    display: grid !important;
+}
+
+.woocommerce-no-js .woocommerce-form-coupon-toggle,
+.woocommerce-no-js .woocommerce-form-login-toggle {
+    display: none !important;
 }
 
 /* "Create an account?" below the address. */
@@ -938,18 +1015,32 @@
     content: ' · ';
 }
 
+/* WooCommerce marks an order's number, date and status in a sentence; the
+   browser would put them on yellow. Here they stand out by weight. */
+.woocommerce mark {
+    background-color: transparent;
+    color: inherit;
+    font-weight: 600;
+}
+
 .woocommerce .woocommerce-customer-details address {
     border-radius: var(--radius-card);
     background-color: var(--color-mist);
     padding: 1.25rem 1.5rem;
     font-style: normal;
     line-height: 1.6;
+    /* A long e-mail address breaks instead of pushing the page sideways. */
+    overflow-wrap: anywhere;
 }
 
 .woocommerce .woocommerce-columns--addresses {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
     gap: 1.5rem;
+}
+
+.woocommerce .woocommerce-columns--addresses > * {
+    min-width: 0;
 }
 
 /* --- Account --------------------------------------------------------------------- */
@@ -1010,7 +1101,7 @@
 .woocommerce form.woocommerce-form-register,
 .woocommerce form.woocommerce-ResetPassword,
 .woocommerce form.edit-account,
-.woocommerce form.woocommerce-address-fields {
+.woocommerce .woocommerce-address-fields {
     display: grid;
     max-width: 32rem;
     gap: 1rem;
@@ -1045,6 +1136,11 @@
     display: block;
 }
 
+/* Room at the end of the field for the button, so the text never runs under it. */
+.woocommerce .password-input input {
+    padding-right: 2.75rem;
+}
+
 .woocommerce .show-password-input {
     position: absolute;
     top: 50%;
@@ -1064,6 +1160,11 @@
     background-color: var(--color-muted);
     content: '';
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z'/%3E%3Ccircle cx='12' cy='12' r='2.75'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Shown: the eye is struck through, so the button says which state it is in. */
+.woocommerce .show-password-input.display-password::before {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z'/%3E%3Ccircle cx='12' cy='12' r='2.75'/%3E%3Cpath d='M4 4l16 16'/%3E%3C/svg%3E");
 }
 
 /* What WooCommerce adds below a field in italics. */
@@ -1117,17 +1218,20 @@
         padding-block: 1rem;
     }
 
+    /* The label at the left, the value at the right. A value of several pieces
+       (the total: "66,70 € für 2 Artikel") stays together as one line of text. */
     .woocommerce table.woocommerce-orders-table th,
     .woocommerce table.woocommerce-orders-table td {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
+        display: flow-root;
         border: 0;
         padding: 0;
+        text-align: right;
     }
 
     .woocommerce table.woocommerce-orders-table td::before,
     .woocommerce table.woocommerce-orders-table th[data-title]::before {
+        float: left;
+        margin-right: 1rem;
         content: attr(data-title);
         color: var(--color-muted);
         font-size: 0.875rem;
@@ -1158,4 +1262,5 @@
 .woocommerce .woocommerce-Address address {
     font-style: normal;
     line-height: 1.6;
+    overflow-wrap: anywhere;
 }

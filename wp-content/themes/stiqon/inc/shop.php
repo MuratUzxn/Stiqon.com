@@ -63,7 +63,9 @@ function stiqon_notice_content(string $html): string
         [, $html, $action] = $parts;
     }
 
-    return '<span class="min-w-0 flex-1">'.trim($html).'</span>'.$action;
+    // The sentence keeps room of its own: where there is not about 14rem beside
+    // the button, the button moves below it.
+    return '<span class="min-w-0 grow basis-56">'.trim($html).'</span>'.$action;
 }
 
 /**
@@ -322,7 +324,13 @@ function stiqon_net_price_text(WC_Product $product): string
 /**
  * Each variation carries its net price text, for the script that follows the choice.
  */
-add_filter('woocommerce_available_variation', function (array $data, $product, $variation): array {
+add_filter('woocommerce_available_variation', function (mixed $data, mixed $product, mixed $variation): mixed {
+    // Another plugin may drop a variation by handing back false or nothing;
+    // WooCommerce then leaves it out, and so does this.
+    if (! is_array($data) || $data === [] || ! $variation instanceof WC_Product) {
+        return $data;
+    }
+
     $data['stiqon_net_price'] = stiqon_net_price_text($variation);
 
     return $data;
@@ -530,6 +538,7 @@ function stiqon_email_rows_without_pictures(mixed $args): mixed
 
 add_filter('woocommerce_email_order_items_args', 'stiqon_email_rows_without_pictures');
 add_filter('eu_owb_woocommerce_email_withdrawal_items_args', 'stiqon_email_rows_without_pictures');
+add_filter('woocommerce_email_fulfillment_items_args', 'stiqon_email_rows_without_pictures');
 
 /**
  * Germanized prints the button for withdrawing from a contract after the
@@ -538,4 +547,16 @@ add_filter('eu_owb_woocommerce_email_withdrawal_items_args', 'stiqon_email_rows_
  */
 add_action('wp_loaded', static function (): void {
     remove_action('wp_footer', ['Vendidero\\OrderWithdrawalButton\\Package', 'print_button'], 5);
+});
+
+/**
+ * WooCommerce's setting not to mark required fields with a star works through
+ * an inline stylesheet the theme leaves out; a class on the body carries it.
+ */
+add_filter('body_class', static function (mixed $classes): mixed {
+    if (is_array($classes) && get_option('woocommerce_checkout_highlight_required_fields', 'yes') === 'no') {
+        $classes[] = 'stiqon-required-unmarked';
+    }
+
+    return $classes;
 });

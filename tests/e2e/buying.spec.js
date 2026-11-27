@@ -199,7 +199,8 @@ test.describe('checkout', () => {
         // WooCommerce prints the name through a filter that takes drawings apart and
         // leaves their lettering behind. The drawing arrives whole, and beside it
         // stands the name and nothing else.
-        await expect(row.locator('.stiqon-order-drawing svg[data-mockup="sticker"]')).toBeVisible();
+        // It is the drawing of what was chosen, not of the product's default.
+        await expect(row.locator('.stiqon-order-drawing').getByRole('img', { name: 'Runde Sticker, Kraftpapier', includeHidden: true })).toBeVisible();
         expect(await row.locator('.product-name').evaluate((cell) => {
             const copy = cell.cloneNode(true);
 
@@ -291,6 +292,9 @@ test.describe('checkout', () => {
         const field = page.locator('#billing_first_name');
 
         await expect(field).toHaveAttribute('aria-invalid', 'true');
+        // Its red edge leaves the focus ring free to show where the cursor is.
+        await field.focus();
+        expect(await field.evaluate((input) => ['outlineStyle', 'outlineColor', 'borderTopColor'].map((property) => getComputedStyle(input)[property]))).toEqual(['solid', 'rgb(20, 20, 20)', 'rgb(179, 38, 30)']);
         await expect(field).toHaveAccessibleDescription('Rechnung: Vorname ist ein Pflichtfeld.');
         await expect(page.locator('#billing_first_name_field .checkout-inline-error-message')).toBeVisible();
         await expect(page.locator('.checkout-inline-error-message')).toHaveCount(7);
@@ -299,11 +303,53 @@ test.describe('checkout', () => {
         // text, they are not set apart like a sentence and its button.
         const last = list.getByRole('listitem').last();
 
-        await expect(last.getByRole('link')).not.toHaveCount(1);
+        await expect(last.locator('a[href$="/agb/"]')).toHaveText('Allgemeinen Geschäftsbedingungen');
+        await expect(last.locator('a[href$="/widerruf/"]')).toHaveText('Widerrufsbestimmungen');
         expect(await last.evaluate((item) => getComputedStyle(item).display)).not.toBe('flex');
 
         expect(await accessibilityViolations(page)).toEqual([]);
         expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+    });
+});
+
+test.describe('what WooCommerce writes on its own', () => {
+    // One test lets an order fail on purpose; the browser reports the failed request.
+    test.use({ expectedStatuses: [500] });
+
+    test('messages that scripts write into the page look like the shop’s own', async ({ page }, testInfo) => {
+        await add(page, '/produkt/runde-sticker/');
+        await openCheckout(page);
+
+        // A voucher nobody knows is answered at its field, in the colour of a mistake.
+        await page.getByRole('button', { name: 'Gutscheincode eingeben' }).click();
+        await page.locator('#coupon_code').fill('GIBT-ES-NICHT');
+        await page.locator('button[name="apply_coupon"]').click();
+        await expect(page.locator('.coupon-error-notice')).toBeVisible();
+        expect(await page.locator('.coupon-error-notice').evaluate((notice) => getComputedStyle(notice).color)).toBe('rgb(179, 38, 30)');
+
+        // The order fails on its way: WooCommerce's script says so in a message of its own.
+        await fillIn(page, address(testInfo, 'fehler'));
+        await page.locator('#legal').check();
+        await page.route(/wc-ajax=checkout/, (route) => route.fulfill({ status: 500, body: '' }));
+        await page.locator('#place_order').click();
+
+        const failure = page.locator('.woocommerce-NoticeGroup-checkout .woocommerce-error');
+
+        await expect(failure).toBeVisible();
+        expect(await failure.evaluate((notice) => getComputedStyle(notice).backgroundColor)).toBe('rgb(243, 243, 243)');
+    });
+
+    test('on a narrow phone a message keeps its sentence readable next to its button', async ({ page }) => {
+        await page.setViewportSize({ width: 360, height: 740 });
+        await add(page, '/produkt/sticker-mit-konturschnitt/');
+
+        const notice = page.locator('.woocommerce-notices-wrapper .shop-notice').first();
+        const sentence = await notice.locator('span.min-w-0').boundingBox();
+        const button = await notice.getByRole('link', { name: 'Warenkorb anzeigen' }).boundingBox();
+
+        expect(sentence.width).toBeGreaterThan(200);
+        // The button stands below the sentence, not on it.
+        expect(button.y).toBeGreaterThanOrEqual(sentence.y + sentence.height - 1);
     });
 });
 
@@ -424,15 +470,32 @@ test.describe('an order by payment in advance', () => {
         await expect(order).toHaveCount(1);
         await expect(order).toContainText(`#${id}`);
         await expect(order).toContainText('In Wartestellung');
+        // The total keeps its amount and the number of articles together, also on a phone.
+        expect(await order.locator('.woocommerce-orders-table__cell-order-total').evaluate((cell) => {
+            const text = [...cell.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim()).pop();
+            const range = document.createRange();
+
+            range.selectNodeContents(text);
+
+            return range.getBoundingClientRect().left - cell.querySelector('.amount').getBoundingClientRect().right;
+        })).toBeLessThan(12);
         expect(await accessibilityViolations(page)).toEqual([]);
         expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
 
         await order.locator('a.view').click();
         await expect(page.locator('.woocommerce-order-details')).toContainText('Flyer DIN A5');
         await expect(page.locator('.woocommerce-order-details')).toContainText('250 g Bilderdruck');
+        // Number, date and status stand out by weight, not on the browser's yellow.
+        expect(await page.locator('.woocommerce-MyAccount-content mark').first().evaluate((mark) => getComputedStyle(mark).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
 
         await page.goto('/mein-konto/edit-address/');
         await expect(page.locator('.woocommerce-Address').first()).toContainText('Musterstraße 1');
+
+        // The form for an address is laid out like the account's other forms.
+        await page.locator('.woocommerce-Address').first().getByRole('link').click();
+        await expect(page.locator('button[name="save_address"]')).toBeVisible();
+        expect(await page.locator('button[name="save_address"]').evaluate((button) => getComputedStyle(button).backgroundColor)).toBe('rgb(20, 20, 20)');
+        expect(await page.locator('.woocommerce-address-fields').evaluate((form) => form.getBoundingClientRect().width)).toBeLessThanOrEqual(512);
 
         // Two e-mails: the welcome with the way to a password, and the confirmation.
         const sent = sentTo(email);
@@ -454,12 +517,23 @@ test.describe('an order by payment in advance', () => {
     test('it works without JavaScript', async ({ browser, baseURL, isMobile }, testInfo) => {
         const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: isMobile ? { width: 390, height: 844 } : { width: 1440, height: 900 } });
         const page = await context.newPage();
-        const email = address(testInfo, 'ohne-skript');
+        // A long address without a place to break it, as some firms have them.
+        const email = `rechnungseingangbuchhaltung${testInfo.project.name.replace(/\W/g, '')}${Date.now()}@example.com`;
 
         await add(page, '/produkt/ovale-sticker/');
         await page.goto('/warenkorb/');
         await expect(rows(page)).toHaveCount(1);
         await page.getByRole('link', { name: 'Weiter zur Kasse' }).click();
+
+        // The forms behind the two lines stand open, and the delivery address opens with its box only.
+        await expect(page.locator('form.woocommerce-form-login')).toBeVisible();
+        await expect(page.locator('.woocommerce-form-login-toggle')).toBeHidden();
+        await expect(page.locator('form.checkout_coupon')).toBeVisible();
+        await expect(page.locator('.woocommerce-form-coupon-toggle')).toBeHidden();
+        await expect(page.locator('#shipping_first_name')).toBeHidden();
+        await page.locator('#ship-to-different-address-checkbox').check();
+        await expect(page.locator('#shipping_first_name')).toBeVisible();
+        await page.locator('#ship-to-different-address-checkbox').uncheck();
 
         await fillIn(page, email);
         await page.locator('#legal').check();
@@ -468,6 +542,7 @@ test.describe('an order by payment in advance', () => {
         const id = await placed(page);
 
         expect(stored(id).items).toEqual([['Ovale Sticker', 'vinyl', '100', 1]]);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
         expect(sentTo(email)).toHaveLength(1);
 
         await context.close();
@@ -491,6 +566,17 @@ test.describe('the account', () => {
 
         expect(await accessibilityViolations(page)).toEqual([]);
         expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+
+        // The password's end stays clear of the eye, and the eye says whether it shows the password.
+        const password = page.locator('#password');
+        const eye = page.locator('.show-password-input').first();
+        const closed = await eye.evaluate((button) => getComputedStyle(button, '::before').maskImage);
+
+        expect(await password.evaluate((input) => parseFloat(getComputedStyle(input).paddingRight))).toBeGreaterThanOrEqual(40);
+        await eye.click();
+        await expect(password).toHaveAttribute('type', 'text');
+        expect(await eye.evaluate((button) => getComputedStyle(button, '::before').maskImage)).not.toBe(closed);
+        await eye.click();
 
         // A wrong password is answered in the look of the shop, without saying which part was wrong.
         await page.locator('#username').fill('niemand@example.com');

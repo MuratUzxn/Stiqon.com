@@ -36,6 +36,17 @@ $open->set_attributes(['pa_material' => '', 'pa_groesse' => '5-cm', 'pa_auflage'
 $expect(str_contains($picture($open, $asChosen('kraftpapier')), 'Runde Sticker, Kraftpapier'), 'A variation with its material left open is not drawn in the material the customer chose.');
 $expect(str_contains($picture($open, $asChosen('holografisch')), 'Runde Sticker, Holografische Folie'), 'A variation with its material left open ignores the choice "holografisch".');
 
+// The same at the checkout, where the drawing comes in through another filter.
+$atCheckout = (string) apply_filters('woocommerce_checkout_cart_item_quantity', ' × 1', ['data' => $open, 'variation' => $asChosen('kraftpapier'), 'quantity' => 1], 'row');
+$expect(str_contains($atCheckout, 'Runde Sticker, Kraftpapier'), 'At the checkout a variation with its material left open is not drawn in the material the customer chose.');
+
+// Another plugin may drop a variation by handing back false or nothing; the theme passes that on.
+$expect(apply_filters('woocommerce_available_variation', false, $kraft->get_parent_id() ? wc_get_product($kraft->get_parent_id()) : null, $kraft) === false, 'A variation another plugin dropped with false breaks or comes back.');
+$expect(! array_key_exists('stiqon_net_price', (array) apply_filters('woocommerce_available_variation', [], null, $kraft)), 'A variation another plugin emptied comes back with a net price.');
+
+// Mails keep emoji as text instead of pictures from WordPress.org.
+$expect(has_filter('wp_mail', 'wp_staticize_emoji_for_email') === false, 'Emoji in mails become pictures loaded from WordPress.org.');
+
 // What a variation fixes stays fixed, whatever a row claims.
 $expect(str_contains($picture($vinyl, $asChosen('kraftpapier')), 'Runde Sticker, Weißes Vinyl'), 'A variation on vinyl is drawn in another material because the row says so.');
 
@@ -49,7 +60,7 @@ $expect(str_contains($drawn, 'Runde Sticker, Kraftpapier') && ! str_contains($dr
 $expect(has_action('woocommerce_cart_collaterals', 'woocommerce_cross_sell_display') === false, 'The cart still shows WooCommerce\'s list of cross-sells.');
 
 // E-mails list their rows without pictures: those about an order, and Germanized's about a withdrawal.
-foreach (['woocommerce_email_order_items_args', 'eu_owb_woocommerce_email_withdrawal_items_args'] as $filter) {
+foreach (['woocommerce_email_order_items_args', 'eu_owb_woocommerce_email_withdrawal_items_args', 'woocommerce_email_fulfillment_items_args'] as $filter) {
     $expect((apply_filters($filter, ['show_image' => true])['show_image'] ?? null) === false, "Rows of e-mails keep their pictures ({$filter}).");
 }
 

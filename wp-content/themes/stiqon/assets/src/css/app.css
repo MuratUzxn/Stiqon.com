@@ -410,7 +410,11 @@
         margin-bottom: 2rem;
     }
 
-    .shop-notice {
+    /* The theme's templates set shop-notice. Messages that scripts write into the
+       page themselves (a failed order, Germanized's withdrawal form) carry only
+       WooCommerce's classes – they get the same card. */
+    .shop-notice,
+    :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -421,7 +425,7 @@
         padding: 1rem 1.5rem;
     }
 
-    .shop-notice:focus-visible {
+    :is(.shop-notice, .woocommerce-error, .woocommerce-message, .woocommerce-info):focus-visible {
         outline-offset: -2px;
     }
 
@@ -446,14 +450,14 @@
         font-weight: 500;
     }
 
-    .shop-notice a:not(.button) {
+    :is(.shop-notice, .woocommerce-error, .woocommerce-message, .woocommerce-info) a:not(.button) {
         font-weight: 600;
         text-decoration: underline;
         text-underline-offset: 3px;
     }
 
     /* The button that belongs to a message stands after its sentence (inc/shop.php). */
-    .shop-notice .button {
+    :is(.shop-notice, .woocommerce-error, .woocommerce-message, .woocommerce-info) .button {
         display: inline-flex;
         height: 2.75rem;
         flex-shrink: 0;
@@ -468,7 +472,7 @@
         transition: background-color 200ms var(--ease-soft);
     }
 
-    .shop-notice .button:hover {
+    :is(.shop-notice, .woocommerce-error, .woocommerce-message, .woocommerce-info) .button:hover {
         background-color: var(--color-ink-soft);
     }
 }

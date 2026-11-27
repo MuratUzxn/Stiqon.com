@@ -13,11 +13,17 @@
  * look at them. Amounts, bank details and legal texts here are examples and
  * say so.
  *
- * Running it again changes nothing that is already in place.
+ * Running it again puts the same settings in place; pages and tax rates that
+ * exist already are used, not made twice. It refuses to run anywhere but on a
+ * local site (WP_ENVIRONMENT_TYPE "local", which tools/dev/setup-wordpress.sh sets).
  */
 
 if (! class_exists(WC_Tax::class)) {
     WP_CLI::error('WooCommerce is not active.');
+}
+
+if (wp_get_environment_type() !== 'local') {
+    WP_CLI::error('This sets up a local test shop and overwrites settings, pages and tax rates. It runs only where WP_ENVIRONMENT_TYPE is "local".');
 }
 
 $options = [
@@ -75,7 +81,9 @@ foreach ($options as $option => $value) {
 // The standard rate, and the reduced one in WooCommerce's class for it.
 $reduced = array_values(array_filter(WC_Tax::get_tax_class_slugs(), static fn (string $slug): bool => str_contains($slug, 'erm') || str_contains($slug, 'reduced')))[0] ?? null;
 
-foreach (['' => '19.0000', $reduced => '7.0000'] as $class => $rate) {
+// Pairs, not keys: without a reduced class $reduced is null, and as a key it
+// would turn into '' and overwrite the standard rate.
+foreach ([['', '19.0000'], [$reduced, '7.0000']] as [$class, $rate]) {
     if ($class === null || WC_Tax::get_rates_for_tax_class((string) $class) !== []) {
         continue;
     }
