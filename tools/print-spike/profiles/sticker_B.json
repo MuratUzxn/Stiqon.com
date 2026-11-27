@@ -1,0 +1,9 @@
+{"id":"sticker_B","kind":"sticker","label":"Synthetic supplier B - die-cut sticker 60 mm",
+ "size_mm":60,"contour_offset_mm":1.5,"bleed_mm":3,"safe_mm":3,
+ "cut":{"spot_name":"Stanze","line_pt":0.5,"overprint":true,"alt_cmyk":[0,1,0,0]},
+ "pdfx":"X-1a","pdf_version":"1.4","transparency_allowed":false,
+ "icc_target":"ISO Coated v2 (FOGRA39)",
+ "icc_file":"icc/stand_in_B_tac330.icc","output_condition_identifier":"FOGRA39",
+ "output_condition":"STAND-IN: ArgyllCMS profile from FOGRA39L.ti3, TAC 330%",
+ "rendering_intent":"relative","bpc":true,"tac_max":330,
+ "min_ppi":300,"bleed_fill":"edge-extend","smooth_mm":0.8,"text_k":100}

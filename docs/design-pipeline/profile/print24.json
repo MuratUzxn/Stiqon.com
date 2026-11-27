@@ -1,0 +1,364 @@
+{
+ "supplier": "print24",
+ "name": "print24 (Unitedprint SE)",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "PDF bevorzugt, auch JPEG oder TIFF (Produkt-Datenblätter Flyer/Sticker/Visitenkarte/Plakat); Roll-up-Datenblatt nennt nur PDF X3-2003",
+   "evidence": "F",
+   "source": "https://print24.com/de/faq/druckerzeugnisse",
+   "quote": "Am liebsten ist uns eine PDF-Datei (Standardeinstellungen für Druckvorstufe beachten). Sie können uns aber auch gerne eine TIFF- oder JPEG-Datei senden."
+  },
+  "pdf_standard": {
+   "value": "Kein PDF/X-Standard für Klein-/Offsetprodukte genannt; Roll-up (Werbetechnik): PDF X3 - 2003, Maßstab 1:1 inkl. Beschnitt",
+   "evidence": "F",
+   "source": "https://print24.com/de/werbetechnik/rollups",
+   "quote": "als PDF X3 - 2003 mit dem Farbprofil ISO Coated v2 (ECI) im Maßstab 1:1 inkl. Beschnitt"
+  },
+  "color_mode": {
+   "value": "CMYK",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/flyer",
+   "quote": "Mind. 300dpi als PDF, JPEG oder TIFF im CMYK-Farbmodus mit dem Farbprofil „ISO Coated v2 (Fogra 39 L)"
+  },
+  "icc_profiles": {
+   "value": "Bilderdruckpapier (gestrichen): ISO Coated v2 (Fogra 39 L); Offset-/Recyclingpapier: PSO Uncoated ISO12647 (Fogra 47L); Freiform-Aufkleber: ISO Coated v2; Roll-up: ISO Coated v2 (ECI)",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/flyer",
+   "quote": "Mind. 300dpi als PDF, JPEG oder TIFF im CMYK-Farbmodus mit dem Farbprofil „ISO Coated v2 (Fogra 39 L)"
+  },
+  "rgb_handling": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "min_dpi": {
+   "value": "300 dpi (Kleinformat); Plakate je nach Format mind. 150 dpi; Roll-up/Großformat 70-150 dpi",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/plakate",
+   "quote": "Mind. 150dpi als PDF, JPEG oder TIFF im CMYK-Farbmodus"
+  },
+  "bleed_mm": {
+   "value": "2 mm rundum (Flyer, Sticker A7, Visitenkarte, Plakat); 3 mm Freiform-Aufkleber; 5 mm Roll-up (Werte aus trimValue der Produktkonfiguration)",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/flyer",
+   "quote": "trimValue\\\":{\\\"bleed\\\":{\\\"bottom\\\":2,\\\"left\\\":2,\\\"right\\\":2,\\\"top\\\":2}"
+  },
+  "safe_mm": {
+   "value": "1,5 mm vom Endformatrand (Flyer, Visitenkarte, Plakat-Legende); Freiform-Aufkleber distance_size 2",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/flyer",
+   "quote": "Seitenformat in mm (Schriften und Bilder 1,5 mm vom Rand anlegen)"
+  },
+  "max_ink_pct": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "fonts": {
+   "value": "Alle Schriften in Pfade umwandeln (Datenblatt); FAQ: in PDF müssen Schriften eingebettet sein",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/flyer",
+   "quote": "Bitte wandeln Sie alle Schriften in Pfade um, ziehen Sie alle Hintergrundbilder und -farben bis in den Beschnittrand"
+  },
+  "min_font_pt": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "min_line_pt": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "transparency": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "spot_colors": {
+   "value": "Keine Schmuck-/Sonderfarben in den Druckdaten (Ausnahme: Schnittlinie 'cutting line' bei Freiform). HKS/Pantone/Gold/Silber nur als bestellte Option.",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/flyer",
+   "quote": "Bitte verwenden Sie keine Schmuck- bzw. Sonderfarben."
+  },
+  "pages_and_sides": {
+   "value": "Druckdaten im vorgegebenen Format ohne Schnittmarken/Endformatrahmen; Druckbögen schlagen um (nicht umstülpen); Upload je Vorder-/Rückseite im Shop (Details je Produkt unbekannt)",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/flyer",
+   "quote": "Beachten Sie bitte, dass unsere Druckbögen umschlagen und nicht umstülpt werden."
+  },
+  "max_file_mb": {
+   "value": "1 GB pro Upload (Shop-Upload)",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/aufkleber-etiketten/aufkleber-etiketten-freiform",
+   "quote": "Dateiupload (max. 1 GB)"
+  }
+ },
+ "products": [
+  {
+   "family": "sticker",
+   "product": "Aufkleber/Etiketten Freiform",
+   "sizes": "Standard 20 x 20 mm, weitere Formate per Konfigurator; Druck ab 1 bis 50.000 Stück",
+   "materials": "u.a. Naturpapier, wetterfeste Haftfolie, Neonpapier, Haftpapier",
+   "bleed_mm": 3,
+   "safe_mm": 2,
+   "dpi": 300,
+   "contour": "Vektorpfad als Schnittlinie, Volltonfarbe namens 'cutting line', auf Überdrucken; Freiform muss in Maximalmaßen dem bestellten Format entsprechen und an allen vier Seiten das Endformat berühren",
+   "white": "",
+   "template": "Produktseite: 'Datenblatt anzeigen' und PDF-Vorlage zum Download nach Kalkulation der finalen Konfiguration",
+   "notes": "Profil ISO Coated v2; Eckenradius mind. 1 mm; safe 2 mm laut distanceSize (nicht in Klartext bestätigt); Weiß-Regel nicht gefunden",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/aufkleber-etiketten/aufkleber-etiketten-freiform",
+   "quotes": [
+    {
+     "quote": "Weisen Sie diesem Pfad eine Volltonfarbe zu, benennen Sie die Sonderfarbe mit"
+    },
+    {
+     "quote": "Die Freiform muss in ihren Maximalmaßen dem bestellten Format entsprechen und an allen vier Seiten in mindestens einem Punkt pro Seite das Endformat berühren."
+    },
+    {
+     "quote": "Bitte legen Sie Ihre Druckdatei mit 3 mm Beschnitt an jeder zu beschneidenden Seite an."
+    },
+    {
+     "quote": "Mind. 300dpi als PDF im CMYK-Farbmodus mit dem Farbprofil „ISO Coated v2"
+    },
+    {
+     "quote": "distanceSize\\\":{\\\"distance_size\\\":2}"
+    }
+   ]
+  },
+  {
+   "family": "sticker",
+   "product": "Sticker",
+   "sizes": "Standard 74 x 105 mm DIN A7 Hochformat, weitere per Konfigurator",
+   "materials": "unbekannt (nicht ausgewertet)",
+   "bleed_mm": 2,
+   "safe_mm": 1.5,
+   "dpi": 300,
+   "contour": "keine Schnittlinie im Datenblatt für Standardformat verlangt",
+   "white": "",
+   "template": "Produktseite: 'Datenblatt anzeigen' und PDF-Vorlage zum Download nach Kalkulation der finalen Konfiguration",
+   "notes": "Profil nach Papierklasse (Fogra 39 L / Fogra 47L)",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/aufkleber-etiketten/sticker",
+   "quotes": [
+    {
+     "quote": "trimValue\\\":{\\\"bleed\\\":{\\\"bottom\\\":2,\\\"left\\\":2,\\\"right\\\":2,\\\"top\\\":2}"
+    },
+    {
+     "quote": "Mind. 300dpi als PDF, JPEG oder TIFF im CMYK-Farbmodus mit dem Farbprofil „ISO Coated v2 (Fogra 39 L)"
+    },
+    {
+     "quote": "PDF Vorlage zum Download für Aufkleber im A7 Hochformat"
+    }
+   ]
+  },
+  {
+   "family": "flyer",
+   "product": "Flyer",
+   "sizes": "DIN A8 bis A4, DIN lang u.a.; Standard 105 x 148 mm DIN A6; Sonderformate möglich",
+   "materials": "Bilderdruck- oder Offset-/Recyclingpapier",
+   "bleed_mm": 2,
+   "safe_mm": 1.5,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "Produktseite: 'Datenblatt anzeigen' und PDF-Vorlage zum Download nach Kalkulation der finalen Konfiguration",
+   "notes": "ISO Coated v2 (Fogra 39 L) bei Bilderdruck, PSO Uncoated ISO12647 (Fogra 47L) bei Offset/Recycling; Bögen schlagen um",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/flyer",
+   "quotes": [
+    {
+     "quote": "trimValue\\\":{\\\"bleed\\\":{\\\"bottom\\\":2,\\\"left\\\":2,\\\"right\\\":2,\\\"top\\\":2}"
+    },
+    {
+     "quote": "distanceSize\\\":{\\\"distance_size\\\":1.5}"
+    },
+    {
+     "quote": "Mind. 300dpi als PDF, JPEG oder TIFF im CMYK-Farbmodus mit dem Farbprofil „ISO Coated v2 (Fogra 39 L)"
+    }
+   ]
+  },
+  {
+   "family": "visitenkarte",
+   "product": "Visitenkarten",
+   "sizes": "Standard 85 x 55 mm Querformat",
+   "materials": "unbekannt",
+   "bleed_mm": 2,
+   "safe_mm": 1.5,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "Produktseite: 'Datenblatt anzeigen' und PDF-Vorlage zum Download nach Kalkulation der finalen Konfiguration",
+   "notes": "wie Flyer",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/visitenkarten",
+   "quotes": [
+    {
+     "quote": "trimValue\\\":{\\\"bleed\\\":{\\\"bottom\\\":2,\\\"left\\\":2,\\\"right\\\":2,\\\"top\\\":2}"
+    },
+    {
+     "quote": "distanceSize\\\":{\\\"distance_size\\\":1.5}"
+    },
+    {
+     "quote": "Seitenformat in mm (Schriften und Bilder 1,5 mm vom Rand anlegen)"
+    }
+   ]
+  },
+  {
+   "family": "plakat",
+   "product": "Plakate",
+   "sizes": "Standard 841 x 1189 mm DIN A0, weitere Formate",
+   "materials": "unbekannt",
+   "bleed_mm": 2,
+   "safe_mm": 1.5,
+   "dpi": 150,
+   "contour": "",
+   "white": "",
+   "template": "Produktseite: 'Datenblatt anzeigen' und PDF-Vorlage zum Download nach Kalkulation der finalen Konfiguration",
+   "notes": "Datenblatt nennt mind. 150 dpi (vermutlich Großformate) und 300 dpi; welche Grenze für welches Format gilt, unbekannt",
+   "evidence": "F",
+   "source": "https://print24.com/de/druckprodukte/plakate",
+   "quotes": [
+    {
+     "quote": "trimValue\\\":{\\\"bleed\\\":{\\\"bottom\\\":2,\\\"left\\\":2,\\\"right\\\":2,\\\"top\\\":2}"
+    },
+    {
+     "quote": "Mind. 150dpi als PDF, JPEG oder TIFF im CMYK-Farbmodus"
+    }
+   ]
+  },
+  {
+   "family": "rollup",
+   "product": "Roll-ups",
+   "sizes": "Standard 800 x 2000 mm",
+   "materials": "510 g/m² PVC-Plane, Druck inkl. System",
+   "bleed_mm": 5,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "Produktseite: 'Datenblatt anzeigen' und PDF-Vorlage zum Download nach Kalkulation der finalen Konfiguration",
+   "notes": "PDF X3-2003, ISO Coated v2 (ECI), 1:1 inkl. Beschnitt; Großformat 70-150 dpi; unterer Bereich wird von Klemmschiene verdeckt bzw. bleibt in Kassette (Maß unbekannt, siehe PDF-Vorlage)",
+   "evidence": "F",
+   "source": "https://print24.com/de/werbetechnik/rollups",
+   "quotes": [
+    {
+     "quote": "trimValue\\\":{\\\"bleed\\\":{\\\"bottom\\\":5,\\\"left\\\":5,\\\"right\\\":5,\\\"top\\\":5}"
+    },
+    {
+     "quote": "Großformatdruck 70-150 dpi, Kleinformatdruck 300 dpi als PDF X3 - 2003 mit dem Farbprofil ISO Coated v2 (ECI)"
+    },
+    {
+     "quote": "Bereich wird von Klemmschiene verdeckt bzw. bleibt auf der Rolle in Kassette"
+    }
+   ]
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Kostenloser Basis-Datencheck nach Eingang auf grundlegende Verwendbarkeit; prüft NICHT Qualität (Auflösung, Beschnitt, Transparenzen)",
+   "evidence": "F",
+   "source": "https://print24.com/de/faq/druckerzeugnisse",
+   "quote": "Bitte beachten Sie, dass Ihre Druckdaten bei dieser Kontrolle nicht auf Qualität (zum Beispiel Auflösung, Beschnitt, Transparenzen etc.) überprüft werden."
+  },
+  "auto_corrections": {
+   "value": "Keine automatischen Korrekturen genannt; Bearbeitung durch Mitarbeiter nur im Premium-Datencheck, fehlerabhängig und kostenpflichtig",
+   "evidence": "F",
+   "source": "https://print24.com/de/faq/druckerzeugnisse",
+   "quote": "b. Bearbeitung Ihrer Daten durch unsere Mitarbeiter (fehlerabhängig und kostenpflichtig)"
+  },
+  "rejection_reasons": {
+   "value": "Fehler, die den Druck unmöglich machen -> Neulieferung oder Druckfreigabe; Upload-Formatprüfung meldet Fehler bei falschem Format, Schnittmarken, fehlendem Beschnitt",
+   "evidence": "F",
+   "source": "https://print24.com/de/faq/druckerzeugnisse",
+   "quote": "Falls jedoch Fehler gefunden werden, die den Druck unmöglich machen, bieten wir Ihnen zwei Möglichkeiten an:"
+  },
+  "paid_options": {
+   "value": "Premium-Datencheck: persönliche umfassende Qualitätskontrolle mit zeitlich garantiertem Feedback (Preis unbekannt); Screen-/Paperproof bestellbar",
+   "evidence": "F",
+   "source": "https://print24.com/de/faq/druckerzeugnisse",
+   "quote": "Dieser Service bietet Ihnen die persönliche und umfassende Kontrolle der Qualität Ihrer Druckdaten, sowie ein zeitlich garantiertes Datencheck-Feedback."
+  },
+  "result_channel": {
+   "value": "Shop: Upload-Vorschau/Formatprüfung; API: Statuswert Datenbearbeitung (order_stati_1750_4) per HTTP-Callback; Kanal für Datencheck-Fehler im API-Betrieb unbekannt (vermutl. E-Mail)",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "order_stati_1750_4 Datenbearbeitung"
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "partner-only",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "Das Kundenkonto muss"
+  },
+  "docs_url": {
+   "value": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf (USS Connect, Version 1.1, Änderungsdatum 10.08.2026)",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "Schnittstellenbeschreibung zur Auftragsanlage von"
+  },
+  "auth": {
+   "value": "SOAP 1.1 mit Client-Zertifikat (Sample/Dev/Prod) plus customerNumber und password; WSDL prod http://interface.unitedprint.com/wsdl2.1",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "Kunden benötigt werden."
+  },
+  "access": {
+   "value": "Gültiges UP-Kundenkonto, Freischaltung für Schnittstellenbetrieb, von UP-IT bereitgestelltes Zertifikat",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "durch UP für den Schnittstellenbetrieb freigeschaltet werden."
+  },
+  "catalog": {
+   "value": "Produkte vorher im Partner-Katalog anlegen (catalogue.php) und unter Artikelnummer speichern -> customerProductId; Liste über catalogueList.php; keine freie Optionsabfrage per API beschrieben",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "Im Produktkatalog werden alle für einen Kunden bestellbaren Produkte gepflegt."
+  },
+  "order": {
+   "value": "createOrder mit validate=1 (nur Prüfung, liefert Lieferdatum, Netto/Brutto, Währung) bzw. validate=0 (Anlage, liefert Auftragsnummer); Pflichtfelder u.a. customerProductId, orderQuantity, shippingType, orderName",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "Bei erfolgreicher Prüfung werden das voraussichtliche Lieferdatum, Netto- und Bruttopreis sowie die"
+  },
+  "artwork_handover": {
+   "value": "Pro orderPosition dataSourceInformation (dataSourceHost, dataSourcePort, dataSourceUser, dataSourcePassword, dataTransmission upload|download); UP holt das PDF per FTP oder Webserver-URL (dataTransmission='download', User/Passwort dürfen nicht leer sein); kein Multipart-Upload beschrieben; ein PDF pro Position",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "Der Download des Produkt-PDFs findet üblicherweise über einen FTP-Server statt."
+  },
+  "proof_or_preview": {
+   "value": "Per API nicht beschrieben; im Shop Druckdatenvorschau und bestellbarer Screen-/Paperproof",
+   "evidence": "F",
+   "source": "https://print24.com/de/faq/druckerzeugnisse",
+   "quote": "Unter Screen/ Paperproof können Sie sich jedoch Ihren Screenproof oder farbverbindlichen Paperproof nach FOGRA-zertifiziertem Qualitätsstandard bestellen."
+  },
+  "status_webhooks": {
+   "value": "Kein Status-Polling; HTTP-Callback beim Partner je Statuswechsel (Datenbearbeitung, Pooling, Verarbeitung, Versandbereitstellung, Versand, Stornierung) inkl. Tracking; Einrichtung durch UP",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "Der Status einer Bestellung wird nicht (!) über die Schnittstelle abgefragt."
+  },
+  "sandbox": {
+   "value": "Sample (offenes Testsystem) und Dev (Kunden-Testsystem) unter http://interface.onts.unitedprint.dev/wsdl2.1; validate=1 als Trockenlauf",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "Sample (Offenes Testsystem) – Bereitstellung im Downloadbereich"
+  },
+  "white_label_shipping": {
+   "value": "Absenderadresse pro Position änderbar (senderAddress); Lieferadressen pro Position, Länder ISO 3166 (z.B. DE); ob Paket/Lieferschein völlig neutral ist, unbekannt",
+   "evidence": "F",
+   "source": "https://upi.unitedprint.com/upimgt/downloads/USS_UP_interface_documentation_DE.pdf",
+   "quote": "In diesem Beispiel wird die Absenderadresse eines Auftrags geändert."
+  }
+ },
+ "automation_risks": [
+  "API nur nach Freischaltung durch Unitedprint mit Zertifikat; Konditionen/Kosten unbekannt.",
+  "Jede Produktkonfiguration muss vorab im Katalog angelegt werden; keine dynamische Options-/Preisabfrage per API (Preis nur via validate=1).",
+  "Druck-PDF muss auf eigenem FTP- oder Webserver mit Benutzer/Passwort bereitliegen; UP lädt es selbst.",
+  "Basis-Datencheck prüft weder Auflösung noch Beschnitt noch Transparenzen: Fehler fallen ggf. erst im Druck auf; eigener Preflight nötig.",
+  "Bleed variiert je Produkt (2/3/5 mm); Werte stehen nur im Konfigurations-JSON der Produktseite bzw. im Datenblatt, nicht in der API-Doku.",
+  "Schriften müssen in Pfade umgewandelt werden; keine Sonderfarben außer 'cutting line' bei Freiform.",
+  "RGB-Behandlung, Weißdruck-Regel für Folien, max. Farbauftrag und Mindestschrift/-linie sind nicht dokumentiert gefunden.",
+  "Status-Callbacks müssen von UP eingetragen werden; API-Doku verwendet http-Endpunkte (Beispiele) und RAR-Zertifikate, Prozess teils manuell."
+ ]
+}

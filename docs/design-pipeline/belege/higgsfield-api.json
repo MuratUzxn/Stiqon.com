@@ -1,0 +1,154 @@
+{
+ "claims": [
+  {
+   "claim": "Basis-URL der API ist https://api.higgsfield.ai (nicht platform.higgsfield.ai).",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/how-to/introduction.md",
+   "quote": "**Base URL:** `https://api.higgsfield.ai`"
+  },
+  {
+   "claim": "Authentifizierung: Header 'Authorization: Key <key-id>:<key-secret>'; kein Bearer-Token; Schluessel werden in der Higgsfield Console erstellt.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/help/faq.md",
+   "quote": "authenticate server-side with `Authorization: Key YOUR_KEY_ID:YOUR_KEY_SECRET`. Do not use a Bearer token"
+  },
+  {
+   "claim": "Webhook wird per Query-Parameter hf_webhook beim Submit gesetzt; Endpoint muss oeffentlich per HTTPS erreichbar sein und binnen 10 s antworten.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/how-to/webhooks.md",
+   "quote": "Your endpoint must be publicly reachable over HTTPS, accept a JSON request body, and respond within ten seconds."
+  },
+  {
+   "claim": "Webhooks werden nach Standard Webhooks signiert (webhook-id, webhook-timestamp, webhook-signature v1,<base64>); Secret whsec_ in Console-Settings, erst nach erstem Aufdecken wird signiert.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/how-to/webhooks.md",
+   "quote": "The secret is created the first time it is revealed; until then, deliveries for your account are not signed."
+  },
+  {
+   "claim": "Webhook-Retries: Netzfehler und 5xx bis zu zwei Stunden; 4xx gilt als endgueltig; Duplikate moeglich.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/how-to/webhooks.md",
+   "quote": "Network failures and `5xx` responses are retried for up to two hours."
+  },
+  {
+   "claim": "Uploads: POST /files/generate-upload-url liefert presigned upload_url (1 h gueltig) und public_url; Typen jpeg/jpg/png/webp/gif, wav, mp4.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/concepts/file-uploads.md",
+   "quote": "The upload URL expires after one hour."
+  },
+  {
+   "claim": "Geloescht werden kann eine fertige Anfrage per DELETE /requests/{request_id} (Dateien, Prompt, Parameter); laufende Anfrage gibt 409.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/enterprise/data-retention.md",
+   "quote": "Delete a finished request's data immediately, regardless of its retention:"
+  },
+  {
+   "claim": "Ausgabedateien werden 7 Tage nach Abschluss aufbewahrt und dann geloescht; der Shop muss vor expires_at selbst herunterladen.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/concepts/billing-and-retention.md",
+   "quote": "Request files are kept for seven days after the request finishes, then deleted."
+  },
+  {
+   "claim": "Hf-Expires-After (3600 s bis Account-Retention) kann die Aufbewahrung je Anfrage nur verkuerzen.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/api-reference/headers.md",
+   "quote": "Seconds to keep the request's data after it finishes, from 3600 to your account retention. It can only shorten retention"
+  },
+  {
+   "claim": "Trainings-Opt-out: Console > Settings > 'Exclude data from training', standardmaessig AUS.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/enterprise/model-training.md",
+   "quote": "The setting applies to the selected account, for every API key. It is off by default."
+  },
+  {
+   "claim": "Abrechnung: erfolgreiche Generierungen werden vom Guthaben abgebucht; failed/nsfw werden nicht berechnet; Guthaben verfaellt nach einem Jahr.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/concepts/billing-and-retention.md",
+   "quote": "Funds added to your account balance expire one year after they are added."
+  },
+  {
+   "claim": "Kostenschaetzung vor dem Submit ueber POST /estimate/<endpoint-id> mit identischem Body, Antwort in USD.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/concepts/billing-and-retention.md",
+   "quote": "Use the estimate endpoint with the same model parameters before submitting generation:"
+  },
+  {
+   "claim": "Rate-Limit ist Concurrency; ueberzaehlige Anfragen werden gequeued; volle Queue ergibt 429 account_queue_full mit Retry-After, ohne Kosten.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/concepts/rate-limits.md",
+   "quote": "When the queue is full, a new generation request is rejected with `429 Too Many Requests` and a `Retry-After` header, and nothing is created or charged"
+  },
+  {
+   "claim": "Idempotency-Key (1-255 sichtbare ASCII-Zeichen) verhindert Doppelgenerierung bei Retry nach Timeout.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/api-reference/headers.md",
+   "quote": "1–255 visible ASCII characters, a UUID is recommended. Retrying with the same key returns the original request instead of creating a new one."
+  },
+  {
+   "claim": "Offizielle SDKs nur Python (higgsfield-client) und Node/TypeScript (@higgsfield/client); fuer PHP direkt REST.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/help/faq.md",
+   "quote": "You can also integrate directly through the REST API from any language with an HTTP client."
+  },
+  {
+   "claim": "Der API-Bildkatalog umfasst 17 Eintraege (SOUL, Marketing/Ads Studio, Grok Image 2.0, Recraft V4.1 Varianten, Qwen Image 3, Ideogram 4.0, Z-Image Turbo); Nano Banana, GPT Image, Flux, Seedream und Kling Image sind dort nicht gelistet.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/models/image-generation.md",
+   "quote": "Choose from **14 model families** and **17 catalog entries**."
+  },
+  {
+   "claim": "Recraft V4.1 ueber die API: output_format nur jpg, png, webp (kein SVG), nur 1k, keine Referenzbilder.",
+   "evidence": "F",
+   "source": "https://docs.higgsfield.ai/docs/models/recraft-v4-1/text-to-image.md",
+   "quote": "output\\_format is jpg, png, or webp; default is jpg. No reference-image input is declared."
+  },
+  {
+   "claim": "Nutzungsbedingungen: Higgsfield beansprucht kein Eigentum an Inputs/Outputs und beschraenkt deren kommerzielle Nutzung nicht; Rechte duerfen an Kunden uebertragen/unterlizenziert werden.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "nor does it restrict your commercial use of Outputs"
+  },
+  {
+   "claim": "Nutzungsbedingungen 4.4: Inhalte, Inputs und Outputs duerfen zum Training von Higgsfield-Modellen genutzt werden (Enterprise-Vertraege abweichend).",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "may be used by Company to train, develop, enhance, evolve, and improve its"
+  },
+  {
+   "claim": "Developer Terms 11.5: kein Weiterverkauf/Bereitstellen des API-Zugangs als reiner Durchreich-Dienst ohne eigenen Mehrwert.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "or act as a pass-through or service bureau for the Service with no independent value added"
+  },
+  {
+   "claim": "Higgsfield fuehrt keine Rechte-Clearance von Inputs oder Outputs durch; der Nutzer ist allein verantwortlich.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "Company does not control, verify, or perform clearance searches or rights verification on your Inputs or the resulting Outputs"
+  },
+  {
+   "claim": "Haftungsdeckel: das Hoehere aus Zahlungen der letzten sechs Monate, 100 USD oder gesetzlichem Mindestbetrag.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "the total amount paid to Company by you during the six"
+  },
+  {
+   "claim": "Vertragspartner Higgsfield Inc. (San Francisco); kalifornisches Recht.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "This Agreement is governed by California law"
+  },
+  {
+   "claim": "Datenschutz: Sitz in den USA, Uebermittlung personenbezogener Daten in die USA; EU-Vertreter DataRep; SCCs als Garantie genannt; ein DPA wird nur fuer Organisationen als moegliche separate Vereinbarung erwaehnt.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/privacy-policy",
+   "quote": "We are headquartered in the United States and may use service providers that operate in other countries."
+  },
+  {
+   "claim": "Die Modelle Nano Banana Pro, GPT Image, Seedream, Flux und Kling Image sind in der oeffentlichen API-Doku nicht gelistet; nur Dritt- und Community-Quellen nennen Endpunkte (z. B. bytedance/seedream/v4/text-to-image) - unbestaetigt, Pruefung in der Console noetig.",
+   "evidence": "W",
+   "source": "https://byteiota.com/?p=23512",
+   "quote": ""
+  }
+ ]
+}

@@ -1,0 +1,273 @@
+{
+ "supplier": "shirtigo",
+ "name": "Shirtigo (Cockpit)",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "PNG oder JPEG (Rasterbild)",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "The file must be at least 1000px in width or height and must be formatted either as PNG- or JPEG raster image."
+  },
+  "pdf_standard": {
+   "value": "kein PDF fuer Druckdaten (nur PNG/JPEG)",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "`design_url` (string): Public URL of the print file (PNG or JPEG)."
+  },
+  "color_mode": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "icc_profiles": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "rgb_handling": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "min_dpi": {
+   "value": "Mindestaufloesung 1000 px Breite oder Hoehe (Pruefung per Default bei design_url abgeschaltet); 300 dpi wird bei extract_size_and_position angenommen",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "Skip the minimum resolution check of the design (1000 px in width or height). Default true for design_url."
+  },
+  "bleed_mm": {
+   "value": "kein Beschnitt (Textildruck auf Druckbereich); Groesse wird in mm per width/height gesetzt",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "`width` (integer): Width of the print in millimetres."
+  },
+  "safe_mm": {
+   "value": "kein Sicherheitsabstand definiert; Positionstoleranz +/-20 mm",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "Due to manual textile handling, expect a standard tolerance of ±20mm in positioning."
+  },
+  "max_ink_pct": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "fonts": {
+   "value": "entfaellt (Rasterdaten)",
+   "evidence": "K",
+   "source": ""
+  },
+  "min_font_pt": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "min_line_pt": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "transparency": {
+   "value": "Transparente Raender werden bei extract_size_and_position abgeschnitten (PNG-Transparenz wird genutzt)",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "transparent margins are trimmed and size and offsets are taken from the visible content."
+  },
+  "spot_colors": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "pages_and_sides": {
+   "value": "ein processings-Eintrag je Druckbereich: front, back, sleeve-left, sleeve-right, back-inside",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "Print area on the base product: front, back, sleeve-left, sleeve-right or back-inside."
+  },
+  "max_file_mb": {
+   "value": null,
+   "evidence": "unknown"
+  }
+ },
+ "products": [
+  {
+   "family": "textil",
+   "product": "T-Shirts/Hoodies (Base products, z. B. STTU169)",
+   "sizes": "Druckgroesse frei in mm innerhalb des Druckbereichs (bezogen auf Groesse L)",
+   "materials": "Textil; DTG, DTF, Stickerei, Sublimation",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "GET /base-products/{id} bzw. Katalog-XLSX (Login)",
+   "notes": "Bei S/M kann die max. Druckgroesse automatisch reduziert werden; Toleranz +/-20 mm",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quotes": [
+    {
+     "quote": "Processing area dimensions of a baseproduct are based on size L products. For smaller sizes (S, M), the maximum print size may be automatically reduced."
+    },
+    {
+     "quote": "Treat design_url as a print file covering the whole print area at 300 dpi"
+    }
+   ]
+  },
+  {
+   "family": "sticker",
+   "product": "nicht als Druckprodukt gefunden (sticker_reference = Branding-Aufkleber fuer Verpackung)",
+   "sizes": "",
+   "materials": "",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "",
+   "notes": "Doku erwaehnt 'stick-on-demand', aber kein Sticker-Endpunkt gelesen; Katalog nur mit JavaScript sichtbar",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quotes": [
+    {
+     "quote": "`sticker_reference` (string): Reference to the sticker to be applied to the order"
+    }
+   ]
+  },
+  {
+   "family": "plakat",
+   "product": "Poster (processingmethod poster erwaehnt)",
+   "sizes": "unbekannt",
+   "materials": "unbekannt",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "GET /base-products",
+   "notes": "Nur indirekt ueber extract_size_and_position belegt",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quotes": [
+    {
+     "quote": "For dtg, dtf, sublimation and poster."
+    }
+   ]
+  },
+  {
+   "family": "flyer",
+   "product": "nicht im Sortiment (kein Flyer/Visitenkarte/Banner)",
+   "sizes": "",
+   "materials": "",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "",
+   "notes": "",
+   "evidence": "K",
+   "source": "",
+   "quotes": []
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Validierung bei Upload/Bestellung; 422 bei ungueltigen Daten",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms.txt",
+   "quote": "Validation errors return `422` with the details in the response body."
+  },
+  "auto_corrections": {
+   "value": "optional: Groesse/Position aus Datei extrahieren, auf Druckbereich verkleinern, Position je Groesse anpassen",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "`resize_to_processingarea` (boolean): Scale the design down proportionally if it would not fit into the print area."
+  },
+  "rejection_reasons": {
+   "value": "Bestellung scheitert z. B. bei Druckdatei-Fehlern (Webhook Order.creation-failed); Klaerung bei Adresse/Bestand",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "Triggered when an order cannot be created due to an issue (e.g., print file errors)."
+  },
+  "paid_options": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "result_channel": {
+   "value": "Webhooks (Order.created, Order.creation-failed, Order.updated, Order.shipped, Order.clarification, Order.canceled) oder Polling GET /orders/{order_reference}",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms.txt",
+   "quote": "register a webhook with `POST /webhooks` (event types:"
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "yes",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms.txt",
+   "quote": "Base URL: `https://cockpit.shirtigo.com/api`"
+  },
+  "docs_url": {
+   "value": "https://cockpit.shirtigo.com/docs/ (plus llms.txt, llms-full.txt, swagger.json)",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms.txt",
+   "quote": "[OpenAPI specification](https://cockpit.shirtigo.com/docs/swagger.json): Swagger 2.0, for client generators"
+  },
+  "auth": {
+   "value": "Authorization: Bearer <API-Key> (Cockpit > Interfaces > API) oder OAuth2",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/",
+   "quote": "Authorization: Bearer YOUR_API_KEY"
+  },
+  "access": {
+   "value": "Self-Service nach Registrierung; Bestellen erfordert aktive Zahlungsmethode",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms.txt",
+   "quote": "Ordering requires an active billing method on the account."
+  },
+  "catalog": {
+   "value": "GET /base-products, GET /base-products/{id}, Katalog-XLSX; Preis vorab POST /orders/predict-price",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms.txt",
+   "quote": "Price before ordering: `POST /orders/predict-price`."
+  },
+  "order": {
+   "value": "POST /orders mit base_product_sku + processings (alles in einem Aufruf) oder mit sku vorher angelegter Produkte; external_reference gegen Dubletten",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms.txt",
+   "quote": "Every order is a `POST /orders` with a delivery address and a list of products."
+  },
+  "artwork_handover": {
+   "value": "Pro Druckbereich design_url (oeffentliche URL, PNG/JPEG, Shirtigo laedt) oder design_reference nach POST /designs/url, /designs/file (multipart) bzw. /designs/base64",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms.txt",
+   "quote": "Upload the design: `POST /designs/url`, `/designs/file` or `/designs/base64`."
+  },
+  "proof_or_preview": {
+   "value": "Mockup-Factory: POST /mockup-factory/generate-image (mockup_ids, design_url, mm-Masse, jpg/png, max. 2000 px)",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "#### POST /mockup-factory/generate-image: Generate Mockup Images"
+  },
+  "status_webhooks": {
+   "value": "POST /webhooks, Typen via GET /webhook-types, HMAC-SHA256-Signatur, exponentielles Retry, Testaufruf POST /webhooks/{id}/test",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "This signature is calculated using the HMAC SHA-256 algorithm with your webhook's secret key."
+  },
+  "sandbox": {
+   "value": "keine Sandbox; Test mit separatem Vorkasse-Konto und is_onhold true, Freigabe PUT /order/{reference}/release-onhold",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms.txt",
+   "quote": "There is no sandbox and no test mode; integrations are built against the live API."
+  },
+  "white_label_shipping": {
+   "value": "Absenderadresse pro Auftrag (muss in Deutschland liegen), Branding (Hangtags, Labels, Packins, Verpackungsaufkleber)",
+   "evidence": "F",
+   "source": "https://cockpit.shirtigo.com/docs/llms-full.txt",
+   "quote": "`sender` (OrderAddress): Sender address printed on the parcel. Must be a physical address in Germany. Default: the address of the account."
+  }
+ },
+ "automation_risks": [
+  "Nur Textil und wenige Hartwaren; keine Sticker-, Flyer- oder Visitenkartenprodukte fuer die Werbemittel-Kernlinie.",
+  "Mindestaufloesungspruefung (1000 px) ist bei design_url standardmaessig ausgeschaltet: der Exporter muss Aufloesung selbst pruefen, sonst unscharfer Druck.",
+  "Positionstoleranz +/-20 mm und automatische Groessenreduktion bei S/M: randgenaue Designs sind nicht moeglich.",
+  "Keine Sandbox: Tests laufen gegen die Live-API (separates Vorkasse-Konto, is_onhold).",
+  "Druckbereichsmasse je Base product nur ueber API/Katalog-XLSX mit Login; Produktkatalog-Webseite rendert nur per JavaScript.",
+  "Farbraum- und Dateigroessenregeln nicht dokumentiert gefunden: beim Support erfragen."
+ ]
+}

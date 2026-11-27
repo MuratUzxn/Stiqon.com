@@ -1,0 +1,373 @@
+{
+ "supplier": "flyeralarm-pro",
+ "name": "FLYERALARM PRO",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "PDF, TIF, JPG (Leitfaden 2020; JPG/TIF-Konvertierung gegen Aufpreis); API: PDF oder ZIP mit PDF/JPEG/TIFF",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/images/upload/content/_pdf/de/de/flyeralarm-druckdaten-de-050520.pdf",
+   "quote": "Ihre Druckdaten benötigen wir im PDF-, TIF- oder JPG-Format."
+  },
+  "pdf_standard": {
+   "value": "PDF/X-4 liefern. FLYERALARM-Blog-Tutorial (Update 2025): \"Inzwischen empfehlen wir Ihnen, immer PDF/X-4 zu verwenden\"; Freiform-Etiketten-Datenblatt: nur PDF/X-4 moeglich; Textil/Baumwolltaschen: PDF/X-4 Pflicht. Der Leitfaden 2020 (PDF/X-3:2002, PDF 1.3, keine Transparenzen/Ebenen) ist aelter und wurde nicht ausdruecklich widerrufen; aeltere Blog-Kommentarantworten empfehlen noch X-3. Je Auftrag API print_data/allowed_format abfragen.",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/blog/de/tutorial-druckfaehiges-pdf-mit-indesign-erstellen/",
+   "quote": "Update 2025: Inzwischen empfehlen wir Ihnen, immer PDF/X-4 zu verwenden.",
+   "review": "Widerspruch aufgeloest: Blog-Update 2025 jetzt first-hand gelesen (vorher W); X-4 ist aktuelle Empfehlung, X-3:2002 stammt aus Leitfaden 2020 (010.pdf)."
+  },
+  "color_mode": {
+   "value": "CMYK bei 4/0 und 4/4; Sonderfarbprodukte ohne CMYK laut Datenblatt",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/blog/wp-content/uploads/Die_Flyeralarm_Checkliste_zur_Erstellung_von_Druckdaten_2026.pdf",
+   "quote": "Bei 4/4- und 4/0-farbigen Produkten: CMYK"
+  },
+  "icc_profiles": {
+   "value": "Offset: ISO Coated v2 300 % (ECI); Werbetechnik und Werbeartikel: ISO Coated v2 (ECI)",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/blog/wp-content/uploads/Die_Flyeralarm_Checkliste_zur_Erstellung_von_Druckdaten_2026.pdf",
+   "quote": "Wir verwenden für Offset-Produkte: ISO Coated v2 300 % (ECI) und für Werbetechnik und"
+  },
+  "rgb_handling": {
+   "value": "RGB wird automatisch nach CMYK konvertiert; Farbabweichungen möglich",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/blog/wp-content/uploads/Die_Flyeralarm_Checkliste_zur_Erstellung_von_Druckdaten_2026.pdf",
+   "quote": "Bei Anlieferung der Daten in RGB-Farbe werden die Farben in unserem System automatisch in"
+  },
+  "min_dpi": {
+   "value": "300 bis 356 ppi; Großformat ab DIN A2: 100 bis 150 ppi",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/blog/wp-content/uploads/Die_Flyeralarm_Checkliste_zur_Erstellung_von_Druckdaten_2026.pdf",
+   "quote": "Generell: 300 bis 356 ppi"
+  },
+  "bleed_mm": {
+   "value": "produktabhaengig laut Datenblatt: Flyer DIN A6 und DIN A5 (Standard) 1 mm; Flyer DIN lang mit Visitenkarte 1 mm; Plakat A4 und Block A4 1 mm; Freiform-Etiketten A4-Bogen: kein klassischer Beschnitt, Gestaltung 2 mm ueber die Schneidekontur. Flyer DIN A4 nicht gelesen.",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/sheets/de/flyer_a6_mass.pdf",
+   "quote": "Beschnittzugabe (x)",
+   "review": "Vorher nur W (Suchergebnis); jetzt Datenblaetter flyer_a6_mass.pdf und flyer_a5_mass.pdf (Stand 10.03.2015) gelesen: 1 mm Beschnitt."
+  },
+  "safe_mm": {
+   "value": "produktabhaengig laut Datenblatt: Flyer DIN A6/A5 4 mm; Plakat A4 und Block A4 6 mm; Flyer DIN lang mit Visitenkarte 3 mm; Freiform-Etiketten 2 mm zur Schneidekontur. Rahmen/Outlines (falls gewuenscht) mind. 4 mm stark anlegen - das ist eine Rahmenstaerke, kein Sicherheitsabstand.",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/sheets/de/flyer_a6_mass.pdf",
+   "quote": "Sicherheitsabstand (z)",
+   "review": "Rahmen-4-mm-Regel war als Sicherheitsabstand gelesen (Checkliste 2026: \"mit einer Staerke von mindestens 4 mm\"); Flyer-A6/A5-Werte 4 mm aus Datenblaettern ergaenzt."
+  },
+  "max_ink_pct": {
+   "value": "max. 300 %, min. 10 % Gesamtfarbauftrag",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/blog/wp-content/uploads/Die_Flyeralarm_Checkliste_zur_Erstellung_von_Druckdaten_2026.pdf",
+   "quote": "Achten Sie darauf, dass der Gesamtfarbauftrag 300 % nicht übersteigt und 10 % nicht"
+  },
+  "fonts": {
+   "value": "Leitfaden 2020: alle Schriften in Pfade konvertieren (unter PDF/X-3-Vorgabe); aktueller Stand unter PDF/X-4 nicht first-hand geprüft",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/images/upload/content/_pdf/de/de/flyeralarm-druckdaten-de-050520.pdf",
+   "quote": "Alle Schriften müssen in Pfade konvertiert werden."
+  },
+  "min_font_pt": {
+   "value": "Schriftgrößen unter 6 pt vermeiden; Veredelungen höher (z. B. partieller UV-Lack 12 pt, Heißfolie 14 pt)",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/images/upload/content/_pdf/de/de/flyeralarm-druckdaten-de-050520.pdf",
+   "quote": "Vermeiden Sie Schriftgrößen unter 6 Punkt."
+  },
+  "min_line_pt": {
+   "value": "positiv 0,25 pt (0,09 mm), negativ 0,5 pt (0,18 mm)",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/blog/wp-content/uploads/Die_Flyeralarm_Checkliste_zur_Erstellung_von_Druckdaten_2026.pdf",
+   "quote": "Positive Linien (dunkle Linie auf hellem Hintergrund) sollten mindestens 0,25 Punkt (0,09 mm)"
+  },
+  "transparency": {
+   "value": "Leitfaden 2020 (PDF/X-3): keine Transparenzen (F, Datei 010.pdf); Blog 2025: PDF/X-4 erhält Transparenzen und Ebenen",
+   "evidence": "W",
+   "source": "https://www.flyeralarm.com/blog/de/tutorial-druckfaehiges-pdf-mit-indesign-erstellen/"
+  },
+  "spot_colors": {
+   "value": "HKS/Pantone nur nach Datenblatt mit korrekt benanntem Farbfeld; Überdrucken nur wenn im Datenblatt verlangt; weiße Elemente nicht auf Überdrucken",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/blog/wp-content/uploads/Die_Flyeralarm_Checkliste_zur_Erstellung_von_Druckdaten_2026.pdf",
+   "quote": "Achten Sie darauf, bei Sonderfarben (HKS/Pantone) den Farbkanal bzw. Farbfeldnamen mit dem"
+  },
+  "pages_and_sides": {
+   "value": "Einzel-PDF mit numberOfPages Seiten (Leerseiten nicht weglassen) oder ZIP mit Dateien 0001.pdf usw.; je Auftrag per API GET .../print_data/allowed_format abfragen",
+   "evidence": "F",
+   "source": "https://resellerapi.flyeralarm.com/docs/v1/swagger.json",
+   "quote": "Number of pages needed in single upload PDF"
+  },
+  "max_file_mb": {
+   "value": null,
+   "evidence": "unknown"
+  }
+ },
+ "products": [
+  {
+   "family": "sticker",
+   "product": "Etiketten auf A4 Bogen - Freiform (Konturschnitt)",
+   "sizes": "Bogen 21,0 x 29,7 cm Hochformat; Motivbereich 20,6 x 29,3 cm",
+   "materials": "unbekannt (nicht im Datenblatt-Auszug)",
+   "bleed_mm": 2,
+   "safe_mm": 2,
+   "dpi": null,
+   "contour": "Separate Ebene, Volltonfarbe 100 % Magenta namens „Cutkontur“, Überdrucken EIN, 0,1 mm (0,28 pt), nur geschlossene Pfade, Kontur mittig ausgerichtet, nicht im Beschnitt, Abstand zwischen Konturen mind. 2 mm (Konturführung 3 mm), Eckenradius 3 mm, Zacken/Wellen mind. 3 mm; Gestaltung mind. 2 mm über die Kontur hinaus",
+   "white": "",
+   "template": "Datenblatt https://www.flyeralarm.com/sheets/de/etikett_bogen_cut.pdf",
+   "notes": "Nur PDF/X-4. Randabstand Motivbereich 2 mm, Sicherheitsabstand zum Motivbereich 2 mm oben/rechts/links, 7 mm unten (Steuermarke 10 x 9 mm wird automatisch gedruckt). Texte mind. 2 mm innerhalb der Schneidekontur. Bleed-Wert 2 = Überfüllung über die Kontur, nicht klassischer Beschnitt. Für einfache Formen (rund/eckig) unbekannt, ob Kontur nötig.",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/sheets/de/etikett_bogen_cut.pdf",
+   "quotes": [
+    {
+     "quote": "Benennen Sie die Volltonfarbe „Cutkontur“."
+    },
+    {
+     "quote": "Legen Sie die Schneidekontur mit einer Linienstärke von 0,1 mm (0,28 Punkt) an."
+    },
+    {
+     "quote": "Als Dateiformat ist nur ein PDF/X-4 möglich."
+    },
+    {
+     "quote": "Berücksichtigen Sie hierbei, Ihre Gestaltung mindestens 2 mm rund um die Schneidekontur anzulegen,"
+    },
+    {
+     "quote": "Sicherheitsabstand zur Schneidekontur für Texte und wichtige"
+    }
+   ]
+  },
+  {
+   "family": "sticker",
+   "product": "Transparente Etiketten/Aufkleber mit Weiß -> Etiketten auf Rolle mit Zusatzfarbe Weiß",
+   "sizes": "unbekannt (Produktseite nur per JS)",
+   "materials": "transparente Folie",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "unbekannt",
+   "white": "Weiss auf transparenten Etiketten nur beim Produkt 'Etiketten auf Rolle mit Zusatzfarbe Weiss': Weiss als Sonderfarbe im 5. Farbkanal laut (nicht gelesenem) Datenblatt. Farbfeldname und Tonwert fuer dieses Produkt unbekannt.",
+   "template": "Datenblatt auf https://www.flyeralarm.com/de/p/etiketten-auf-rolle-mit-zusatzfarbe-weis-4213298.html (nicht gelesen)",
+   "notes": "Beim normalen transparenten Aufkleber kein Weißdruck. Datenblatt der Rollenetiketten vor Export lesen.",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/blog/de/kundenservice-die-haeufigsten-fehler-beim-erstellen-von-druckdaten/",
+   "quotes": [
+    {
+     "quote": "Achtung: In diesem Fall muss die Farbe Weiß, wie im Datenblatt beschrieben, als Sonderfarbe im 5. Farbkanal angelegt werden."
+    },
+    {
+     "quote": "Nein, das funktioniert bei transparenten Etiketten und Aufklebern leider nicht ohne Weiteres."
+    }
+   ],
+   "review": "Farbkanalname 'white' stammt aus der Kugelschreiber-Antwort derselben FAQ (wrong-scope), nicht aus dem Etiketten-Datenblatt; entfernt (016.bin)."
+  },
+  {
+   "family": "flyer",
+   "product": "Flyer DIN A6 und DIN A5 (Standard, Hoch- und Querformat)",
+   "sizes": "A6: Endformat 10,5 x 14,8 cm, Datenformat 10,7 x 15,0 cm; A5: Endformat 14,8 x 21,0 cm, Datenformat 15,0 x 21,2 cm",
+   "materials": "unbekannt",
+   "bleed_mm": 1,
+   "safe_mm": 4,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "Datenblaetter https://www.flyeralarm.com/sheets/de/flyer_a6_mass.pdf und https://www.flyeralarm.com/sheets/de/flyer_a5_mass.pdf (Stand 10.03.2015)",
+   "notes": "Sicherheitsabstand laut Legende \"Sicherheitsabstand (z)\"; ob zum End- oder Datenformat gemessen, geht aus dem Text nicht hervor (konservativ: 4 mm vom Endformat). DIN A4 Flyer nicht gelesen (A4-Plakat/Block: 6 mm). dpi aus Checkliste 2026.",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/sheets/de/flyer_a6_mass.pdf",
+   "quotes": [
+    {
+     "quote": "DIN A6, Hochformat"
+    },
+    {
+     "quote": "DIN A5, Hochformat"
+    }
+   ],
+   "review": "Neu aus Gegenpruefung: Standard-Flyer-Datenblaetter A6/A5 gelesen."
+  },
+  {
+   "family": "flyer",
+   "product": "Flyer DIN lang mit ausgestanzter Visitenkarte",
+   "sizes": "Endformat 210 x 98 mm, Datenformat 212 x 100 mm",
+   "materials": "unbekannt",
+   "bleed_mm": 1,
+   "safe_mm": 3,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "Datenblatt https://www.flyeralarm.com/sheets/de/flyer_dl_vk_mass.pdf",
+   "notes": "Sonderprodukt mit perforierter Visitenkarte (85 x 55 mm, Eckenradius 4 mm); Sicherheitsabstand zur Perforation beachten. Standard-Flyer DIN A6/A5: 1 mm Beschnitt, 4 mm Sicherheitsabstand (eigener Produkteintrag). dpi aus allgemeiner Checkliste (300-356 ppi).",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/sheets/de/flyer_dl_vk_mass.pdf",
+   "quotes": [
+    {
+     "quote": "DIN lang, mit ausgestanzter Visitenkarte"
+    },
+    {
+     "quote": "Hintergründe und randabfallende Bilder bitte bis zum Rand des Datenformats anlegen, um Blitzer (weiße Ränder) zu vermeiden."
+    }
+   ],
+   "review": "Hinweis \"typisch 1 mm / 6 mm\" fuer Standard-Flyer ersetzt durch gelesene A6/A5-Datenblaetter (1 mm / 4 mm)."
+  },
+  {
+   "family": "plakat",
+   "product": "Plakat DIN A4",
+   "sizes": "Endformat 21,0 x 29,7 cm, Datenformat 21,2 x 29,9 cm",
+   "materials": "unbekannt",
+   "bleed_mm": 1,
+   "safe_mm": 6,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "Datenblatt https://www.flyeralarm.com/sheets/de/plakat_a4_mass.pdf (Stand 06.03.2015)",
+   "notes": "Datenblatt alt (2015). Großformat ab DIN A2: 100-150 ppi laut Checkliste 2026; Werbetechnik-Plakate ggf. ISO Coated v2 (ECI) statt 300 %.",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/sheets/de/plakat_a4_mass.pdf",
+   "quotes": [
+    {
+     "quote": "letzte Aktualisierung am 06.03.2015"
+    },
+    {
+     "quote": "Sicherheitsabstand (z)"
+    }
+   ]
+  },
+  {
+   "family": "visitenkarte",
+   "product": "Visitenkarten",
+   "sizes": "unbekannt",
+   "materials": "unbekannt",
+   "bleed_mm": 1,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "Datenblatt im Produktkonfigurator (nicht gelesen)",
+   "notes": "1 mm Beschnitt nur aus Suchergebnis (W); bei 2 Seiten PDF mit 2 Seiten, leere Rückseite nicht weglassen (API-Beispieltext)",
+   "evidence": "W",
+   "source": "https://www.flyeralarm.com/blog/de/druckdaten-erstellen-leichtgemacht-kompakte-checkliste/",
+   "quotes": []
+  },
+  {
+   "family": "banner",
+   "product": "Banner / Roll-up",
+   "sizes": "unbekannt",
+   "materials": "unbekannt",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "Datenblatt im Produktkonfigurator (nicht gelesen)",
+   "notes": "Nicht first-hand geprüft. Allgemein: Werbetechnik ISO Coated v2 (ECI), ab A2 100-150 ppi (Checkliste 2026).",
+   "evidence": "K",
+   "source": "",
+   "quotes": []
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Ja, vollständiger Druckdatencheck, per API vor Bestellung (check_print_data) und nach Upload",
+   "evidence": "F",
+   "source": "https://flyeralarm.pro/reseller-api/",
+   "quote": "Vollständiger Druckdatencheck"
+  },
+  "auto_corrections": {
+   "value": "RGB wird automatisch in CMYK umgewandelt; Daten werden zentriert platziert (TrimBox beachtet); Support prüft Aufträge mit hohem Wert/komplexen Daten zusätzlich proaktiv; sonst keine Autokorrekturen belegt",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/images/upload/content/_pdf/de/de/flyeralarm-druckdaten-de-050520.pdf",
+   "quote": "Da alle Daten zentriert platziert werden, muss das Motiv ebenfalls immer mittig auf der Seite stehen."
+  },
+  "rejection_reasons": {
+   "value": "API: reasons-Array (Beispiel 'Page 1: Incorrect file format.'); bei reinen Sonderfarbprodukten führen CMYK-Elemente zur Fehlermeldung; vollständige Liste unbekannt",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/blog/de/serie-sonderfarben-teil-3-sonderfarbdruck/",
+   "quote": "Farben aus dem CMYK-Farbraum, wie du schon richtig gesagt hast, sind da nicht zulässig und werden beim Datencheck sehr zuverlässig gefunden und führen dann zu einer Fehlermeldung."
+  },
+  "paid_options": {
+   "value": "Konvertierung von JPG/TIF gegen Aufpreis (Leitfaden 2020); Preise für Profi-Datencheck unbekannt",
+   "evidence": "F",
+   "source": "https://www.flyeralarm.com/images/upload/content/_pdf/de/de/flyeralarm-druckdaten-de-050520.pdf",
+   "quote": "JPG- und TIF-Daten konvertieren wir – gegen einen Aufpreis – gerne für Sie."
+  },
+  "result_channel": {
+   "value": "Polling: GET /{country}/v1/orders/{order_id}/print_data/status bzw. /orders/print_data_checks/{print_data_check_id}",
+   "evidence": "F",
+   "source": "https://resellerapi.flyeralarm.com/docs/v1/swagger.json",
+   "quote": "The current status of uploaded Print Data"
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "yes",
+   "evidence": "F",
+   "source": "https://flyeralarm.pro/reseller-api/",
+   "quote": "Über unsere Schnittstelle werden alle Aufträge aus Ihrem Hause automatisiert an uns weitergeleitet, inklusive Datenupload, Datencheck, Status Report sowie individuellen Versandbedingungen."
+  },
+  "docs_url": {
+   "value": "https://resellerapi.flyeralarm.com/docs/index.html (OpenAPI 3.0.1: /docs/v1/swagger.json)",
+   "evidence": "F",
+   "source": "https://resellerapi.flyeralarm.com/docs/v1/swagger.json",
+   "quote": "A REST API to browse the FLYERALARM product catalog, order and track items."
+  },
+  "auth": {
+   "value": "POST /user/login mit username/password liefert JWT; Header Authorization: Bearer",
+   "evidence": "F",
+   "source": "https://resellerapi.flyeralarm.com/docs/v1/swagger.json",
+   "quote": "Authenticates the User and issues an JSON Web Token (JWT)"
+  },
+  "access": {
+   "value": "Reseller-Vertrag; mittelfristig monatlicher Mindestumsatz 2.500 EUR netto; Testzugang möglich; monatliche Sammelrechnung bonitätsabhängig",
+   "evidence": "F",
+   "source": "https://flyeralarm.pro/faq/",
+   "quote": "Ja, um bei FLYERALARM PRO Reseller zu werden, muss mittelfristig ein monatlicher Mindestumsatz von 2.500 EUR (netto) erreicht werden."
+  },
+  "catalog": {
+   "value": "GET product_groups/list, product_groups/{id}, product_variants/{id}, product_options/{quantity_id}/{shipping_type_id}, POST product_attributes/{group_id} (Konfigurator), Custom-Size-Preise",
+   "evidence": "F",
+   "source": "https://resellerapi.flyeralarm.com/docs/v1/swagger.json",
+   "quote": "Get Group with ProductVariants"
+  },
+  "order": {
+   "value": "POST /{country}/v1/orders mit quantity_id, shipping_type (standard|express|overnight), payment (invoice|prepayment|debit), addresses (delivery, invoice, sender), reference_text",
+   "evidence": "F",
+   "source": "https://resellerapi.flyeralarm.com/docs/v1/swagger.json",
+   "quote": "Id of a valid Quantity from the productCatalog_v1"
+  },
+  "artwork_handover": {
+   "value": "Separater Schritt nach Bestellung: POST /{country}/v1/orders/{order_id}/print_data entweder JSON {print_data_url} (FLYERALARM holt per http/ftp) oder multipart/form-data Feld print_data (PDF oder ZIP); vorher Pflicht-Check POST /orders/check_print_data mit print_data_url + quantity_id",
+   "evidence": "F",
+   "source": "https://resellerapi.flyeralarm.com/docs/v1/swagger.json",
+   "quote": "PDF or ZIP file can be uploaded as multipart/form-data (print_data) content-type."
+  },
+  "proof_or_preview": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "status_webhooks": {
+   "value": "Keine Webhooks in der Spezifikation; Polling über GET /orders/{order_id}/status und /orders/statuses",
+   "evidence": "F",
+   "source": "https://resellerapi.flyeralarm.com/docs/v1/swagger.json",
+   "quote": "Order Status"
+  },
+  "sandbox": {
+   "value": "Kein Sandbox-Server (nur Production environment). Spezifikation: \"Use payment: prepayment for test orders only, otherwise they won't be processed!\" - mehrdeutig; dass prepayment-Bestellungen sicher nicht produziert werden, ist nicht belegt. Testzugang laut FAQ fuer Preisuebersicht.",
+   "evidence": "F",
+   "source": "https://resellerapi.flyeralarm.com/docs/v1/swagger.json",
+   "quote": "Use payment: `prepayment` for test orders only, otherwise they won't be processed!",
+   "review": "Vorher als \"prepayment-Bestellungen werden nicht verarbeitet\" gelesen; der Satz sagt das nicht eindeutig (002.bin). Vor Tests schriftlich beim Service klaeren."
+  },
+  "white_label_shipping": {
+   "value": "Neutraler Versand; ohne sender-Adresse wird eine FLYERALARM-Standardadresse auf dem Label gedruckt; eigener Lieferschein per POST .../delivery_note",
+   "evidence": "F",
+   "source": "https://flyeralarm.pro/faq/",
+   "quote": "Nein, FLYERALARM tritt nicht in Erscheinung. Auch der Versand der Ware erfolgt verpackungsneutral an Ihre Kunden, auf Wunsch mit Ihrer Absenderadresse."
+  }
+ },
+ "automation_risks": [
+  "PDF-Standard: aktuell PDF/X-4 (Blog-Update 2025, Freiform-Datenblatt); alter Leitfaden 2020 nennt PDF/X-3:2002 - je Auftrag allowed_format pruefen.",
+  "Freiform-Aufkleber brauchen eine Vektor-Schneidekontur (Sonderfarbe Cutkontur); Higgsfield liefert Rasterbilder, die Kontur muss algorithmisch erzeugt und geglättet werden (Radius 3 mm, keine Zacken unter 3 mm).",
+  "Druckdaten-Check ist vor der Bestellung Pflicht und asynchron (Polling, keine Webhooks).",
+  "Seiten-/Dateistruktur je Produkt unterschiedlich (numberOfPages, ZIP-Benennung 0001.pdf) - je Auftrag allowed_format abfragen.",
+  "Ohne sender-Adresse erscheint eine FLYERALARM-Adresse auf dem Versandlabel - immer eigene Absenderadresse mitsenden.",
+  "Kein Sandbox-Server; Tests laufen gegen Produktion (prepayment-Trick) - Fehlbestellungen kosten Geld.",
+  "Mindestumsatz 2.500 EUR netto/Monat mittelfristig - Zugang kann bei kleinem Volumen entzogen bzw. nicht gewährt werden.",
+  "KI-Bilder in Webauflösung reichen nicht: 300 ppi bei Endformat nötig (Großformat ab A2 100-150 ppi), RGB wird automatisch konvertiert (Farbverschiebung)."
+ ]
+}
