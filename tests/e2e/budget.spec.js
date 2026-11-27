@@ -28,7 +28,13 @@ const pages = {
     // home page loads come the gallery's own script and the serif face of the samples.
     // Every page carries about 0.3 kB for a header that knows when it is older than
     // the cart (the Back button, a cache in front of the shop) and asks again.
-    '/sticker/': { document: 11.3, total: 138, elements: 900 },
+    // The switch between the two areas at the top took the place of the path and the button to the other area.
+    '/sticker/': { document: 11.6, total: 138, elements: 900 },
+    // The designs: six example pictures of together 68 kB, in the small sizes WordPress keeps of
+    // each (a card is half the phone wide). One request per picture on top of the shared ones.
+    '/design/': { document: 7.5, total: 195, elements: 260, image: 125, requests: 13 },
+    // One design large (51 kB), two more below it, and the small script that hands it to the motif.
+    '/design/beispiel-neu-eroeffnet/': { document: 7, total: 175, elements: 200, image: 105, requests: 11 },
     // A page of text from the editor – the legal pages. It carries the styles for
     // editor content in its document and nothing of WooCommerce: no stylesheet, no
     // script, no jQuery (it used to load 180 kB of each).

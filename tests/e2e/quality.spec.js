@@ -1,6 +1,6 @@
 import { test, expect, fixture, accessibilityViolations, logInAsAdministrator, cli } from './fixtures.js';
 
-const pages = ['/', '/sticker/', '/flyer/', '/?s=folie'];
+const pages = ['/', '/sticker/', '/flyer/', '/?s=folie', '/design/', '/design/beispiel-neu-eroeffnet/'];
 
 test.describe('accessibility (axe, WCAG 2.2 AA)', () => {
     for (const path of pages) {

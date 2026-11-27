@@ -62,8 +62,10 @@ test.describe('references', () => {
     test('header and footer lead to the list, and the home page shows the newest', async ({ page }) => {
         await page.goto('/');
 
-        // In the header, in the menu for small screens, in the footer, and below the cards on this page.
-        await expect(linksToTheList(page)).toHaveCount(4);
+        // In the menu for small screens, in the footer, and below the cards on this page. The bar
+        // of the header names the registers only – the references belong to neither.
+        await expect(linksToTheList(page)).toHaveCount(3);
+        await expect(page.locator('header nav[aria-label="Hauptnavigation"]').first().locator('a[href$="/referenzen/"]')).toHaveCount(0);
         await expect(page.locator('footer').getByRole('link', { name: 'Referenzen' })).toBeVisible();
 
         const section = page.locator('section[aria-labelledby="referenzen"]');
@@ -72,7 +74,8 @@ test.describe('references', () => {
         await expect(section.locator('li[id^="referenz-"]')).toHaveCount(1);
         await section.getByRole('link', { name: 'Alle Referenzen' }).click();
         await expect(page).toHaveURL(/\/referenzen\/$/);
-        await expect(page.locator('header nav a[aria-current="page"]').first()).toHaveText('Referenzen');
+        // The menu marks the list; no register claims it.
+        await expect(page.locator('header nav[aria-label="Hauptnavigation"] a[aria-current]')).toHaveText(['Referenzen']);
     });
 
     test('the address of a single reference leads to the list', async ({ page }) => {
