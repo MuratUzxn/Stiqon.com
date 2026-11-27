@@ -309,12 +309,13 @@ link_into_site "$REPO/tools/dev/mu-plugins/stiqon-dev-mail.php" "$SITE_DIR/wp-co
 wp plugin is-active stiqon-shop || wp plugin activate stiqon-shop --quiet
 wp theme activate stiqon --quiet
 
-# --- Shop settings and the example assortment --------------------------------------
+# --- Shop settings, the example assortment and the example designs ------------------
 
 wp eval-file "$REPO/tools/dev/shop-settings.php" --quiet
 wp rewrite structure '/%postname%/' --quiet
 wp wc tool run install_pages --user="$ADMIN_USER" --quiet
 wp eval-file "$REPO/tools/dev/example-catalogue.php" --quiet
+wp eval-file "$REPO/tools/dev/example-designs.php" --quiet
 
 # --- Pages the theme has templates for ----------------------------------------------
 
