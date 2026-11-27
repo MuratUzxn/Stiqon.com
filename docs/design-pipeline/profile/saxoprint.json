@@ -1,0 +1,378 @@
+{
+ "supplier": "saxoprint",
+ "name": "SAXOPRINT",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "PDF bevorzugt, alternativ JPG, TIFF (Upload-Center: PDF, JPG oder TIFF; keine RAR/ZIP; keine Umlaute/Sonderzeichen im Dateinamen). Achtung: Fehlermeldungstext nennt 'PDF 1.4, JPEG, TIFF'",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "Bitte nutzen Sie zum Speichern Ihrer Druckdaten nur geschlossene Formate, vorzugsweise PDF"
+  },
+  "pdf_standard": {
+   "value": "Widerspruch: Druckdatenanleitung \"vorzugsweise PDF (PDF/X-4 bzw. PDF 1.6)\", keine Ebenen, native Transparenzen erhalten; seitenweit eingebetteter Fehlermeldungstext nennt \"von uns akzeptierten Dateiformat (PDF 1.4, JPEG, TIFF)\". Arbeitsannahme: PDF/X-4 nach Anleitung; vor Livegang per Staging/Service klaeren, ob PDF 1.6 im Datencheck angenommen wird.",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "(PDF/X-4 bzw. PDF 1.6), alternativ JPG, TIFF.",
+   "review": "contradicted: Anleitung (001.bin) X-4/PDF 1.6 gegen Fehlertext PDF 1.4 (in allen gespeicherten Seiten, z.B. 002.bin); nicht aufloesbar ohne Druckdatenanleitung-PDF (api.saxoprint.de, nicht abgerufen)."
+  },
+  "color_mode": {
+   "value": "CMYK, nicht RGB; Graustufen-Bestellung -> Datei in Graustufen; schwarzer Text nicht 4c",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "Legen Sie Ihre Daten in CMYK und nicht in RGB an."
+  },
+  "icc_profiles": {
+   "value": "PSO Coated v3 (FOGRA51) fuer gestrichene Papiere UND Werbetechnik; PSO Uncoated v3 (FOGRA52) fuer ungestrichene Papiere",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "PSO Coated v3 – FOGRA51 (für einen Druck auf gestrichenen Papieren oder Werbetechnik)"
+  },
+  "rgb_handling": {
+   "value": "RGB und Sonderfarben (wenn keine HKS-Farbe bestellt) werden im Basis-Datencheck automatisch nach CMYK umgewandelt, ggf. ohne vorherige Information",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/datencheck",
+   "quote": "Ihre Daten werden automatisch in CMYK umgewandelt, wenn sie in RGB oder Sonderfarben (wenn keine"
+  },
+  "min_dpi": {
+   "value": "250 dpi Bilder; 1.200 dpi Strichbilder; Plakate/Werbetechnik mit Text 150 dpi; Werbetechnik 72 dpi",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "Fotos, Bilder und Grafiken: 250 dpi"
+  },
+  "bleed_mm": {
+   "value": "Standard 2 mm; Briefumschlaege 1 mm; Werbetechnik, Verpackungen, Praesentationsmappen, Klatschpappen, Monatskalender 3 mm; Prospekte Rollenoffset 5 mm; Textilspannrahmen 15 mm",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "Standard-Beschnittzugabe: 2 mm"
+  },
+  "safe_mm": {
+   "value": "3 mm vom Endformatrand; Wire-O 20 mm zur Bindungsseite; Folder 5 mm beidseitig zum Falz",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "Inhalte sollten mindestens 3 mm vom Rand des Endformates entfernt platziert werden."
+  },
+  "max_ink_pct": {
+   "value": "300 % Gesamtfarbauftrag (Offset) maximal gewaehrleistet; Registerfarben (400 %) im Motiv vermeiden; sichtbare Elemente mind. 5 % Farbauftrag",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/fehlerdiagnose/farben",
+   "quote": "In unserem Offset-Druckverfahren wird maximal ein Farbauftrag von 300 % gewährleistet."
+  },
+  "fonts": {
+   "value": "Schriften einbetten oder in Pfade wandeln; lizenzfreie Fonts mit korrekter Kodierung; bei Folienveredelung Text nicht konvertieren",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "Schriften müssen ins Dokument eingebettet oder in Pfade konvertiert sein"
+  },
+  "min_font_pt": {
+   "value": "6 pt (Satz steht im Absatz zur Folienveredelung; allgemeine Lesegroesse 12 pt)",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "sollte mindestens 6 pt betragen"
+  },
+  "min_line_pt": {
+   "value": "0,125 pt bei mind. 40 % Farbauftrag; duennere Linien werden automatisch verstaerkt (nicht garantiert bei exakt 0 pt)",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "Linien sollten mindestens 0,125 pt stark bei einem Farbauftrag von mindestens 40% sein."
+  },
+  "transparency": {
+   "value": "native Transparenzen erhalten (nicht reduzieren), keine Ebenen (Optional Content)",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quote": "Vermeiden Sie im PDF mehrfache Ebenen (Optional Content) Native Transparenzen sollten"
+  },
+  "spot_colors": {
+   "value": "HKS und Pantone als Option bestellbar; Farbkanal mit passender Nummer benennen; CMYK ueber Sonderfarbe aussparend, nicht ueberdruckend (und umgekehrt); ohne HKS-Bestellung wird Sonderfarbe nach CMYK konvertiert",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/sonderfarben",
+   "quote": "Bitte benennen Sie dafür den Farbkanal der Sonderfarbe in Ihren Druckdaten entsprechend mit der passenden Nummer."
+  },
+  "pages_and_sides": {
+   "value": "Offenes Endformat inkl. Beschnitt; alle Seiten in richtiger Reihenfolge; Einzelseiten als 01.pdf, 02.pdf ...; Broschueren mit Umschlag getrennt 'Umschlag'/'Inhalt'; geheftete Produkte als Einzelseiten; Upload pro Auftrag nur einmal moeglich",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/werbebedarf/aufkleber/aufkleber-drucken?c=800-0LQ0MU01E0MW01w0N403J03e",
+   "quote": "Der Upload ist pro Auftrag nur einmal möglich."
+  },
+  "max_file_mb": {
+   "value": "keine feste Grenze genannt; eine Fehlermeldung 'Maximale Dateigröße überschritten' existiert, ein Fehlertext nennt Dateien > 1 GB als nicht verarbeitbar",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/werbebedarf/aufkleber/aufkleber-drucken?c=800-0LQ0MU01E0MW01w0N403J03e",
+   "quote": "zu groß (> 1 GB)"
+  }
+ },
+ "products": [
+  {
+   "family": "sticker",
+   "product": "Aufkleber (rechteckig, quadratisch, rund, oval, runde Ecken)",
+   "sizes": "Standardformate, z.B. 85x55, 50x50, 40x40 rund, 70x48 oval, DIN-Formate bis DIN A3; ab 250 Stueck",
+   "materials": "95 µm Haftfolie matt, 80 µm Haftfolie glaenzend, 80 µm Haftfolie transparent, 70/80 g/m² Haftpapier, vegane/ECO-Folien",
+   "bleed_mm": 2,
+   "safe_mm": 3,
+   "dpi": 250,
+   "contour": "Standardformen werden einzeln gestanzt (oval, rund, runde Ecken) bzw. geschnitten (rechteckig, quadratisch); keine eigene Kontur in den Daten dokumentiert (Beschnitt 2 mm = Standardwert, produktspezifisch nicht bestaetigt)",
+   "white": "Weissdruck nur auf transparenter Haftfolie: ohne / vollflaechig / hinter Farbflaechen. Bei 'hinter Farbflaechen': Sonderfarbkanal 'Weißdruck' 100 % Vollton (Anzeige besser Magenta), auf Ueberdrucken, keine Verlaeufe/Transparenzen/Raster/Effekte, Linien mind. 8 pt (2,82 mm), Schrift mind. 6 pt; widerspruechlicher Fehlertext nennt 0,25 mm Mindestlinie",
+   "template": "Druckvorlagen (PDF, Id, Ai) und Datenblatt im Produktkonfigurator / https://www.saxoprint.de/druckvorlagen (Downloads auf api.saxoprint.de, hier nicht abrufbar)",
+   "notes": "CMYK Offset 4/0 Euroskala; Profil FOGRA51 (gestrichen/Werbetechnik) vs. FOGRA52 je Material unklar fuer Folien Beschnitt 2 mm und Sicherheitsabstand 3 mm sind die allgemeinen Standardwerte der Druckdatenanleitung; die Aufkleberseite verweist fuer Randanschnitt auf die produktspezifischen Druckvorlagen/Datenblaetter.",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/werbebedarf/aufkleber",
+   "quotes": [
+    {
+     "quote": "einzeln gestanzt (oval, rund, runde Ecken)"
+    },
+    {
+     "quote": "Weißdruck können ausschließlich auf unseren transparenten Haftfolien bestellt werden."
+    },
+    {
+     "quote": "Wir drucken im Offsetdruck 4/0 nach Euroskala, legen Sie Ihre Datei deshalb in CMYK an."
+    },
+    {
+     "quote": "braucht einen Sonderfarbenkanal („Weißdruck“) in 100% Vollton (nicht Weiß, besser Magenta)"
+    },
+    {
+     "quote": "Sonderfarbkanal immer auf „Überdrucken“ stehend!"
+    },
+    {
+     "quote": "Schrift- und Linienstarke mind. 8 pt (2,82 mm) und Schriftgröße mind. 6 pt (vom Weißdruck)"
+    }
+   ],
+   "review": "bleed/safe/dpi sind Allgemeinwerte (001.bin), nicht produktspezifisch belegt (wrong-scope-Risiko); vor Export Vorlage pruefen."
+  },
+  {
+   "family": "sticker",
+   "product": "Konturaufkleber",
+   "sizes": "feste Bogenformate: 289x202 (1/Bogen), 142,5x202 (2), 202x94 (3), 99x142,5 (4), 99x94 (6), 99x69 (8), 47,5x69 (16), 30x44,5 mm (36)",
+   "materials": "135 g/m² PVC-Folie weiss glaenzend oder weiss matt",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": 250,
+   "contour": "unbekannt: Produktseite konturaufkleber-drucken verweist auf kostenlose Vorlagen (InDesign, Acrobat, Illustrator) mit bereits eingezeichneten Schnittraendern und ein Datenblatt; Name/Aufbau der Kontur steht nicht im Seitentext. Fehlerkatalog kennt 'In den Druckdaten fehlt die Schneidkontur.'; Sonderfarbe 'DieCutting' ist dort nur fuer Verpackungen/Stanzprodukte belegt.",
+   "white": "",
+   "template": "Druckvorlage + Datenblatt im Konfigurator (api.saxoprint.de)",
+   "notes": "Kontur-Regel vor Automatisierung aus Vorlage/Datenblatt klaeren. Auflagen 5, 10, 25, 50, 100, 200 Exemplare je Motiv laut FAQ.",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/werbebedarf/aufkleber",
+   "quotes": [
+    {
+     "quote": "289 × 202 mm (1 Etikett je Bogen)"
+    },
+    {
+     "quote": "135 g/m² PVC-Folie weiß glänzend"
+    },
+    {
+     "quote": "In den Druckdaten fehlt die Schneidkontur."
+    }
+   ],
+   "review": "Produktseite neu gelesen (saxoprint-check/001.bin): keine Konturfarbe genannt, nur Verweis auf Vorlagen mit eingezeichneten Schnittraendern; bleibt offen."
+  },
+  {
+   "family": "flyer",
+   "product": "Flyer",
+   "sizes": "DIN A4, A5, A6, DIN lang, Sonderformate 10x21, 21x21, 14,8x14,8 cm",
+   "materials": "13 Papiersorten 80-450 g/m², z.B. 130 g/m² Bilderdruckpapier",
+   "bleed_mm": 2,
+   "safe_mm": 3,
+   "dpi": 250,
+   "contour": "",
+   "white": "",
+   "template": "Druckvorlagen-Generator https://www.saxoprint.de/druckvorlagen",
+   "notes": "Offenes Endformat inkl. 2 mm Beschnitt (Standard); Bilderdruck = gestrichen -> FOGRA51, Offsetpapier = ungestrichen -> FOGRA52; bei Abweichung wird ohne Randanschnitt skaliert / Beschnitt gespiegelt",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/werbebedarf/flyer",
+   "quotes": [
+    {
+     "quote": "DIN A4, A5, A6 + DIN-lang + Sonderformate (10×21, 21×21, 14,8×14,8 cm)"
+    },
+    {
+     "quote": "Standard-Beschnittzugabe: 2 mm"
+    }
+   ]
+  },
+  {
+   "family": "falzflyer",
+   "product": "Folder & Falzflyer",
+   "sizes": "unbekannt (nicht gelesen)",
+   "materials": "unbekannt",
+   "bleed_mm": 2,
+   "safe_mm": 5,
+   "dpi": 250,
+   "contour": "",
+   "white": "",
+   "template": "Druckvorlagen-Generator (Folder waehlen)",
+   "notes": "mind. 5 mm Abstand beidseitig zum Falz; Profi-Datencheck prueft Falzart/-position",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quotes": [
+    {
+     "quote": "Bei Foldern sollte der Abstand beidseitig mindestens 5 mm zum Falz betragen."
+    }
+   ]
+  },
+  {
+   "family": "plakat",
+   "product": "Plakate & Poster",
+   "sizes": "unbekannt (nicht gelesen)",
+   "materials": "unbekannt",
+   "bleed_mm": null,
+   "safe_mm": 3,
+   "dpi": 150,
+   "contour": "",
+   "white": "",
+   "template": "Druckvorlagen-Generator",
+   "notes": "150 dpi fuer Plakate mit Text; Beschnitt 2 mm (Standard) oder 3 mm falls als Werbetechnik gefuehrt - produktspezifisch klaeren",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quotes": [
+    {
+     "quote": "Plakate, Werbetechnik-Produkte mit Text: 150 dpi"
+    }
+   ]
+  },
+  {
+   "family": "rollup",
+   "product": "Roll Ups (Werbetechnik)",
+   "sizes": "unbekannt (nicht gelesen)",
+   "materials": "unbekannt",
+   "bleed_mm": 3,
+   "safe_mm": 3,
+   "dpi": 72,
+   "contour": "",
+   "white": "",
+   "template": "Datenblatt Roll Up im Konfigurator",
+   "notes": "Werbetechnik: 3 mm Beschnitt, 72 dpi (150 dpi mit Text), FOGRA51",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quotes": [
+    {
+     "quote": "Werbetechnik-Produkte: 72 dpi"
+    }
+   ],
+   "review": "Werte aus der Werbetechnik-Allgemeinregel (001.bin) uebertragen; Roll-up-Produktseite nicht gelesen (Kassetten-/Klemmbereich unbekannt)."
+  },
+  {
+   "family": "visitenkarte",
+   "product": "Visitenkarten",
+   "sizes": "unbekannt (nicht gelesen)",
+   "materials": "unbekannt",
+   "bleed_mm": 2,
+   "safe_mm": 3,
+   "dpi": 250,
+   "contour": "",
+   "white": "",
+   "template": "Generator: psd, indd, ai, pdf; Hoch/Quer, 1-/2-seitig, Klappkarten 4 Seiten",
+   "notes": "Standardwerte aus der allgemeinen Anleitung",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/druckdatenanleitung",
+   "quotes": [
+    {
+     "quote": "Standard-Beschnittzugabe: 2 mm"
+    }
+   ]
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Kostenfreier Basis-Datencheck bei jedem Auftrag: Seitenmasse, CMYK, eingebettete Schriften",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/datencheck",
+   "quote": "Bei jedem Auftrag werden Ihre Vorlagen mit dem kostenfreien"
+  },
+  "auto_corrections": {
+   "value": "RGB/Sonderfarben -> CMYK, Formatanpassung (Skalierung ohne Randanschnitt), Beschnitt per Spiegelung, zu duenne Linien verstaerkt - teils ohne vorherige Information",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/datencheck",
+   "quote": "Bitte beachten Sie, dass eine Anpassung des Formats bzw. eine automatische Umwandlung von Farben"
+  },
+  "rejection_reasons": {
+   "value": "Fehlerkatalog unterscheidet 'Mit Druckfreigabe produzierbar' und 'NICHT mit Druckfreigabe produzierbar' (z.B. Weissdruck falsch angelegt, Veredelung als Pixelbild, Broschueren nicht als Einzelseiten, Perforation); weitere: fehlende Schneidkontur, Ebenen, beschaedigte/passwortgeschuetzte Datei, ungueltiges Format, leere Seiten (<5 %)",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/fehlerdiagnose/farben",
+   "quote": "NICHT mit Druckfreigabe produzierbar!"
+  },
+  "paid_options": {
+   "value": "Profi-Datencheck 9,90 EUR: zusaetzlich Randanschnitt, Farbprofil, Ebenen, Falzart/-position; dann KEINE automatischen Anpassungen",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/datencheck",
+   "quote": "Profi-Datencheck optional – FÜR NUR 9,90 €"
+  },
+  "result_channel": {
+   "value": "E-Mail; Fehlerprotokoll mit Links in die Fehlerdiagnose; Korrektur per erneutem Upload in der Auftragsuebersicht oder 'Druckfreigabe erteilen'",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/service-und-hilfe/datencheck",
+   "quote": "Falls Optimierungen notwendig sind, informieren wir Sie umgehend per E-Mail."
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "partner-only",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/schnittstelle",
+   "quote": "Nach Prüfung und Freigabe durch unser Team, erhalten Sie Zugang zu unserer interaktiven Schnittstellendokumentation sowie einen Staging-API-Key."
+  },
+  "docs_url": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "interaktive Doku erst nach Freigabe/NDA"
+  },
+  "auth": {
+   "value": "API-Key (Staging- und Live-Key); Details unbekannt",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/schnittstelle",
+   "quote": "Nachdem erfolgreich getestet wurde, erhalten Sie den Live-API-Key"
+  },
+  "access": {
+   "value": "E-Mail an Service mit Kundennummer, geplantem Jahresumsatz, IT-Faehigkeit; Fragebogen + NDA; Voraussetzung Kundenkonto als Reseller/Geschaeftskunde, Rechnungsfreigabe (USt-IdNr.), IT-Ressourcen",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/schnittstelle",
+   "quote": "Ein SAXOPRINT Kundenkonto als Reseller oder Geschäftskunde"
+  },
+  "catalog": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "Produkt-/Preisabfragen nicht oeffentlich dokumentiert"
+  },
+  "order": {
+   "value": "Bestellungen, Druckdaten und Auftragsinformationen werden laut Seite direkt uebertragen; Endpunkte unbekannt",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/schnittstelle",
+   "quote": "Bestellungen, Druckdaten und Auftragsinformationen werden direkt und ohne manuellen Aufwand übertragen."
+  },
+  "artwork_handover": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "Uebergabeart (Upload vs. URL) nicht oeffentlich; im Web-Shop: Upload-Center, PDF/JPG/TIFF, einmal pro Auftrag"
+  },
+  "proof_or_preview": {
+   "value": "Web-Shop: 'Upload mit Vorschau & Prüfung', Vorab-Proof als Option; via API unbekannt",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/werbebedarf/aufkleber/aufkleber-drucken?c=800-0LQ0MU01E0MW01w0N403J03e",
+   "quote": "Vorab-Proof"
+  },
+  "status_webhooks": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "sandbox": {
+   "value": "Staging-API-Key fuer Tests",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/schnittstelle",
+   "quote": "sowie einen Staging-API-Key."
+  },
+  "white_label_shipping": {
+   "value": "Neutraler Versand fuer Reseller; Versand nur innerhalb Deutschlands, keine Packstationen/Postfaecher/DHL-Filialen",
+   "evidence": "F",
+   "source": "https://www.saxoprint.de/werbebedarf/aufkleber/aufkleber-drucken?c=800-0LQ0MU01E0MW01w0N403J03e",
+   "quote": "Sparen Sie Zeit durch den neutralen Versand Ihrer Druckprodukte direkt an Ihre Kunden"
+  }
+ },
+ "automation_risks": [
+  "API nur nach Antrag, NDA und Freigabe; Endpunkte, Datei-Uebergabe und Status-Rueckmeldung sind vorab unbekannt.",
+  "Basis-Datencheck korrigiert still (RGB->CMYK, Skalierung, gespiegelter Beschnitt) - Farb- und Formatabweichungen ohne Rueckfrage moeglich.",
+  "Fehlerhafte Daten erfordern erneuten Upload oder manuelle 'Druckfreigabe' im Kundenkonto; Kommunikation per E-Mail, nicht maschinenlesbar belegt.",
+  "Konturaufkleber: Schneidkontur-Regel (Farbname, Aufbau) nicht oeffentlich gelesen; falsche Kontur = nicht produzierbar.",
+  "Weissdruck hinter Farbflaechen braucht einen separaten Sonderfarbkanal 'Weißdruck' (100 %, Ueberdrucken, Vektor, min. 8 pt) - KI-Rasterbilder liefern das nicht.",
+  "KI-Bilder sind RGB: muessen vor Export nach FOGRA51/FOGRA52 je Papier konvertiert und auf 250 dpi im Endformat inkl. Beschnitt gebracht werden; max. 300 % Farbauftrag.",
+  "Lieferung nur innerhalb Deutschlands, keine Packstationen.",
+  "Upload pro Auftrag nur einmal; Dateinamen ohne Umlaute/Sonderzeichen, Mehrseiter als 01.pdf, 02.pdf."
+ ]
+}

@@ -1,0 +1,293 @@
+{
+ "supplier": "probo",
+ "name": "Probo (Probo Prints GmbH, probo.de)",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "PDF (empfohlen, mehrseitig moeglich), JPG, PNG; JPG nur ohne Schnittlinie/Bohrloecher/Weissdruck; TIFF, PSD, AI, EPS nicht akzeptiert",
+   "evidence": "F",
+   "source": "https://www.probo.de/kundendienst/dateien/das-richtige-dateiformat/",
+   "quote": "Dateien in den Formaten TIFF, PSD, AI oder EPS werden nicht akzeptiert"
+  },
+  "pdf_standard": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "Kein PDF/X-Standard genannt; Probo bietet eigene PDF-Voreinstellungen fuer Adobe (Download auf Hilfeseite) - Inhalt nicht geprueft."
+  },
+  "color_mode": {
+   "value": "RGB und CMYK erlaubt; Fotos besser RGB, sonst CMYK empfohlen",
+   "evidence": "F",
+   "source": "https://www.probo.de/kundendienst/dateien/tipps-fur-die-besten-farbprofile-und-einstellungen/",
+   "quote": "m RGB und CMYK-Format hochladen. Wenn Sie ein Foto hochladen, empfehlen wir Ihnen RGB f&uuml;r das beste Ergebnis."
+  },
+  "icc_profiles": {
+   "value": "CMYK: ISO Coated v2 (ECI) zuweisen, PDF-Export ohne Farbkonvertierung, alle Profile einschliessen; RGB: sRGB IEC61966-2.1. Keine Unterscheidung nach Papierklasse genannt.",
+   "evidence": "F",
+   "source": "https://www.probo.de/kundendienst/dateien/tipps-fur-die-besten-farbprofile-und-einstellungen/",
+   "quote": "ISO Coated v2 (ECI)"
+  },
+  "rgb_handling": {
+   "value": "RGB wird akzeptiert (keine Ablehnung); Profil muss eingebettet sein, daher PDF verwenden. Genaue Konvertierung durch Probo unbekannt.",
+   "evidence": "F",
+   "source": "https://www.probo.de/kundendienst/dateien/tipps-fur-die-besten-farbprofile-und-einstellungen/",
+   "quote": "m RGB und CMYK-Format hochladen."
+  },
+  "min_dpi": {
+   "value": "Empfehlung (keine Pflicht): 300 ppi fuer Aufkleber/Drucksachen, 150 ppi fuer alle anderen; Grossformat 100-150 ppi beste Qualitaet, 70-100 gut, 30-70 aus Abstand",
+   "evidence": "F",
+   "source": "https://www.probo.de/kundendienst/dateien/die-beste-auflosung-fur-das-beste-ergebnis/",
+   "quote": "sung von 300PPI. F&uuml;r alle anderen Produkte gilt eine Aufl&ouml;sung von 150 PPI."
+  },
+  "bleed_mm": {
+   "value": "produktabhaengig; Produktseiten haben ein Feld 'Beschnitt rundum', dessen Wert erst per JavaScript (Platzhalter ${bleed}) bzw. im Uploader nach Warenkorb erscheint; in API-Doku (reference/probo, examples/configure-examples, examples/products) kein Beschnittfeld oeffentlich -> Wert unbekannt, per Konto/Uploader/Support klaeren.",
+   "evidence": "F",
+   "source": "https://www.probo.de/kundendienst/dateien/beschnitt-fur-die-fertigstellung-in-dateien/",
+   "quote": "Beschnitt variiert je nach Produkt. Die genauen Anforderungen finden Sie u.a. in unserem Shop",
+   "review": "Gegenprueft: 005/018.bin enthalten nur den Platzhalter ${bleed}; neu gelesen probo-check/001.bin (reference/probo) und 002.bin (configure-examples): kein bleed-Wert"
+  },
+  "safe_mm": {
+   "value": "Aufkleber (Laserschnitt): ca. 5 mm Sicherheitsmarge empfohlen, Schnitttoleranz max. 1,5 mm; andere Produkte unbekannt",
+   "evidence": "F",
+   "source": "https://www.probo.de/aufkleber-druckarbeit/kleines-format/kleine-aufkleber",
+   "quote": "eine Sicherheitsmarge von ca. 5 mm"
+  },
+  "max_ink_pct": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "Nicht genannt; Probo-Support fragen."
+  },
+  "fonts": {
+   "value": "Schriften einbetten oder in Pfade umwandeln",
+   "evidence": "F",
+   "source": "https://www.probo.de/kundendienst/dateien/schriftarten-einbetten/",
+   "quote": "In Pfade umwandeln (Create Outlines)"
+  },
+  "min_font_pt": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "Nicht gefunden."
+  },
+  "min_line_pt": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "Nicht gefunden."
+  },
+  "transparency": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "Keine Regel zu Transparenzreduzierung gefunden; nur Deckkraft der White-Volltonfarbe ist steuerbar."
+  },
+  "spot_colors": {
+   "value": "Prozessfarben verwenden; Sonderfarben nur fuer PANTONE (automatisch angenaehert) sowie Schnitt-/Rilllinien, Bohrloecher und Weiss; Volltonfarbenbibliothek (.ase) zum Download",
+   "evidence": "F",
+   "source": "https://www.probo.de/kundendienst/dateien/tipps-fur-die-besten-farbprofile-und-einstellungen/",
+   "quote": "ot Color) kann zu unerw&uuml;nschten Farbabweichungen f&uuml;hren. Achtung: Eine Sonderfarbe ist notwending f&uuml;r PANTONE&reg; Farben"
+  },
+  "pages_and_sides": {
+   "value": "API: pro Datei-Objekt uri + page + side (front/back); Mehrseiten-PDF ueber pages-Array; doppelseitig je Seite ein Datei-Objekt oder Seiten eines PDFs. Broschueren als Einzelseiten, keine Spreads. Keine Schnitt-/Druckmarken.",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/guides/how-to-supply-files-for-an-order-request",
+   "quote": "For single-sided products this is always &quot;front&quot;."
+  },
+  "max_file_mb": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "Nicht gefunden."
+  }
+ },
+ "products": [
+  {
+   "family": "sticker",
+   "product": "Aufkleber (kleines Format, Laserschnitt)",
+   "sizes": "unbekannt (frei konfigurierbar, Details im Konfigurator)",
+   "materials": "u.a. QuaPro BIOND, transparente Folie, zwei Papiersorten",
+   "bleed_mm": null,
+   "safe_mm": 5,
+   "dpi": 300,
+   "contour": "Rechteck/Quadrat: keine Schnittlinie noetig (automatisch). Freie Form: eine geschlossene Vektorlinie, Volltonfarbe (Spot) namens \"Cutcontour\", Linie ohne Fuellung, Linie mittig ausrichten, innerhalb der Zeichenflaeche (nicht im Beschnitt), Beschnitt um die Kontur; nur eine Schnittlinie je Design (Ausnahme Aufkleberboegen, Fraesbuchstaben); bei doppelseitig nur auf der Vorderseite. Linienstaerke/Ueberdrucken der Kontur nicht genannt.",
+   "white": "Optionen beim Bestellen (Hilfeseite Weissdruck, 007.bin; Produktseite 005.bin bietet 'Weisse Tinte angeben'): vollflaechig weiss (nichts in der Datei), weiss wo Farbe (nichts in der Datei; nur fuer Vektorobjekte geeignet; Farberkennung ab C2/M1/Y6/K1 %), oder Weiss selbst platzieren: Form in der Druckdatei als Volltonfarbe 'White' (Spot), ueber den Farbobjekten, auf Ueberdrucken; Deckkraft steuerbar. Varianten: 1 oder 2 Schichten Weiss, Day&Night.",
+   "template": "Template unter \"Downloads\" auf der Produktseite; Beschnittwert im Uploader nach Warenkorb",
+   "notes": "Schnittabweichung bis 1,5 mm; keine duennen Rahmen; JPG nur ohne Kontur/Weiss -> fuer Konturaufkleber PDF Pflicht. Druck bis 1200 dpi (Durst TAU RSCi 510).",
+   "evidence": "F",
+   "source": "https://www.probo.de/aufkleber-druckarbeit/kleines-format/kleine-aufkleber",
+   "quotes": [
+    {
+     "quote": "Abweichung von maximal 1,5 mm aus der Mitte der Datei"
+    },
+    {
+     "quote": "eine Sicherheitsmarge von ca. 5 mm"
+    },
+    {
+     "quote": "Benennen Sie den Farbfeld mit: Cutcontour"
+    },
+    {
+     "quote": "Die Schnittlinie muss geschlossen sein"
+    },
+    {
+     "quote": "Wenn Sie eine Rechteckige oder Quadratische Form gew"
+    },
+    {
+     "quote": "Geben Sie dem Farbfeld den Namen: White"
+    },
+    {
+     "quote": "Ohne diese Kennzeichnung sieht unser Drucker nur die oberste Form und nicht die Form darunter."
+    }
+   ],
+   "review": "misread: 'in eigener Datei' -> die White-Volltonfarbe wird in derselben Druckdatei angelegt ('Ihre Druckdatei entsprechend selbst erstellen', 007.bin)"
+  },
+  {
+   "family": "flyer",
+   "product": "Flyer (A-Formate)",
+   "sizes": "12 Standardformate (u.a. A3-A7), feste Formate",
+   "materials": "8 Papiersorten, z.B. Holzfrei Offset weiss 90/170 g, Sulfatpapier 260/300 g; Laminat glaenzend/matt/soft touch",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "Template unter \"Downloads\" auf der Produktseite",
+   "notes": "Beschnitt in mm nur im Uploader sichtbar (unbekannt). Doppelseitig: Vorder- und Rueckseite hochladen. Keine Schnittmarken.",
+   "evidence": "F",
+   "source": "https://www.probo.de/aufkleber-druckarbeit/papier/flyer",
+   "quotes": [
+    {
+     "quote": "12 Standardformate zur Auswahl"
+    },
+    {
+     "quote": "Sulfatpapier: 260 und 300 gr./m2"
+    }
+   ]
+  },
+  {
+   "family": "banner",
+   "product": "Banner / Grossformat (z.B. Banner 510, 610)",
+   "sizes": "unbekannt (frei)",
+   "materials": "Planen",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "Produktseite/Uploader",
+   "notes": "Grossformat: Datei im Massstab anlegen und im Uploader vergroessern; Oesen mit Oesenpunkten (Sonderfarbe) in der Datei angeben; API-Feld tiling (Default none -> sonst evtl. Ablehnung bei Uebergroesse), fill/fill_even fuer Skalierung. 30-150 ppi je Sichtabstand. Saum-/Oesenregeln im Detail nicht gelesen (Hilfeseite oesen-angeben).",
+   "evidence": "F",
+   "source": "https://www.probo.de/kundendienst/dateien/die-beste-auflosung-fur-das-beste-ergebnis/",
+   "quotes": [
+    {
+     "quote": "which means it will not be tiled and may result in a not accepted order."
+    },
+    {
+     "quote": "Deshalb empfehlen wir Ihnen die Datei im Ma"
+    }
+   ]
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Ja: nach Bestelleingang werden Dateien heruntergeladen und gepreflightet (vor accepted)",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/guides/callbacks-webhooks",
+   "quote": "the files still have to be downloaded and preflighted."
+  },
+  "auto_corrections": {
+   "value": "PANTONE wird automatisch angenaehert; Skalieren/Drehen nur auf Anweisung (fill, fill_even, rotation, mirror, tiling) - Standard: keine Skalierung",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/guides/how-to-supply-files-for-an-order-request",
+   "quote": "By default, the API does not scale or rotate the images, unless you explicitly give these instructions."
+  },
+  "rejection_reasons": {
+   "value": "Datei nicht verarbeitbar, haeufig fehlende oder nicht erlaubte Sonderfarbe; doppelte Bestell-ID; Uebergroesse ohne Tiling",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/guides/callbacks-webhooks",
+   "quote": "A common cause of a preflighting error is a missing or not-allowed spot-color in the file."
+  },
+  "paid_options": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "Kostenpflichtiger manueller Datencheck nicht gefunden."
+  },
+  "result_channel": {
+   "value": "Webhook an callback_urls mit status not_accepted und message \"File rejected, could not be processed\"; zusaetzlich error_email_addresses im Auftrag",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/guides/callbacks-webhooks",
+   "quote": "File rejected, could not be processed"
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "yes",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/getting-started/authorization",
+   "quote": "The Probo Reseller API uses a basic authentication token."
+  },
+  "docs_url": {
+   "value": "https://apidocs.proboprints.com/",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/getting-started/authorization",
+   "quote": "The Probo Reseller API uses a basic authentication token."
+  },
+  "auth": {
+   "value": "Header Authorization: Basic {{token}}; Host api.proboprints.com",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/getting-started/authorization",
+   "quote": "Authorization: Basic {{token}}"
+  },
+  "access": {
+   "value": "Nur fuer Print-Professionals: Konto auf probo.de/konto-anfordern, Pruefung, Zahlung auf Rechnung, dann API-Token unter Mein Konto > Konto & Einstellungen > API-Verknuepfung. Probo.de (Probo Prints GmbH) hat eigene Auftragsliste.",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/requesting-a-probo-account",
+   "quote": "s are exclusively available for Probo Print Professionals."
+  },
+  "catalog": {
+   "value": "GET /products/product/{code}; konfigurierte Produkte brauchen vollstaendigen Options-Satz (configure endpoint); Preisabfrage aehnlich Order-Call",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/examples/products",
+   "quote": "Configured products requires a full options set."
+  },
+  "order": {
+   "value": "/order endpoint; JSON mit id, reference, deliveries (address, delivery_date_preset, shipping_method_preset), products (customer_code oder code+options, files), callback_urls, order_type test/production",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/getting-started/sandbox-test-env",
+   "quote": "The order_type applies only to the <code>/order</code> endpoint."
+  },
+  "artwork_handover": {
+   "value": "Kein Multipart-Upload: files-Array je Produkt, jedes Objekt mit uri (oeffentlich erreichbare URL, die Probo abholt) plus page, side, amount, rotation, fill, fill_even, tiling, mirror; alternativ White-label-Uploader-Session",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/guides/how-to-supply-files-for-an-order-request",
+   "quote": "The full URL to the file, must have public access."
+  },
+  "proof_or_preview": {
+   "value": null,
+   "evidence": "unknown",
+   "note": "Kein Proof in API gelesen; White-label-Uploader (Vorschau?) nicht geprueft."
+  },
+  "status_webhooks": {
+   "value": "callback_urls je Order; Status queued, accepted, not_accepted, shipment_in_transit (mit tracking_url); Signatur Header X-Probo-Signature (HMAC-SHA256, base64)",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/guides/callbacks-webhooks",
+   "quote": "You need to supply the callback URL on every order post."
+  },
+  "sandbox": {
+   "value": "Keine Sandbox; Testbestellungen mit order_type test werden storniert",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/getting-started/sandbox-test-env",
+   "quote": "Probo has no sandbox or test environment for you to test the API on."
+  },
+  "white_label_shipping": {
+   "value": "sender_address und packing_slip_urls pro Lieferung moeglich (Lieferschein s/w in Folientasche); Neutralversand-Details/Laender sonst unbekannt",
+   "evidence": "F",
+   "source": "https://apidocs.proboprints.com/guides/packingslips",
+   "quote": "array to the deliveries object. You serve the packing slips in the same manner as the print files"
+  }
+ },
+ "automation_risks": [
+  "Beschnitt in mm ist produktabhaengig und nur im Shop-Uploader/Template sichtbar - je Produkt manuell erfassen oder Support fragen.",
+  "Freiform-Aufkleber brauchen eine geschlossene Vektor-Schnittlinie als Spot \"Cutcontour\" - ein KI-Rasterbild (Higgsfield) liefert das nicht; Vektorisierung/Konturerzeugung noetig.",
+  "Weissdruck auf transparenter Folie braucht Spot \"White\" auf Ueberdrucken oder Optionswahl - fehlende/falsche Spotfarbe ist haeufigster Preflight-Fehler.",
+  "Dateien muessen unter oeffentlicher URL liegen, bis Probo sie geladen hat (Hosting, Ablauf, Datenschutz).",
+  "Keine Sandbox: Tests nur mit order_type test; production wird produziert und berechnet.",
+  "Ablehnung kommt asynchron per Webhook - Shop muss not_accepted abfangen und Kunden informieren.",
+  "API nur fuer geprueften Reseller mit Rechnungskauf; Probo.de getrennt von Probo.nl/.eu.",
+  "Kein PDF/X-Standard, kein maximaler Farbauftrag, keine Mindest-Schrift/Linie dokumentiert - Exporter muss konservativ arbeiten."
+ ]
+}
