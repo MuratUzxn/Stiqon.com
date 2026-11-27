@@ -1,0 +1,229 @@
+{
+ "supplier": "maxilia",
+ "name": "Maxilia Werbeartikel GmbH (maxilia.de)",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "Vektor: EPS oder AI (PDF nur wenn echt vektoriell); JPG/PNG ungeeignet, werden kostenlos konvertiert",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/aufdruck/",
+   "quote": "Um Ihr Logo scharf zu drucken, benötigen wir eine vektorisierte EPS- oder AI-Datei."
+  },
+  "pdf_standard": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "color_mode": {
+   "value": "Sonderfarben PMS (Pantone Coated); CMYK nur bei Vollfarb-/Digitaldruck",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/aufdruck/",
+   "quote": "Nein, wir verwenden PMS für alle unsere Farbcodes, es sei denn, wir drucken vollfarbig. Dann arbeiten wir mit CMYK und sprechen über 'Digitaldruck'."
+  },
+  "icc_profiles": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "rgb_handling": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "min_dpi": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "bleed_mm": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "safe_mm": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "max_ink_pct": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "fonts": {
+   "value": "Text in Konturen (Buchstabenkonturen) umwandeln oder TTF-Schriftdatei mitsenden; alternativ Schriftname + PMS-Farben angeben",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/aufdruck/",
+   "quote": "Dann konvertieren Sie Ihre Datei in Buchstabenkonturen."
+  },
+  "min_font_pt": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "min_line_pt": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "transparency": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "spot_colors": {
+   "value": "Pantone/PMS Coated; Anzahl Druckfarben je Produkt waehlbar, Einrichtungskosten pro Farbe",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/aufdruck/",
+   "quote": "Wir verwenden die Coated Version für unsere Drucktechniken."
+  },
+  "pages_and_sides": {
+   "value": "Je Produkt feste Druckpositionen mit max. Druckflaeche (Breite x Hoehe in mm) unter 'Eigenschaften'; Logo wird standardmaessig groesstmoeglich in die Druckflaeche gesetzt; bei beidseitigen Produkten (z.B. Absperrgitter-Banner) Vorder- und Rueckseite separat anliefern",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/aufdruck/",
+   "quote": "Bei allen Produkten auf unserer Website finden Sie die Druckpositionen inklusive maximaler Druckfläche unter dem Themenpunkt \"Eigenschaften\"."
+  },
+  "max_file_mb": {
+   "value": null,
+   "evidence": "unknown"
+  }
+ },
+ "products": [
+  {
+   "family": "werbeartikel",
+   "product": "Kugelschreiber Rio farbiger Griff Kunststoff Vollfarbdruck (Produktnr. 53062)",
+   "sizes": "Druckflaeche rechtshaendig 58x6 mm oder linkshaendig 58x6 mm",
+   "materials": "Kunststoff mit Gummigriff",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "Druckposition/-groesse auf der Produktseite (Eigenschaften); DIY-Vorlagen (Canva/Photoshop/InDesign) fuer Ansichten laut Bestellprozess-Seite, Fundort je Produkt unbekannt",
+   "notes": "Logo wird groesstmoeglich in die Druckflaeche gesetzt; Strichzeichnung nicht massstabsgetreu, digitaler Korrekturabzug massgeblich. Vollfarbdruck (CMYK).",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/product/kugelschreiber-rio-farbiger-griff-kunststoff-vollfarbdruck-53062/",
+   "quotes": [
+    {
+     "quote": "Rechtshändig 58x6 mm"
+    },
+    {
+     "quote": "Wir drucken Ihr Logo und/oder Ihren Text standardmäßig größtmöglich innerhalb der Druckfläche."
+    }
+   ]
+  },
+  {
+   "family": "banner",
+   "product": "Absperrgitter-Banner Medium Banner 510 beidseitig (101832)",
+   "sizes": "Format Medium fuer Standardgitter 250 cm Breite; Produktdaten nennen Druckbreite 215 mm x Druckhoehe 146 mm (vermutlich Datenfehler/andere Einheit - beim Support klaeren)",
+   "materials": "Banner 510, schwer entflammbar, Oesen links und rechts",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "unbekannt (nicht auf der Produktseite gefunden)",
+   "notes": "Vorder- und Rueckseite muessen separat angeliefert werden; Beschnitt, Aufloesung, Oesenabstand unbekannt.",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/product/absperrgitter-banner-medium-banner-510-beidseitig-101832/",
+   "quotes": [
+    {
+     "quote": "Vorder- und Rückseite des Designs müssen angeliefert werden."
+    }
+   ]
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Manuelle Pruefung durch DTP-Spezialisten (kostenlose Dateikontrolle), kein automatischer Preflight belegt",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/druckwerk/",
+   "quote": "Unsere DTP-Spezialisten prüfen Ihr Logo und Ihre Dateien, so sind Sie sicher, dass die Druckqualität perfekt ist."
+  },
+  "auto_corrections": {
+   "value": "Pixeldateien (JPG/PNG) werden kostenlos in Vektor konvertiert; Logo kann in weniger/andere Farben umgewandelt werden",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/aufdruck/",
+   "quote": "Wir können diese Datei für Sie in den richtigen Dateityp konvertieren. Kostenlos!"
+  },
+  "rejection_reasons": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "paid_options": {
+   "value": "Einrichtungskosten pro Druckfarbe; Kategoriepreise enthalten 1 Farbe",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/bestellungen/",
+   "quote": "Wir berechnen die Einrichtungskosten pro Farbe, da der Produktionsprozess dann erneut beginnt."
+  },
+  "result_channel": {
+   "value": "E-Mail: Bestaetigung, Auftragsbestaetigung, Logopruefung, digitale Druckvorschau zur Freigabe, dann Liefertermin per E-Mail",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/bestellungen/",
+   "quote": "Dann senden wir Ihnen eine Auftragsbestätigung und prüfen, ob Ihr Logo / Drucktext geeignet ist. Dann folgt ein digitales Druckbeispiel."
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "no",
+   "evidence": "W",
+   "source": "https://www.maxilia.de/reseller/",
+   "note": "Reseller-Seite nennt nur E-Mail-Anfrage, Kundenkonto und persoenlichen Ansprechpartner; keine API/Datenfeed-Erwaehnung; Websuche ohne Treffer. Endgueltig nur durch Anfrage beim Reseller-Team zu klaeren."
+  },
+  "docs_url": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "auth": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "access": {
+   "value": "Reseller-Programm per E-Mail-Anfrage; Voraussetzungen: Handelsregistereintrag, aktiver Wiederverkauf, Kreditwuerdigkeit (jaehrliche Pruefung)",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/reseller/",
+   "quote": "Im Handelsregister der Handelskammer eingetragen."
+  },
+  "catalog": {
+   "value": "Kein Datenfeed belegt; Produktdaten (Druckpositionen, Druckbreite/-hoehe) nur auf Produktseiten bzw. per oeffentlicher Sitemap (Shopware-Sitemap mit ca. 2.297 /product/-URLs) auslesbar",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/sitemap.xml",
+   "quote": "<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
+  },
+  "order": {
+   "value": "Bestellung ueber Website (Kundenkonto), Angebotsanfrage ueber Website oder E-Mail an Kontaktperson",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/bestellungen/",
+   "quote": "Sie können auf drei Arten bestellen:"
+  },
+  "artwork_handover": {
+   "value": "Nach der Bestellung Logo/Design im Kundenkonto (Account) hochladen; danach Druckvorschau zur Freigabe; alternativ E-Mail an Kontaktperson. Keine maschinelle Uebergabe belegt.",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/product/kugelschreiber-rio-farbiger-griff-kunststoff-vollfarbdruck-53062/",
+   "quote": "Nach der Bestellung laden Sie Ihr Logo oder Design bequem in Ihrem Account hoch."
+  },
+  "proof_or_preview": {
+   "value": "Kostenlose digitale Druckvorschau (Korrekturabzug) laut /aufdruck/ innerhalb von 4 Stunden nach Bestellung; Produktion erst nach Freigabe; der Korrekturabzug ist fuer die Druckposition massgeblich",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/product/kugelschreiber-rio-farbiger-griff-kunststoff-vollfarbdruck-53062/",
+   "quote": "Kein Druck ohne Ihre Zustimmung. Sie erhalten vor der Produktion automatisch eine digitale Druckvorschau zur Freigabe.",
+   "review": "Die 4-Stunden-Angabe steht auf /aufdruck/ (002.bin), nicht auf der Produktseite; dort zusaetzlich: Freigabe innerhalb eines Arbeitstages nach Bestellung, danach keine Aenderung/Stornierung."
+  },
+  "status_webhooks": {
+   "value": "Nur E-Mails; Sendungsverfolgungsnummer nach Druck",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/bestellungen/",
+   "quote": "Sobald Ihre Produkte gedruckt sind, erhalten Sie eine Sendungsverfolgungsnummer."
+  },
+  "sandbox": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "white_label_shipping": {
+   "value": "Ja, Blankoversand/Dropshipping ohne Maxilia-Branding direkt an Endkunden",
+   "evidence": "F",
+   "source": "https://www.maxilia.de/reseller/",
+   "quote": "Neutrale Lieferung ohne Maxilia-Branding, direkt an Ihre Endkunden oder Ihr Lager."
+  }
+ },
+ "automation_risks": [
+  "Kein Aufkleber-, Flyer-, Visitenkarten- oder Plakatsortiment in der DE-Sitemap gefunden: Maxilia deckt nur Werbeartikel/Textil und wenige Grossformate ab.",
+  "Keine API und kein Datenfeed belegt: Bestellung nur ueber Website-Kundenkonto oder E-Mail, also manuell oder per Browser-Automatisierung (AGB pruefen).",
+  "Druckdatei wird erst nach der Bestellung im Account hochgeladen, nicht mit der Bestellung uebergeben.",
+  "Jede Bestellung braucht eine manuelle Freigabe der digitalen Druckvorschau, bevor produziert wird; Liefertermin gilt nur bei rechtzeitiger Freigabe.",
+  "Druckdaten werden manuell von DTP-Spezialisten geprueft und ggf. umgesetzt (Vektorisierung, Farbreduktion), Ergebnis kann vom KI-Design abweichen.",
+  "Higgsfield liefert Pixelbilder; Maxilia verlangt fuer scharfen Druck vektorisierte AI/EPS-Dateien und PMS-Farben, ausser bei Vollfarbdruck.",
+  "Einrichtungskosten pro Druckfarbe: die Farbanzahl des Designs bestimmt den Preis, die Kategoriepreise enthalten nur 1 Farbe.",
+  "Druckflaechendaten auf Produktseiten teils unplausibel (Banner 215x146 mm), deshalb Masse nicht blind uebernehmen."
+ ]
+}

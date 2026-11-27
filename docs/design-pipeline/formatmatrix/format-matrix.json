@@ -1,0 +1,462 @@
+[
+ {
+  "format": "Sticker rund 50 mm",
+  "with_bleed_mm": "54 x 54",
+  "bleed_mm": 2,
+  "ratio": 1.0,
+  "dpi": 300,
+  "px": "638 x 638",
+  "mp": 0.4,
+  "models": [
+   {
+    "model": "kling_image_4_0",
+    "ratio": "1:1",
+    "crop_loss_pct": 0.0,
+    "tier": "8k",
+    "eff_dpi_assumed": 3853
+   },
+   {
+    "model": "flux_3_image",
+    "ratio": "1:1",
+    "crop_loss_pct": 0.0,
+    "tier": "4k",
+    "eff_dpi_assumed": 1927
+   },
+   {
+    "model": "ideogram_4_6",
+    "ratio": "1:1",
+    "crop_loss_pct": 0.0,
+    "tier": "4k",
+    "eff_dpi_assumed": 1927
+   },
+   {
+    "model": "nano_banana_pro",
+    "ratio": "1:1",
+    "crop_loss_pct": 0.0,
+    "tier": "4k",
+    "eff_dpi_assumed": 1927
+   },
+   {
+    "model": "recraft_v4_1",
+    "ratio": "1:1",
+    "crop_loss_pct": 0.0,
+    "tier": "2k",
+    "eff_dpi_assumed": 963
+   }
+  ]
+ },
+ {
+  "format": "Visitenkarte 85 x 55",
+  "with_bleed_mm": "89 x 59",
+  "bleed_mm": 2,
+  "ratio": 1.5085,
+  "dpi": 300,
+  "px": "697 x 1051",
+  "mp": 0.7,
+  "models": [
+   {
+    "model": "kling_image_4_0",
+    "ratio": "2:3",
+    "crop_loss_pct": 0.6,
+    "tier": "8k",
+    "eff_dpi_assumed": 2338
+   },
+   {
+    "model": "flux_3_image",
+    "ratio": "2:3",
+    "crop_loss_pct": 0.6,
+    "tier": "4k",
+    "eff_dpi_assumed": 1169
+   },
+   {
+    "model": "ideogram_4_6",
+    "ratio": "2:3",
+    "crop_loss_pct": 0.6,
+    "tier": "4k",
+    "eff_dpi_assumed": 1169
+   },
+   {
+    "model": "nano_banana_pro",
+    "ratio": "2:3",
+    "crop_loss_pct": 0.6,
+    "tier": "4k",
+    "eff_dpi_assumed": 1169
+   },
+   {
+    "model": "recraft_v4_1",
+    "ratio": "2:3",
+    "crop_loss_pct": 0.6,
+    "tier": "2k",
+    "eff_dpi_assumed": 584
+   }
+  ]
+ },
+ {
+  "format": "DIN A6 (Flyer, Postkarte)",
+  "with_bleed_mm": "109 x 152",
+  "bleed_mm": 2,
+  "ratio": 1.3945,
+  "dpi": 300,
+  "px": "1287 x 1795",
+  "mp": 2.3,
+  "models": [
+   {
+    "model": "flux_3_image",
+    "ratio": "5:7",
+    "crop_loss_pct": 0.4,
+    "tier": "4k",
+    "eff_dpi_assumed": 682
+   },
+   {
+    "model": "kling_image_4_0",
+    "ratio": "3:4",
+    "crop_loss_pct": 4.4,
+    "tier": "8k",
+    "eff_dpi_assumed": 1369
+   },
+   {
+    "model": "ideogram_4_6",
+    "ratio": "3:4",
+    "crop_loss_pct": 4.4,
+    "tier": "4k",
+    "eff_dpi_assumed": 684
+   },
+   {
+    "model": "nano_banana_pro",
+    "ratio": "3:4",
+    "crop_loss_pct": 4.4,
+    "tier": "4k",
+    "eff_dpi_assumed": 684
+   },
+   {
+    "model": "recraft_v4_1",
+    "ratio": "3:4",
+    "crop_loss_pct": 4.4,
+    "tier": "2k",
+    "eff_dpi_assumed": 342
+   }
+  ]
+ },
+ {
+  "format": "DIN lang 99 x 210",
+  "with_bleed_mm": "103 x 214",
+  "bleed_mm": 2,
+  "ratio": 2.0777,
+  "dpi": 300,
+  "px": "1217 x 2528",
+  "mp": 3.1,
+  "models": [
+   {
+    "model": "flux_3_image",
+    "ratio": "1:2",
+    "crop_loss_pct": 3.7,
+    "tier": "4k",
+    "eff_dpi_assumed": 486
+   },
+   {
+    "model": "ideogram_4_6",
+    "ratio": "1:2",
+    "crop_loss_pct": 3.7,
+    "tier": "4k",
+    "eff_dpi_assumed": 486
+   },
+   {
+    "model": "kling_image_4_0",
+    "ratio": "21:9",
+    "crop_loss_pct": 11.0,
+    "tier": "8k",
+    "eff_dpi_assumed": 866
+   },
+   {
+    "model": "nano_banana_pro",
+    "ratio": "21:9",
+    "crop_loss_pct": 11.0,
+    "tier": "4k",
+    "eff_dpi_assumed": 433
+   },
+   {
+    "model": "recraft_v4_1",
+    "ratio": "16:9",
+    "crop_loss_pct": 14.4,
+    "tier": "2k",
+    "eff_dpi_assumed": 243
+   }
+  ]
+ },
+ {
+  "format": "DIN A5",
+  "with_bleed_mm": "152 x 214",
+  "bleed_mm": 2,
+  "ratio": 1.4079,
+  "dpi": 300,
+  "px": "1795 x 2528",
+  "mp": 4.5,
+  "models": [
+   {
+    "model": "flux_3_image",
+    "ratio": "5:7",
+    "crop_loss_pct": 0.6,
+    "tier": "4k",
+    "eff_dpi_assumed": 486
+   },
+   {
+    "model": "kling_image_4_0",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.3,
+    "tier": "8k",
+    "eff_dpi_assumed": 972
+   },
+   {
+    "model": "ideogram_4_6",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.3,
+    "tier": "4k",
+    "eff_dpi_assumed": 486
+   },
+   {
+    "model": "nano_banana_pro",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.3,
+    "tier": "4k",
+    "eff_dpi_assumed": 486
+   },
+   {
+    "model": "recraft_v4_1",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.3,
+    "tier": "2k",
+    "eff_dpi_assumed": 243
+   }
+  ]
+ },
+ {
+  "format": "Quadrat 148 x 148",
+  "with_bleed_mm": "152 x 152",
+  "bleed_mm": 2,
+  "ratio": 1.0,
+  "dpi": 300,
+  "px": "1795 x 1795",
+  "mp": 3.2,
+  "models": [
+   {
+    "model": "kling_image_4_0",
+    "ratio": "1:1",
+    "crop_loss_pct": 0.0,
+    "tier": "8k",
+    "eff_dpi_assumed": 1369
+   },
+   {
+    "model": "flux_3_image",
+    "ratio": "1:1",
+    "crop_loss_pct": 0.0,
+    "tier": "4k",
+    "eff_dpi_assumed": 684
+   },
+   {
+    "model": "ideogram_4_6",
+    "ratio": "1:1",
+    "crop_loss_pct": 0.0,
+    "tier": "4k",
+    "eff_dpi_assumed": 684
+   },
+   {
+    "model": "nano_banana_pro",
+    "ratio": "1:1",
+    "crop_loss_pct": 0.0,
+    "tier": "4k",
+    "eff_dpi_assumed": 684
+   },
+   {
+    "model": "recraft_v4_1",
+    "ratio": "1:1",
+    "crop_loss_pct": 0.0,
+    "tier": "2k",
+    "eff_dpi_assumed": 342
+   }
+  ]
+ },
+ {
+  "format": "DIN A4",
+  "with_bleed_mm": "216 x 303",
+  "bleed_mm": 3,
+  "ratio": 1.4028,
+  "dpi": 300,
+  "px": "2551 x 3579",
+  "mp": 9.1,
+  "models": [
+   {
+    "model": "flux_3_image",
+    "ratio": "5:7",
+    "crop_loss_pct": 0.2,
+    "tier": "4k",
+    "eff_dpi_assumed": 343
+   },
+   {
+    "model": "kling_image_4_0",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.0,
+    "tier": "8k",
+    "eff_dpi_assumed": 687
+   },
+   {
+    "model": "ideogram_4_6",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.0,
+    "tier": "4k",
+    "eff_dpi_assumed": 343
+   },
+   {
+    "model": "nano_banana_pro",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.0,
+    "tier": "4k",
+    "eff_dpi_assumed": 343
+   },
+   {
+    "model": "recraft_v4_1",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.0,
+    "tier": "2k",
+    "eff_dpi_assumed": 172
+   }
+  ]
+ },
+ {
+  "format": "DIN A3 (Plakat)",
+  "with_bleed_mm": "303 x 426",
+  "bleed_mm": 3,
+  "ratio": 1.4059,
+  "dpi": 300,
+  "px": "3579 x 5031",
+  "mp": 18.0,
+  "models": [
+   {
+    "model": "flux_3_image",
+    "ratio": "5:7",
+    "crop_loss_pct": 0.4,
+    "tier": "4k",
+    "eff_dpi_assumed": 244
+   },
+   {
+    "model": "kling_image_4_0",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.2,
+    "tier": "8k",
+    "eff_dpi_assumed": 488
+   },
+   {
+    "model": "ideogram_4_6",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.2,
+    "tier": "4k",
+    "eff_dpi_assumed": 244
+   },
+   {
+    "model": "nano_banana_pro",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.2,
+    "tier": "4k",
+    "eff_dpi_assumed": 244
+   },
+   {
+    "model": "recraft_v4_1",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.2,
+    "tier": "2k",
+    "eff_dpi_assumed": 122
+   }
+  ]
+ },
+ {
+  "format": "DIN A1 (Plakat)",
+  "with_bleed_mm": "600 x 847",
+  "bleed_mm": 3,
+  "ratio": 1.4117,
+  "dpi": 150,
+  "px": "3543 x 5002",
+  "mp": 17.7,
+  "models": [
+   {
+    "model": "flux_3_image",
+    "ratio": "5:7",
+    "crop_loss_pct": 0.8,
+    "tier": "4k",
+    "eff_dpi_assumed": 123
+   },
+   {
+    "model": "kling_image_4_0",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.5,
+    "tier": "8k",
+    "eff_dpi_assumed": 246
+   },
+   {
+    "model": "ideogram_4_6",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.5,
+    "tier": "4k",
+    "eff_dpi_assumed": 123
+   },
+   {
+    "model": "nano_banana_pro",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.5,
+    "tier": "4k",
+    "eff_dpi_assumed": 123
+   },
+   {
+    "model": "recraft_v4_1",
+    "ratio": "3:4",
+    "crop_loss_pct": 5.5,
+    "tier": "2k",
+    "eff_dpi_assumed": 61
+   }
+  ]
+ },
+ {
+  "format": "Roll-up 85 x 200 cm",
+  "with_bleed_mm": "860 x 2010",
+  "bleed_mm": 5,
+  "ratio": 2.3372,
+  "dpi": 100,
+  "px": "3386 x 7913",
+  "mp": 26.8,
+  "models": [
+   {
+    "model": "kling_image_4_0",
+    "ratio": "21:9",
+    "crop_loss_pct": 0.2,
+    "tier": "8k",
+    "eff_dpi_assumed": 104
+   },
+   {
+    "model": "flux_3_image",
+    "ratio": "21:9",
+    "crop_loss_pct": 0.2,
+    "tier": "4k",
+    "eff_dpi_assumed": 52
+   },
+   {
+    "model": "ideogram_4_6",
+    "ratio": "21:9",
+    "crop_loss_pct": 0.2,
+    "tier": "4k",
+    "eff_dpi_assumed": 52
+   },
+   {
+    "model": "nano_banana_pro",
+    "ratio": "21:9",
+    "crop_loss_pct": 0.2,
+    "tier": "4k",
+    "eff_dpi_assumed": 52
+   },
+   {
+    "model": "recraft_v4_1",
+    "ratio": "16:9",
+    "crop_loss_pct": 23.9,
+    "tier": "2k",
+    "eff_dpi_assumed": 26
+   }
+  ]
+ }
+]

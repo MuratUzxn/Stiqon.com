@@ -1,0 +1,9 @@
+{"id":"sticker_A","kind":"sticker","label":"Synthetic supplier A - die-cut sticker 60 mm",
+ "size_mm":60,"contour_offset_mm":1.5,"bleed_mm":2,"safe_mm":2,
+ "cut":{"spot_name":"CutContour","line_pt":0.25,"overprint":true,"alt_cmyk":[0,1,0,0]},
+ "pdfx":"X-4","pdf_version":"1.6","transparency_allowed":true,
+ "icc_target":"PSO Coated v3 (FOGRA51)",
+ "icc_file":"icc/stand_in_A_tac300.icc","output_condition_identifier":"FOGRA39",
+ "output_condition":"STAND-IN: ArgyllCMS profile from FOGRA39L.ti3, TAC 300%",
+ "rendering_intent":"relative","bpc":true,"tac_max":300,
+ "min_ppi":300,"bleed_fill":"edge-extend","smooth_mm":0.8,"text_k":100}

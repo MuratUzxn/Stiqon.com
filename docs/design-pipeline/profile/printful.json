@@ -1,0 +1,270 @@
+{
+ "supplier": "printful",
+ "name": "Printful",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "PNG, JPEG (Druckdateien); .ai/.psd/.tiff ueber API abgekuendigt",
+   "evidence": "F",
+   "source": "https://www.printful.com/blog/everything-you-need-to-know-to-prepare-the-perfect-printfile",
+   "quote": "Accepted print file formats – PNG, JPEG."
+  },
+  "pdf_standard": {
+   "value": "kein PDF/X-Standard; Druckdaten sind Rasterbilder (PNG/JPEG)",
+   "evidence": "F",
+   "source": "https://www.printful.com/blog/everything-you-need-to-know-to-prepare-the-perfect-printfile",
+   "quote": "Accepted print file formats – PNG, JPEG."
+  },
+  "color_mode": {
+   "value": "RGB (sRGB), nicht CMYK anliefern",
+   "evidence": "F",
+   "source": "https://www.printful.com/blog/everything-you-need-to-know-to-prepare-the-perfect-printfile",
+   "quote": "Color profile – Use standard RGB IEC61966-2.1 (sRGB). Why not CMYK?"
+  },
+  "icc_profiles": {
+   "value": "sRGB IEC61966-2.1 (eine Vorgabe fuer alle Produkte)",
+   "evidence": "F",
+   "source": "https://www.printful.com/blog/everything-you-need-to-know-to-prepare-the-perfect-printfile",
+   "quote": "Color profile – Use standard RGB IEC61966-2.1 (sRGB)."
+  },
+  "rgb_handling": {
+   "value": "Printful wandelt RGB selbst in seinen CMYK-Prozess um",
+   "evidence": "F",
+   "source": "https://www.printful.com/blog/everything-you-need-to-know-to-prepare-the-perfect-printfile",
+   "quote": "Because our printers use an advanced CMYK process optimized for RGB files"
+  },
+  "min_dpi": {
+   "value": "150 DPI Richtwert, 150-300 ideal, 300 fuer kleine detailreiche Produkte (Sticker: 300 laut Support, W)",
+   "evidence": "F",
+   "source": "https://www.printful.com/blog/everything-you-need-to-know-to-prepare-the-perfect-printfile",
+   "quote": "Resolution – 150–300 DPI is ideal. For smaller products with lots of detail, like mugs or personalized phone cases, use 300 DPI."
+  },
+  "bleed_mm": {
+   "value": "produktabhaengig, steckt in der Druckdatei-Pixelgroesse je Variante/Platzierung (Templates im Tab File guidelines); kein mm-Wert gelesen",
+   "evidence": "unknown",
+   "source": "https://www.printful.com/blog/everything-you-need-to-know-to-prepare-the-perfect-printfile"
+  },
+  "safe_mm": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "max_ink_pct": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "fonts": {
+   "value": "entfaellt (Rasterdaten, Schrift muss eingerechnet sein)",
+   "evidence": "K",
+   "source": ""
+  },
+  "min_font_pt": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "min_line_pt": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "transparency": {
+   "value": "PNG mit transparentem Hintergrund wird erwartet (Design Maker warnt bei fehlender Transparenz)",
+   "evidence": "F",
+   "source": "https://www.printful.com/blog/everything-you-need-to-know-to-prepare-the-perfect-printfile",
+   "quote": "If something’s off – say, your PNG file is too low-res or missing a transparent background – the Design Maker flags it before you place an order."
+  },
+  "spot_colors": {
+   "value": "keine Sonderfarben (Digital/DTG); Stickgarn-Farben separat (thread colors)",
+   "evidence": "K",
+   "source": ""
+  },
+  "pages_and_sides": {
+   "value": "eine Datei je Platzierung (z. B. front, back, label_outside) als files[] mit type + url",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "\"available_placements\": {"
+  },
+  "max_file_mb": {
+   "value": "200 MB",
+   "evidence": "F",
+   "source": "https://www.printful.com/blog/everything-you-need-to-know-to-prepare-the-perfect-printfile",
+   "quote": "File size – Max upload is 200 MB."
+  }
+ },
+ "products": [
+  {
+   "family": "sticker",
+   "product": "Kiss-Cut Stickers (Produkt-ID 358 im Shop)",
+   "sizes": "3x3 in (8x8 cm), 4x4 in (10x10 cm), 5.5x5.5 in (14x14 cm), 15x3.75 in (38x9.5 cm)",
+   "materials": "Vinyl, hohe Deckkraft, glaenzend/matt (W)",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": 300,
+   "contour": "Keine eigene Schneidkontur: Printful schneidet entlang des Motivumrisses und laesst einen weissen Rand stehen; bei mehreren Objekten mind. 0.25 in (0.64 cm) Abstand (W)",
+   "white": "kein Weissdruck-Thema (opakes Vinyl); Holographic-Variante separat, Regeln unbekannt",
+   "template": "Print-file-Template auf der Produktseite (Tab File guidelines) bzw. GET /mockup-generator/printfiles/{id}",
+   "notes": "PNG mit transparentem Hintergrund, 300 DPI; Produktseite ist JavaScript-gerendert, Specs nur per Websuche bestaetigt",
+   "evidence": "W",
+   "source": "https://support.printful.com/hc/en-us/articles/41396541153553",
+   "quotes": []
+  },
+  {
+   "family": "plakat",
+   "product": "Poster / Leinwaende (Wall art)",
+   "sizes": "unbekannt (per API catalog)",
+   "materials": "unbekannt",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "GET /mockup-generator/printfiles/{id} liefert width/height/dpi je Druckdatei",
+   "notes": "Pixelmasse je Variante per API holen",
+   "evidence": "K",
+   "source": "https://developers.printful.com/docs/",
+   "quotes": []
+  },
+  {
+   "family": "textil",
+   "product": "T-Shirt DTG (Beispiel Produkt 71)",
+   "sizes": "Druckflaeche z. B. 12x16 in, bei ausgewaehlten DTG-Produkten 15x18 in",
+   "materials": "Textil",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": 150,
+   "contour": "",
+   "white": "",
+   "template": "GET /mockup-generator/printfiles/71",
+   "notes": "Beispielantwort: printfile 1800x2400 px, 150 dpi, fill_mode fit",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quotes": [
+    {
+     "quote": "Maximum print area – Varies by product. Example: 12″ × 16″ for t-shirts, expanding to 15″ × 18″ on select DTG products."
+    },
+    {
+     "quote": "https://api.printful.com/mockup-generator/printfiles/71"
+    }
+   ]
+  },
+  {
+   "family": "flyer",
+   "product": "nicht im Sortiment (kein Flyer-/Visitenkarten-/Banner-Produkt gelesen; Karten = Gruss-/Postkarten)",
+   "sizes": "",
+   "materials": "",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "",
+   "notes": "Karten-Produkt nicht geprueft",
+   "evidence": "K",
+   "source": "",
+   "quotes": []
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Design Maker prueft Aufloesung/Transparenz vor der Bestellung; Pruefung bei API-Bestellungen unbekannt",
+   "evidence": "F",
+   "source": "https://www.printful.com/blog/everything-you-need-to-know-to-prepare-the-perfect-printfile",
+   "quote": "the Design Maker flags it before you place an order."
+  },
+  "auto_corrections": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "rejection_reasons": {
+   "value": "Status failed bei fehlenden Druckdateien, Adress- oder Zahlungsproblemen",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "Order was submitted for fulfillment but was returned for review because of an error (problem with address, missing printfiles, charging has failed, etc.)."
+  },
+  "paid_options": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "result_channel": {
+   "value": "Webhooks (order_failed, order_put_hold, package_shipped ...) und Bestellstatus",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "\"type\": \"order_failed\","
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "yes",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "All API requests have to be sent to this URL:"
+  },
+  "docs_url": {
+   "value": "https://developers.printful.com/docs/ (OpenAPI zum Download)",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "Download OpenAPI specification:Download"
+  },
+  "auth": {
+   "value": "OAuth: Private Token (eigener Shop) oder Public App; Bearer-Header; X-PF-Store-Id bei Account-Token",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "There are two different ways of using Printful OAuth – Private Token and Public App."
+  },
+  "access": {
+   "value": "Self-Service ueber Developer Portal; Rate Limit 120 Calls/Minute",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "Printful API has a general rate limit of 120 API calls per minute."
+  },
+  "catalog": {
+   "value": "GET /products, /products/{id}, /products/variant/{id}, /products/{id}/sizes, POST /orders/estimate-costs, POST /shipping/rates",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "get/products/variant/{id}"
+  },
+  "order": {
+   "value": "POST /orders legt Draft an, POST /orders/{id}/confirm bzw. confirm=1 uebergibt in Fulfillment; nur bestaetigte Auftraege werden berechnet",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "You are only charged for orders that have been confirmed."
+  },
+  "artwork_handover": {
+   "value": "Pro Position ein files[]-Eintrag mit type (default/front/back/label_inside ...) und url, die Printful herunterlaedt; alternativ POST /files (Dateibibliothek, URL-basiert) und Referenz per id",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "Source URL where the file is downloaded from."
+  },
+  "proof_or_preview": {
+   "value": "Mockup Generator: POST /mockup-generator/create-task/{id}, GET /mockup-generator/task?task_key=...; Druckmasse GET /mockup-generator/printfiles/{id}",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "Returns asynchronous mockup generation task result."
+  },
+  "status_webhooks": {
+   "value": "GET/POST/DELETE /webhooks; nur eine Webhook-URL pro Store; Events u. a. package_shipped, order_failed, order_put_hold, stock_updated, product_synced",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "Note that only one webhook URL can be active for a store, so calling this method disables all existing webhook configuration."
+  },
+  "sandbox": {
+   "value": "kein Sandbox-Shop gelesen; es gibt einen Webhook Simulator; Drafts werden nicht berechnet",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "Webhook Simulator"
+  },
+  "white_label_shipping": {
+   "value": "Packing slip pro Store (Branding) konfigurierbar und pro Auftrag ueberschreibbar; retail_price fuer Lieferschein",
+   "evidence": "F",
+   "source": "https://developers.printful.com/docs/",
+   "quote": "The packing slip fields can be configured at the store level and overridden for a specific order."
+  }
+ },
+ "automation_risks": [
+  "Kein CMYK/PDF-Workflow: Werbemittel-Druckdaten muessen als sRGB-PNG/JPEG in exakt den Pixelmassen je Variante exportiert werden.",
+  "Druckmasse (width/height/dpi/fill_mode) je Produkt nur per API mit Token abrufbar; Exporter muss sie dynamisch lesen statt fest zu codieren.",
+  "Datei-URL muss oeffentlich erreichbar sein, da Printful die Datei selbst herunterlaedt.",
+  "Nur eine Webhook-URL pro Store: Setzen ueberschreibt bestehende Konfiguration (z. B. WooCommerce-Plugin).",
+  "Kein Flyer-, Visitenkarten- oder Bannerprodukt gefunden; Printful deckt nur Sticker/Poster/Textil der Werbemittel ab.",
+  "Sticker-Schnitt folgt dem Motivumriss automatisch; Kontur ist nicht steuerbar, Details nur per Websuche bestaetigt.",
+  "Rate Limit 120 Calls/Minute, Mockup-Generator deutlich niedriger."
+ ]
+}

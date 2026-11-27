@@ -1,0 +1,8 @@
+{"id":"flyer_A","kind":"flyer","label":"Synthetic supplier A - Flyer A6",
+ "trim_mm":[105,148],"bleed_mm":2,"safe_mm":3,
+ "pdfx":"X-4","pdf_version":"1.6","transparency_allowed":true,
+ "icc_target":"PSO Coated v3 (FOGRA51)",
+ "icc_file":"icc/stand_in_A_tac300.icc","output_condition_identifier":"FOGRA39",
+ "output_condition":"STAND-IN: profile built with ArgyllCMS from FOGRA39L.ti3, TAC 300% (real target PSO Coated v3 / FOGRA51 not reachable)",
+ "rendering_intent":"relative","bpc":true,"tac_max":300,
+ "min_ppi":300,"bleed_fill":"cover","text_k":100}

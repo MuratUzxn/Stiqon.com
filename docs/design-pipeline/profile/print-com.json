@@ -1,0 +1,447 @@
+{
+ "supplier": "print-com",
+ "name": "Print.com",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "PDF (Webapp/API: fileUrl zeigt auf eine PDF). Kennisbank: PDF/X-1a oder PDF/X-4; JPEG/PNG/Word nicht fuer Produktion.",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/placeorder.md",
+   "quote": "Optional file URL of pdf to be printed"
+  },
+  "pdf_standard": {
+   "value": "PDF/X-1a oder PDF/X-4 (Kennisbank-Artikel, allgemein formuliert). Preflight-API nutzt PitStop-Profile GWG_SheetCmyk_2015 CMYK bzw. GWG_SheetCmyk_2015 CMYK + RGB.",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/kennisbank/printtechniek/hoe-controleer-ik-of-mijn-bestand-geschikt-is-om-te-laten-drukken/",
+   "quote": "Bestandsformaat: PDF/X-1a of PDF/X-4"
+  },
+  "color_mode": {
+   "value": "CMYK (Sonderfarben nur fuer Weiss, Schnitt-, Rill-, Veredelungsebenen)",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/kennisbank/printtechniek/hoe-controleer-ik-of-mijn-bestand-geschikt-is-om-te-laten-drukken/",
+   "quote": "Kleurmodus: CMYK (geen RGB of Pantone, tenzij specifiek gevraagd)"
+  },
+  "icc_profiles": {
+   "value": "Kein verbindliches Profil dokumentiert. Nur zwei allgemeine Kennisbank-Ratgeber, die sich widersprechen: (a) 'hoe-controleer-ik-of-mijn-bestand-geschikt-is...' : 'ISO Coated v2 300% of PSO Coated v3'; (b) 'hoe-snel-kan-ik-een-bestand-van-rgb-naar-cmyk...' : 'ISO Coated v2 (ECI) of Fogra39 voor gecoat papier, ISO Uncoated voor ongecoat papier'. Beide nennen ISO Coated v2 (FOGRA39-Basis); PSO Coated v3 (FOGRA51) nur (a), Unterscheidung gestrichen/ungestrichen nur (b). Preflight-API prueft gegen PitStop GWG_SheetCmyk_2015 (kein Output-Intent genannt). Verbindliches Profil: Support/Template klaeren.",
+   "evidence": "W",
+   "source": "https://www.print.com/nl/kennisbank/printtechniek/hoe-snel-kan-ik-een-bestand-van-rgb-naar-cmyk-omzetten-voor-aanlevering.md",
+   "quote": "Kleurprofiel: ISO Coated v2 (ECI) of Fogra39 voor gecoat papier, ISO Uncoated voor ongecoat papier",
+   "review": "contradicted: 052.bin (Kennisbank 'hoe controleer ik...') nennt ISO Coated v2 300%/PSO Coated v3, 079.bin nennt ISO Coated v2 (ECI)/Fogra39 + ISO Uncoated; beide sind allgemeine Ratgebertexte ('de meeste drukkers in Europa'), keine Print.com-Vorgabe -> evidence F auf W gesenkt"
+  },
+  "rgb_handling": {
+   "value": "RGB wird laut Kennisbank automatisch nach CMYK konvertiert (ohne Kontrolle ueber die Konvertierung). Ob der Datencheck RGB ablehnt: unbekannt.",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/kennisbank/printtechniek/wat-moet-ik-aanleveren-voor-een-foutloze-digitale-drukorder.md",
+   "quote": "Lever je een RGB-bestand aan, dan converteert de drukkerij dit automatisch naar CMYK"
+  },
+  "min_dpi": {
+   "value": "300 dpi im Endformat (Kennisbank, allgemein); 'voor grote formaten ... kan 150 dpi soms voldoende zijn' (Empfehlung); Spandoek-Artikel: minimaal 150 dpi bei Endmass, Roll-up 300 dpi moeglich. Kein produktbezogener Grenzwert im Datencheck dokumentiert.",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/kennisbank/printtechniek/wat-moet-ik-aanleveren-voor-een-foutloze-digitale-drukorder.md",
+   "quote": "Voor grote formaten zoals banners of posters kan 150 dpi soms voldoende zijn",
+   "review": "150 dpi ist laut 074.bin nur 'soms voldoende' (Empfehlung), nicht Grenzwert; 300 dpi bestaetigt"
+  },
+  "bleed_mm": {
+   "value": "Produktabhaengig: 3 mm Folders/Falzflyer (nl), Doming-Sticker; Fussmatte 5 mm; Re-board 10 mm. Stickerbogen/Stickervellen, kleine Sticker (de/aufkleber-klein, nl/kleine-stickers geprueft 27.11.2026), Etiketten auf Rolle, Flyer (de), Visitenkarten: kein Wert auf der Seite -> nur per Template (/printjobs/templates bzw. workfile).",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/folders-drukken/",
+   "quote": "Upload je drukbestand als PDF met afloop van 3 mm rondom, in CMYK-kleuren en met een resolutie van 300 dpi.",
+   "review": "Wert unveraendert bestaetigt (063/078/065/066.bin); Sticker-Bogen und kleine Sticker nennen keinen Beschnitt (053/055/057.bin, print-com-check/001.bin) - als unbekannt ergaenzt"
+  },
+  "safe_mm": {
+   "value": "3 mm Abstand Text/Logo zur Schnittlinie (Flyer); Kennisbank teils '3 tot 5 mm'.",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/folders-drukken/",
+   "quote": "Houd een veiligheidsmarge van 3 mm aan voor tekst en logo"
+  },
+  "max_ink_pct": {
+   "value": "Nur generisch in der Kennisbank: 'doorgaans 300% tot 320%, afhankelijk van de drukker en het papier' - kein Print.com-Grenzwert",
+   "evidence": "W",
+   "source": "https://www.print.com/nl/kennisbank/printtechniek/wat-moet-ik-aanleveren-voor-een-foutloze-offsetdrukorder/"
+  },
+  "fonts": {
+   "value": "Alle Schriften einbetten oder in Pfade wandeln",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/kennisbank/printtechniek/wat-moet-ik-aanleveren-voor-een-foutloze-digitale-drukorder.md",
+   "quote": "alle lettertypen ingebed of omgezet naar outlines"
+  },
+  "min_font_pt": {
+   "value": "unbekannt (allgemein). Nur fuer Folie/Spotveredelung bei Klebebroschur: Text mindestens 15 pt.",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/brochure-gelijmd/",
+   "quote": "houd bij teksten minstens 15 pt aan"
+  },
+  "min_line_pt": {
+   "value": "Schnitt-/Rill-/Perforationslinien 0,25 pt; Spot-UV/Folie min. 0,25 mm Linienstaerke. Minimale druckbare Linienstaerke allgemein: unbekannt.",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/folders-drukken/",
+   "quote": "Gebruik een lijndikte van 0,25 pt."
+  },
+  "transparency": {
+   "value": "Kennisbank widerspruechlich: Pruefartikel (052.bin) 'Transparanties: afgevlakt of verwerkt' und 'geen ... niet-afgevlakte transparanties'; Offset-/Digitaldruck-Artikel (062/074.bin): 'PDF/X-4 ondersteunt wel transparanties'. Ob die Produktion live-Transparenz in PDF/X-4 annimmt: unbekannt.",
+   "evidence": "W",
+   "source": "https://www.print.com/nl/kennisbank/printtechniek/hoe-controleer-ik-of-mijn-bestand-geschikt-is-om-te-laten-drukken/",
+   "quote": "Transparanties: afgevlakt of verwerkt",
+   "review": "contradicted: 052.bin verlangt abgeflachte Transparenzen, 062/074.bin erlauben sie bei PDF/X-4; beides Ratgebertexte -> W"
+  },
+  "spot_colors": {
+   "value": "Sonderfarben-Ebenen auf Ueberdrucken mit festen Namen: White, CutContour bzw. Thrucut/Kisscut, Creasing, Perforation, Drilling, Numbering, Scodix Spot/Foil. Pantone nur wenn bestellt.",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/folders-drukken/",
+   "quote": "Per bewerking maak je een eigen laag met steunkleur op overdruk en de juiste naam: Creasing (variabele rillijn), Perforation, Drilling (boorgaten), Thrucut (contoursnijden) en Kisscut."
+  },
+  "pages_and_sides": {
+   "value": "Ein PDF; bei Broschueren Inhalt als Einzelseiten, Umschlag als Druckbogen; keine Schnittmarken. Preflight-Template prueft je PDF-Seite in Reihenfolge. Mehrere Motive: designs[] (eine Datei je Design mit copies).",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/brochure-gelijmd/",
+   "quote": "Je levert het binnenwerk aan als"
+  },
+  "max_file_mb": {
+   "value": "1 GB (seit 16.11.2025, vorher 500 MB; einzelne Produktseiten nennen noch 500 MB). Gilt fuer Webapp-Upload; fuer API-fileUrl nicht dokumentiert.",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/appdates/",
+   "quote": "Deze week is de maximale bestandsgrootte verhoogd van 500 MB naar 1 GB."
+  }
+ },
+ "products": [
+  {
+   "family": "sticker",
+   "product": "Stickerbogen / Stickervellen (Kiss Cut)",
+   "sizes": "8 Standardformate oder eigenes Format",
+   "materials": "Papier (u.a. 70 g HVO Offset), 112 g Vinyl weiss, 55 g PP weiss glanz/matt, Silberglanz",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "Jeder Sticker = eine Konturlinie in Volltonfarbe 'Kiss Cut', CMYK 0/100/0/0 (100% Magenta); Anzahl Konturlinien im Bestellformular angeben. Strichstaerke/Ueberdrucken hier nicht genannt (Falzflyer-FAQ: 0,25 pt, Ueberdrucken).",
+   "white": "5/0 CMYK + Weiss waehlbar (055/057.bin, nl 053.bin '5/0 Full colour + wit'). Name/Aufbau der Weiss-Volltonfarbe fuer Stickerbogen NICHT auf der Seite; 'White' ist nur fuer Doming und Folders belegt -> im SKU-Template pruefen.",
+   "template": "Webapp (Login) bzw. API POST /products/{sku}/workfile",
+   "notes": "Liefertermin: Datei vor 18:00 hochladen. Beschnitt fuer Bogen nicht auf der Seite genannt -> Template. Achtung Schnittfarbe hier 'Kiss Cut' (mit Leerzeichen, 0/100/0/0), auf Folders 'Kisscut'/'Thrucut', auf Doming/Fussmatte 'CutContour'. 053.bin ist die nl-Seite (stickervellen), nicht de.",
+   "evidence": "F",
+   "source": "https://www.print.com/de/stickerbogen-drucken/",
+   "quotes": [
+    {
+     "quote": "Die Volltonfarbe hat den CMYK-Wert 0/100/0/0 (100% Magenta). Gib der Schmuckfarbe den Namen „Kiss Cut“."
+    },
+    {
+     "quote": "Elke sticker op het stickervel wordt gevormd door een contourlijn."
+    }
+   ],
+   "review": "wrong-scope: Weissbenennung 'White' war von Doming/Folders uebertragen; fuer Stickerbogen nur die Option 5/0 belegt"
+  },
+  {
+   "family": "sticker",
+   "product": "Doming-Sticker (Vorlage fuer Sticker mit eigener Form/transparentem Material)",
+   "sizes": "18 Standardformate oder eigenes Format/eigene Form, ab 10 Stk.",
+   "materials": "u.a. transparente Materialien",
+   "bleed_mm": 3,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "Eigene Form: Konturlinie als Volltonfarbe 'CutContour'",
+   "white": "Transparent + 5/0: Weisslage als separate Volltonfarbe 'White'",
+   "template": "Templates in der Bestell-App downloadbar",
+   "notes": "Option 'Zeker' = manuelle Dateipruefung vor Produktion",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/doming-stickers/",
+   "quotes": [
+    {
+     "quote": "Lever dan ook een contourlijn aan als steunkleur met de naam “CutContour”."
+    },
+    {
+     "quote": "Geef dan aan waar de witlaag moet komen met een aparte steunkleur “White”."
+    }
+   ]
+  },
+  {
+   "family": "sticker",
+   "product": "Etiketten auf Rolle",
+   "sizes": "Rund Ø 30-130 mm, A6-A8 u.a. Standardformate oder individuell",
+   "materials": "14 Materialien, u.a. 70 g Papier matt, 80 g Papier glanz, 55 g PP weiss, 50 g PP transparent",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "Standardformen ohne eigene Kontur; 'Eigene Form (1 Konturlinie)'",
+   "white": "5/0 CMYK + Weiss waehlbar (068.bin). Name/Aufbau der Weiss-Volltonfarbe fuer Rolle nicht belegt (Doming-Regel 'White' nicht uebertragbar) -> Template.",
+   "template": "Webapp / API workfile",
+   "notes": "Standard-Service: automatische Dateipruefung; Extra: zusaetzliche manuelle Pruefung",
+   "evidence": "F",
+   "source": "https://www.print.com/de/etiketten-auf-rolle/",
+   "quotes": [
+    {
+     "quote": "Eigene Form (1 Konturlinie)"
+    },
+    {
+     "quote": "Standard Service: automatische Dateiprüfung"
+    }
+   ],
+   "review": "wrong-scope: 'Regel wie Doming' entfernt; fuer Rolle nur die Option 5/0 belegt"
+  },
+  {
+   "family": "sticker",
+   "product": "Holografische Sticker",
+   "sizes": "unbekannt",
+   "materials": "Holofolie",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "Through-cut, Kiss cut, Kiss cut mit Applikationsfolie; Schnittlinien als Volltonfarbe 'volgens de aanleverspecificaties'",
+   "white": "Weiss per Volltonfarbe selbst platzieren (5/0)",
+   "template": "Webapp",
+   "notes": "Name der Schnittfarbe hier nicht genannt",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/holografische-stickers/",
+   "quotes": [
+    {
+     "quote": "Voor contoursnijden lever je de snijlijnen aan als steunkleur volgens de aanleverspecificaties."
+    },
+    {
+     "quote": "Bij print met wit bepaal je zelf waar de witte inkt wordt toegepast via een steunkleur in het bestand."
+    }
+   ]
+  },
+  {
+   "family": "falzflyer",
+   "product": "Folders / Flyer (nl folders-drukken)",
+   "sizes": "Standard- und Eigenformate",
+   "materials": "u.a. Bilderdruck, Silk mc, Spezialpapiere",
+   "bleed_mm": 3,
+   "safe_mm": 3,
+   "dpi": 300,
+   "contour": "Thrucut / Kisscut als eigene Ebene, Volltonfarbe auf Ueberdrucken, 0,25 pt",
+   "white": "Dekwit: oberste Ebene Volltonfarbe 'White' auf Ueberdrucken, darunter gleiche Form C0 M0 Y0 K0 ausgespart; >=1 mm Abstand zu Schnitt/Rillung; Vektor, keine Schnittmasken",
+   "template": "Werktekeningen in der Bestell-App (Falz- und Schnittlinien)",
+   "notes": "Standardrillung setzt Print.com; nur variable Rillen markieren. Nummerierung via Volltonfarbe 'Numbering' + Excel per Mail (nicht API-tauglich).",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/folders-drukken/",
+   "quotes": [
+    {
+     "quote": "Upload je drukbestand als PDF met afloop van 3 mm rondom, in CMYK-kleuren en met een resolutie van 300 dpi."
+    },
+    {
+     "quote": "Maak een aparte bovenste laag met steunkleur “White” op overdruk."
+    },
+    {
+     "quote": "In onze bestelapp kun je werktekeningen downloaden"
+    }
+   ]
+  },
+  {
+   "family": "flyer",
+   "product": "Flyer (de)",
+   "sizes": "Standardformate (u.a. A-Formate) oder eigenes Format",
+   "materials": "viele Papiere, farbige Papiere mit weisser Tinte, Sirio Metallic",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "5/0 bzw. 5/5 CMYK + Weiss waehlbar",
+   "template": "Webapp / API workfile",
+   "notes": "Deutsche Produktseite nennt keine Datenspezifikation; Werte wie nl-Folders (3 mm/3 mm/300 dpi) vermutlich, aber per Template pruefen.",
+   "evidence": "F",
+   "source": "https://www.print.com/de/flyer/",
+   "quotes": [
+    {
+     "quote": "5/5-farbig CMYK + Weiß"
+    }
+   ]
+  },
+  {
+   "family": "visitenkarte",
+   "product": "Visitekaartjes drukken",
+   "sizes": "4 Standardgroessen oder eigenes Format",
+   "materials": "unbekannt",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "Webapp / API workfile",
+   "notes": "Produktseite ohne Datenspezifikation -> Template abrufen",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/product/visitekaartjes-drukken/",
+   "quotes": [
+    {
+     "quote": "Afmetingen: 4 standaardafmeting of een eigen formaat"
+    }
+   ]
+  },
+  {
+   "family": "banner",
+   "product": "Spandoek bedrukken (Banner)",
+   "sizes": "frei",
+   "materials": "u.a. Mesh 270 g, Frontlit 510 g",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": 150,
+   "contour": "",
+   "white": "",
+   "template": "Webapp / API workfile",
+   "notes": "Saeume/Tunnel/Oesen als Option (Tunnelzoom 4-12 cm) - Beschnitt/Saumzugabe unbekannt; 150 dpi laut Kennisbank (Artikel enthaelt Rechenfehler, nicht als Grenzwert nutzen).",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/kennisbank/spandoeken-banners/wat-is-de-minimale-resolutie-voor-spandoek-ontwerpen.md",
+   "quotes": [
+    {
+     "quote": "heb je minimaal 150 DPI nodig bij de uiteindelijke printmaat"
+    },
+    {
+     "quote": "Tunnelzoom 4 cm (plat)"
+    }
+   ]
+  },
+  {
+   "family": "schild",
+   "product": "Re-board",
+   "sizes": "max. 301 x 156 cm",
+   "materials": "Wabenkarton 10/16 mm",
+   "bleed_mm": 10,
+   "safe_mm": null,
+   "dpi": 300,
+   "contour": "Konturlinie 0,25 pt, Volltonfarbe auf Ueberdrucken mit Namen aus Volltonfarbbibliothek; min. 20 mm zwischen Konturen; ThruCut +10 mm Schnittrand",
+   "white": "",
+   "template": "Webapp",
+   "notes": "1000x1000 mm wird als 1020x1020 mm angeliefert",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/re-board/",
+   "quotes": [
+    {
+     "quote": "met 10 mm afloop rondom"
+    },
+    {
+     "quote": "Houd minimaal 20 mm ruimte tussen contourlijnen"
+    }
+   ]
+  },
+  {
+   "family": "sonstiges",
+   "product": "Deurmat bedrukken (Fussmatte)",
+   "sizes": "60x40, 80x50, 100x60, 100x80 cm oder eigene Form",
+   "materials": "Fussmatte",
+   "bleed_mm": 5,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "Eigene Form: separate Volltonfarbe 'CutContour'",
+   "white": "",
+   "template": "Webapp",
+   "notes": "Belegt: Schnittfarbe heisst je nach Produkt CutContour oder Thrucut/Kisscut",
+   "evidence": "F",
+   "source": "https://www.print.com/nl/deurmat-bedrukken/",
+   "quotes": [
+    {
+     "quote": "inclusief afloop van 5 mm"
+    }
+   ]
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Ja: (automatische) Pruefung nach Upload gegen die Anlieferspezifikationen; Webapp gibt direkt Feedback. Kein Check von Design, Text, Farbdeckung, Position, Ueberdrucken u.a.",
+   "evidence": "F",
+   "source": "https://www.print.com/en/our-rules/",
+   "quote": "Print.com performs an (automatic) check after the submitted files have been sent."
+  },
+  "auto_corrections": {
+   "value": "Webapp/Order: autoscale (Standard 'down'; up/all/none); Preflight-API wendet Korrekturen an 'when possible' und liefert modifiziertes PDF. Welche Korrekturen genau: unbekannt.",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/pdf-preflight-1.md",
+   "quote": "Solutions for found issues are applied when possible."
+  },
+  "rejection_reasons": {
+   "value": "Status DESIGNREJECTED (durch Print.com-Dateipruefer), DESIGNWARNING, MANUALCHECK. Konkrete Ablehnungskriterien nicht dokumentiert; Kennisbank nennt fehlenden Beschnitt, RGB, <300 dpi, nicht eingebettete Fonts, falsches Format.",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/order-status.md",
+   "quote": "designrejected - The design of the order (item) is rejected by a Print.com file checker."
+  },
+  "paid_options": {
+   "value": "Service-Level Extra (bzw. 'Zeker'): zusaetzliche manuelle Dateipruefung; Preis unbekannt.",
+   "evidence": "F",
+   "source": "https://www.print.com/de/etiketten-auf-rolle/",
+   "quote": "Extra: zusätzliche manuelle Prüfung deiner Datei"
+  },
+  "result_channel": {
+   "value": "Order-Item-Status via GET /orders/{orderNumber} bzw. Webhook (nur 3 Ereignisse: Bestellung, ACCEPTEDBYSUPPLIER, SHIPPED - Design-Status nicht per Webhook). Bei Premium File Check E-Mail-Bestaetigung nach Pruefung/Freigabe (Appdates 29.09.2024).",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/order-status.md",
+   "quote": "For each order, three messages are supported:"
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "yes",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/introduction.md",
+   "quote": "Print.com offers three REST APIs"
+  },
+  "docs_url": {
+   "value": "https://developer.print.com/llms.txt",
+   "evidence": "F",
+   "source": "https://developer.print.com/llms.txt"
+  },
+  "auth": {
+   "value": "Header authorization: PrintApiKey <key> (Key in app.print.com/account) oder Bearer-Token aus POST https://api.print.com/login (168 h)",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/accounts-authentication.md",
+   "quote": "Header value: `PrintApiKey <your-api-key>`"
+  },
+  "access": {
+   "value": "Print.com-Kundenkonto (Webapp, 'Exklusiv fuer Druckprofis', Anmeldung kostenlos); separater API-User empfohlen; Staging-Konto separat per Mail anfragen; Support nur Englisch. Ob/wie die Registrierung geprueft wird: nicht belegt.",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/introduction.md",
+   "quote": "The Print.com API requires a Print.com customer account.",
+   "review": "unsupported-Teil entfernt: 'Registrierung wird geprueft' steht nicht in 004/005/072.bin; 'kostenlos'/'Exklusiv fuer Druckprofis' aus 071/072.bin"
+  },
+  "catalog": {
+   "value": "GET /products, /products/{sku}, POST /products/{sku}/price, POST /products/{sku}/workfile (liefert ZIP-URLs der Workfiles); Platform API (https://platform.print.com): /products/batch/specs, Batch-Preise, POST /printjobs/templates (Seitenmasse, Overlays, bleed und safety in mm je Konfiguration).",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/generate-template.md",
+   "quote": "Generates a production template from a product configuration."
+  },
+  "order": {
+   "value": "POST /orders mit items[] (sku, options, fileUrl oder designs[], fileOptions, approveDesign, senderAddress, shipments[]), billingAddress, optional webhookUrl",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/orders.md",
+   "quote": "To place on order, the following data is needed:"
+  },
+  "artwork_handover": {
+   "value": "Per URL, die Print.com abruft: items[].fileUrl (PDF, http/https) ODER designs[] = [{fileUrl, copies}] (eine Datei je Design, gegenseitig exklusiv). Kein Multipart beim Order. fileOptions.isProduction (Pflicht im Schema), autoscale. Achtung: Order wird auch platziert, wenn URL nicht erreichbar.",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/placeorder.md",
+   "quote": "Order will still be placed if this url wasn't available"
+  },
+  "proof_or_preview": {
+   "value": "Platform API: POST /pdf/preflight (JSON-Location oder Multipart-Upload, Profil GWG_SheetCmyk_2015, Template mit Massen je Seite, Toleranz 0,1 mm), GET /pdf/preflight/{id}, /pdf/preview/{file} (Bitmap), /printjobs/templates. approveDesign=false erfordert explizite Freigabe im Studio.",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/pdf-preflight-1.md",
+   "quote": "The request should contain either JSON with a location to find the PDF document to preflight, or a direct (multipart) upload of the document."
+  },
+  "status_webhooks": {
+   "value": "webhookUrl im Order-Root; Event ORDER_STATUS_CHANGED; nur Bestellung, ACCEPTEDBYSUPPLIER, SHIPPED; Tracking ueber fields=item.trackingUrl",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/order-status.md",
+   "quote": "Simply add a webhookURL to the root of an order and receive messages when the status of the order changes."
+  },
+  "sandbox": {
+   "value": "Staging https://api.stg.print.com, separates Konto, alle 24 h zurueckgesetzt (API-Keys/Presets verfallen), Orders nicht produziert/berechnet. Auf Staging folgt der Orderstatus nicht der Produktion; einzige Statusaenderung ist die Freigabe bei approveDesign:false -> Webhooks fuer Produktion/Versand dort nicht testbar.",
+   "evidence": "F",
+   "source": "https://developer.print.com/reference/introduction.md",
+   "quote": "Staging requires a separate account and is reset every 24 hours.",
+   "review": "Ergaenzt aus 004.bin: Staging-Status folgt nicht der Produktion (wichtig fuer Webhook-Tests)"
+  },
+  "white_label_shipping": {
+   "value": "Neutrale Kartons, neutrales Track&Trace, Absenderadresse frei (senderAddress), Logo auf Packzettel via senderAddress.stickySlipImageUrl (kostenlos, s/w). Lieferung nach DE: Webapp/Seite DE vorhanden; Laenderliste per /shipping/shippable-countries.",
+   "evidence": "F",
+   "source": "https://www.print.com/de/lieferung/",
+   "quote": "Auf unseren weißen Versandkartons findest du keinen Hinweis auf Print.com."
+  }
+ },
+ "automation_risks": [
+  "fileUrl ist optional und der Auftrag wird auch angelegt, wenn die URL nicht abrufbar ist - Pipeline muss URL-Verfuegbarkeit selbst sichern und Status DESIGNADDED/DESIGNREJECTED pruefen.",
+  "Webhooks melden nur Bestellung, ACCEPTEDBYSUPPLIER und SHIPPED - DESIGNREJECTED/MANUALCHECK nur per Polling von GET /orders/{orderNumber}.",
+  "Kein verbindliches ICC-Profil je Papier dokumentiert; Kennisbank-Angaben widersprechen sich (ISO Coated v2 300%/PSO Coated v3 vs. ISO Coated v2 ECI/Fogra39) - Profil beim Support klaeren.",
+  "Namen der Schnitt-Volltonfarbe variieren je Produkt (Kiss Cut mit 0/100/0/0, CutContour, Thrucut/Kisscut) - Exporter braucht Mapping je SKU, am besten aus /products/{sku}/workfile bzw. /printjobs/templates.",
+  "Beschnitt variiert je Produkt (3/5/10 mm) und ist fuer viele Produkte (Bogen, Rolle, Visitenkarte, Banner) nicht oeffentlich - pro Konfiguration POST /printjobs/templates abfragen (Felder bleed/safety in mm) statt fester Werte.",
+  "Kein dokumentiertes Dateigroessenlimit und keine Mindest-Schriftgroesse/Linienstaerke allgemein.",
+  "Higgsfield liefert RGB-Raster: CMYK-Konvertierung, 300 dpi im Endformat und Vektor-Sonderfarbebenen (White, Kontur) muessen in einem eigenen Prepress-Schritt erzeugt werden.",
+  "Nummerierung/Personalisierung laeuft per Excel-Mail an files@print.com - nicht vollautomatisierbar.",
+  "Produktionsorders sind echt und werden berechnet; Staging wird taeglich zurueckgesetzt und braucht eigenes Konto.",
+  "Gegenpruefung 27.11.2026: Weiss-Volltonfarbe 'White' ist nur fuer Doming-Sticker und Folders/Flyer-FAQ belegt; fuer Stickerbogen, Rolle und kleine Sticker unbekannt."
+ ]
+}
