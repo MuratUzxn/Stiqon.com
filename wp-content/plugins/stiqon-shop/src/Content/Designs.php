@@ -2,7 +2,6 @@
 
 namespace Stiqon\Shop\Content;
 
-use WP_Error;
 use WP_Post;
 use WP_Query;
 use WP_Term;
@@ -76,7 +75,6 @@ final class Designs
         add_action('deleted_post', [self::class, 'forgetShown']);
         add_filter('wp_sitemaps_post_types', [self::class, 'notInSitemap']);
         add_filter('rest_'.self::TYPE.'_query', [self::class, 'restQuery']);
-        add_filter('rest_prepare_'.self::TYPE, [self::class, 'restItem'], 10, 2);
         add_filter('oembed_request_post_id', [self::class, 'noEmbed']);
         add_filter('use_block_editor_for_post_type', [self::class, 'classicForm'], 10, 2);
         add_action('edit_form_after_title', [self::class, 'hint']);
@@ -117,6 +115,7 @@ final class Designs
             'exclude_from_search' => true,
             'show_in_nav_menus' => false,
             'show_in_rest' => true,
+            'rest_controller_class' => DesignsRest::class,
             'has_archive' => self::ARCHIVE,
             'rewrite' => ['slug' => self::ARCHIVE, 'with_front' => false, 'feeds' => false],
             'menu_position' => 27,
@@ -468,19 +467,6 @@ final class Designs
         }
 
         return $arguments;
-    }
-
-    /**
-     * A single design asked for through the interface: unknown unless shown, or
-     * asked for by someone who may edit it.
-     */
-    public static function restItem(mixed $response, mixed $post): mixed
-    {
-        if ($post instanceof WP_Post && ! self::isShown($post->ID) && ! current_user_can('edit_post', $post->ID)) {
-            return new WP_Error('rest_post_invalid_id', 'Ungültige Beitrags-ID.', ['status' => 404]);
-        }
-
-        return $response;
     }
 
     /**
