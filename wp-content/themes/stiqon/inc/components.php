@@ -1,6 +1,7 @@
 <?php
 /**
- * The theme's building blocks: icon, button, chip, section heading, logo.
+ * The theme's building blocks: icon, button, chip, segments and tabs, cards,
+ * section heading, logo.
  *
  * Each function returns finished markup – everything variable is escaped
  * inside – so templates print the result as it is.
@@ -161,6 +162,75 @@ function stiqon_chip(string $label, array $options = []): string
     }
 
     return '<button type="button" aria-pressed="'.($active ? 'true' : 'false').'" class="'.esc_attr($classes).'"'.$attributes.'>'.esc_html($label).'</button>';
+}
+
+/**
+ * A segmented control as on mobbin.com ("iOS | Web"): links on a grey track,
+ * the current one a white pill. It switches between views of the same kind –
+ * the areas, a filter – and works without script, because every segment is a
+ * link. The current one carries aria-current="page", and the look follows it.
+ *
+ * @param  list<array{label: string, url: string, current: bool}>  $items
+ */
+function stiqon_segments(array $items, string $label, string $class = ''): string
+{
+    $html = '<nav aria-label="'.esc_attr($label).'" class="'.esc_attr(stiqon_classes(['inline-flex shrink-0 items-center rounded-full bg-mist p-1', $class])).'">';
+
+    foreach ($items as $item) {
+        $html .= '<a href="'.esc_url($item['url']).'"'.($item['current'] ? ' aria-current="page"' : '')
+            .' class="text-action inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full px-4 text-sm text-muted transition-colors duration-200 ease-soft hover:text-ink aria-[current=page]:bg-paper aria-[current=page]:text-ink">'
+            .esc_html($item['label']).'</a>';
+    }
+
+    return $html.'</nav>';
+}
+
+/**
+ * Text tabs as on mobbin.com ("Latest | Most popular"): the current one in ink
+ * and underlined, the others grey. Links, like the segments above.
+ *
+ * @param  list<array{label: string, url: string, current: bool}>  $items
+ */
+function stiqon_tabs(array $items, string $label, string $class = ''): string
+{
+    $html = '<nav aria-label="'.esc_attr($label).'" class="'.esc_attr(stiqon_classes(['flex shrink-0 items-center gap-5', $class])).'">';
+
+    foreach ($items as $item) {
+        $html .= '<a href="'.esc_url($item['url']).'"'.($item['current'] ? ' aria-current="page"' : '')
+            .' class="text-action relative inline-flex h-11 shrink-0 items-center whitespace-nowrap text-[0.9375rem] text-muted transition-colors duration-200 ease-soft hover:text-ink'
+            .' aria-[current=page]:text-ink aria-[current=page]:after:absolute aria-[current=page]:after:inset-x-0 aria-[current=page]:after:bottom-1 aria-[current=page]:after:h-0.5 aria-[current=page]:after:rounded-full aria-[current=page]:after:bg-ink">'
+            .esc_html($item['label']).'</a>';
+    }
+
+    return $html.'</nav>';
+}
+
+/**
+ * One design in a list: its preview fitted into a grey panel, the title, and
+ * medium and occasion. As on the product cards, the link is the title alone,
+ * stretched over the whole card.
+ *
+ * @param  array{id: int, title: string, url: string, image: int, medium: ?array{slug: string, name: string}, occasion: ?array{slug: string, name: string}}  $design
+ * @param  bool  $first  among the first in the list: its picture is fetched right away
+ */
+function stiqon_design_card(array $design, bool $first = false): string
+{
+    // WordPress writes the tag, with the sizes it has of the picture.
+    $picture = wp_get_attachment_image($design['image'], 'stiqon-design', false, [
+        'class' => 'size-full object-contain',
+        'alt' => '',
+        'loading' => $first ? 'eager' : 'lazy',
+        'sizes' => '(min-width: 64rem) 22rem, 46vw',
+    ]);
+
+    $details = array_filter([$design['medium']['name'] ?? null, $design['occasion']['name'] ?? null]);
+
+    return '<li class="group relative">'
+        .'<div class="aspect-[4/5] rounded-card bg-mist p-[12%] transition-colors duration-200 ease-soft group-hover:bg-mist-deep">'.$picture.'</div>'
+        .'<h3 class="mt-3 font-semibold"><a href="'.esc_url($design['url']).'" class="outline-none after:absolute after:inset-0 after:z-10 after:rounded-card focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-ink">'
+        .esc_html($design['title']).'</a></h3>'
+        .($details !== [] ? '<p class="text-label text-muted">'.esc_html(implode(' · ', $details)).'</p>' : '')
+        .'</li>';
 }
 
 /**

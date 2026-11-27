@@ -1,15 +1,17 @@
 <?php
 /**
- * Opens every page: document head, skip link and the header with the areas (and
- * the references, once there are any), the search, the motif button, the cart
- * and the menu for small screens.
+ * Opens every page: document head, skip link and the header with the two
+ * registers of the site – "Design" and "Produkte", as mobbin.com has "Apps" and
+ * "Sites" – the search, the motif button, the cart and the menu for small
+ * screens. The areas and the references are in the menu and in the footer; an
+ * area page links the other one itself.
  */
 
 defined('ABSPATH') || exit;
 
+$registers = stiqon_registers();
 $areas = stiqon_navigation();
 $cart = stiqon_cart_link();
-$link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-offset-[6px] decoration-2 transition-opacity duration-200 hover:opacity-60';
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -34,12 +36,14 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
             <?php echo stiqon_logo(['class' => 'h-8 w-auto']); ?>
         </a>
 
-        <nav aria-label="Hauptnavigation" class="hidden items-center md:flex">
-            <?php foreach ($areas as $area) : ?>
+        <?php // As on the model: plain words, the current register in ink, the other in grey – no underline, no pill. ?>
+        <?php // Below 768 px they do not fit beside search, cart and menu with room to tap; there they open the menu. ?>
+        <nav aria-label="Hauptnavigation" class="hidden items-center gap-1 md:flex lg:ml-2">
+            <?php foreach ($registers as $register) : ?>
                 <a
-                    href="<?php echo esc_url($area['url']); ?>"<?php echo $area['current'] ? ' aria-current="page"' : ''; ?>
-                    class="<?php echo esc_attr(stiqon_classes([$link, 'underline' => $area['current']])); ?>"
-                ><?php echo esc_html($area['label']); ?></a>
+                    href="<?php echo esc_url($register['url']); ?>"<?php echo $register['current'] !== null ? ' aria-current="'.esc_attr($register['current']).'"' : ''; ?>
+                    class="<?php echo esc_attr(stiqon_classes(['text-action inline-flex h-11 items-center rounded-full px-2.5 text-[1.0625rem] transition-colors duration-200 ease-soft', 'text-ink' => $register['current'] !== null, 'text-muted hover:text-ink' => $register['current'] === null])); ?>"
+                ><?php echo esc_html($register['label']); ?></a>
             <?php endforeach; ?>
         </nav>
 
@@ -83,6 +87,15 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
                 </summary>
                 <div class="absolute inset-x-0 top-full rounded-b-card bg-paper pb-2 shadow-[0_24px_32px_-16px_rgb(0_0_0/0.18)]">
                     <nav aria-label="Hauptnavigation" class="wrap flex flex-col gap-1 pt-1 pb-4">
+                        <?php // The registers first, large, as in the header; then what lies within the products, and beside them. ?>
+                        <div class="mb-2 flex flex-col">
+                            <?php foreach ($registers as $register) : ?>
+                                <a
+                                    href="<?php echo esc_url($register['url']); ?>"<?php echo $register['current'] !== null ? ' aria-current="'.esc_attr($register['current']).'"' : ''; ?>
+                                    class="<?php echo esc_attr(stiqon_classes(['text-heading flex h-13 items-center rounded-control px-4 text-[1.625rem] hover:bg-mist', 'text-ink' => $register['current'] !== null, 'text-muted' => $register['current'] === null])); ?>"
+                                ><?php echo esc_html($register['label']); ?></a>
+                            <?php endforeach; ?>
+                        </div>
                         <?php foreach ($areas as $area) : ?>
                             <a
                                 href="<?php echo esc_url($area['url']); ?>"<?php echo $area['current'] ? ' aria-current="page"' : ''; ?>

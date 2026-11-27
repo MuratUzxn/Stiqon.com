@@ -60,7 +60,7 @@ add_action('wp_enqueue_scripts', function (): void {
 }, 20);
 
 /**
- * The page's script fetches the behaviour of gallery and product pages on
+ * The page's script fetches the behaviour of gallery, product and design pages on
  * demand (see assets/src/js/app.js). Told about it up front, the browser
  * fetches that file alongside the main script instead of after it.
  */
@@ -68,6 +68,7 @@ add_action('wp_head', function (): void {
     $source = match (true) {
         function_exists('is_product') && is_product() => 'assets/src/js/product.js',
         is_page(array_keys(stiqon_required_pages())) => 'assets/src/js/gallery.js',
+        is_singular('stiqon_design') => 'assets/src/js/design.js',
         default => null,
     };
 

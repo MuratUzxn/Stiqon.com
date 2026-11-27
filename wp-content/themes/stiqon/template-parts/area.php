@@ -1,10 +1,11 @@
 <?php
 /**
  * An area of the shop (Sticker, Flyer), laid out like a category page of
- * mobbin.com: path, large centred title, a sentence, filters as pills, then a
- * dense grid of cards – one per product and material or paper.
+ * mobbin.com: a segmented control to the other area, large centred title, a
+ * sentence, filters as pills, then a dense grid of cards – one per product and
+ * material or paper.
  *
- * @var array{name: string, lead: string, category: string, other: array{label: string, url: string}} $args
+ * @var array{name: string, lead: string, category: string} $args
  */
 
 defined('ABSPATH') || exit;
@@ -33,18 +34,12 @@ $shown = count(array_filter($gallery['cards'], $matches));
 $count = $shown === $total ? sprintf('%d Ausführungen', $total) : sprintf('%d von %d Ausführungen', $shown, $total);
 ?>
 <section class="wrap pt-8 pb-10 text-center lg:pt-14 lg:pb-12">
-    <nav aria-label="Pfad" class="text-label text-muted">
-        <ol class="flex items-center justify-center gap-1.5">
-            <li><a href="<?php echo esc_url(home_url('/')); ?>" class="rounded-sm transition-colors hover:text-ink">Start</a></li>
-            <li aria-hidden="true">›</li>
-            <li aria-current="page" class="text-ink"><?php echo esc_html($args['name']); ?></li>
-        </ol>
-    </nav>
-    <h1 class="text-display mt-4"><?php echo esc_html($args['name']); ?></h1>
+    <?php // The header names the registers only; the areas switch here, like the model's "iOS | Web". ?>
+    <?php echo stiqon_segments(array_map(static fn (array $area): array => ['label' => $area['label'], 'url' => $area['url'], 'current' => $area['current']], stiqon_areas()), 'Bereiche'); ?>
+    <h1 class="text-display mt-6 lg:mt-8"><?php echo esc_html($args['name']); ?></h1>
     <p class="text-lead mx-auto mt-6 max-w-xl text-muted"><?php echo esc_html($args['lead']); ?></p>
     <div class="mt-8 flex flex-wrap items-center justify-center gap-2">
         <?php echo stiqon_motif_button('Motiv wählen'); ?>
-        <?php echo stiqon_button(esc_html($args['other']['label']), ['variant' => 'secondary', 'href' => $args['other']['url']]); ?>
     </div>
 </section>
 

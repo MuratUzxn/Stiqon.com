@@ -52,8 +52,8 @@ function stiqon_areas(): array
 }
 
 /**
- * What the header and the footer link to: the areas and, once there is one to
- * show, the references.
+ * What the footer and the menu for small screens link to below the registers:
+ * the areas and, once there is one to show, the references.
  *
  * @return list<array{slug: string, label: string, url: string, current: bool}>
  */
@@ -67,6 +67,89 @@ function stiqon_navigation(): array
     }
 
     return $items;
+}
+
+/**
+ * Which register of the site a page belongs to, as on mobbin.com, whose
+ * header switches between "Apps" and "Sites": "design" for the list of designs
+ * and a design's page; "produkte" for everything that sells – the home page,
+ * the areas, products, search, cart, checkout and account. Null for pages of
+ * neither: written pages, the references, "not found", and the announcement
+ * while it stands in for a page of the shop.
+ */
+function stiqon_current_register(): ?string
+{
+    if (is_404() || stiqon_announcement_is_shown()) {
+        return null;
+    }
+
+    if (is_post_type_archive('stiqon_design') || is_singular('stiqon_design')) {
+        return 'design';
+    }
+
+    if (is_front_page() || is_search() || is_page(array_keys(stiqon_required_pages()))
+        || (function_exists('is_product') && is_product()) || stiqon_is_woocommerce_page()) {
+        return 'produkte';
+    }
+
+    return null;
+}
+
+/**
+ * The two registers of the header. "current" is the value of aria-current:
+ * "page" on the register's own start – the unfiltered list of designs, the
+ * home page – "true" elsewhere inside it, null outside. Without the plugin
+ * there are no designs, and the header offers the products alone.
+ *
+ * @return list<array{slug: string, label: string, url: string, current: ?string}>
+ */
+function stiqon_registers(): array
+{
+    $current = stiqon_current_register();
+    $registers = [];
+
+    if (post_type_exists('stiqon_design') && function_exists('stiqon_designs_url')) {
+        $start = is_post_type_archive('stiqon_design') && ! is_paged() && array_filter(stiqon_designs()['selection']) === [];
+
+        $registers[] = [
+            'slug' => 'design',
+            'label' => 'Design',
+            'url' => stiqon_designs_url(),
+            'current' => $current === 'design' ? ($start ? 'page' : 'true') : null,
+        ];
+    }
+
+    $registers[] = [
+        'slug' => 'produkte',
+        'label' => 'Produkte',
+        // The shop's start is where the products begin; mobbin.com's logo, too, leads into a register.
+        'url' => home_url('/'),
+        'current' => $current === 'produkte' ? (is_front_page() ? 'page' : 'true') : null,
+    ];
+
+    return $registers;
+}
+
+/**
+ * Where a design's medium is sold, for the design's page: the area page and a
+ * label for the way there. Products in general for a medium without one.
+ *
+ * @param  array{slug: string, name: string}|null  $medium
+ * @return array{url: string, label: string}
+ */
+function stiqon_design_area(?array $medium): array
+{
+    $slug = $medium['slug'] ?? '';
+
+    if (! isset(stiqon_required_pages()[$slug])) {
+        return ['url' => home_url('/'), 'label' => 'Zu den Produkten'];
+    }
+
+    return ['url' => stiqon_page_url($slug), 'label' => match ($slug) {
+        'sticker' => 'Zu den Stickern',
+        'flyer' => 'Zu den Flyern',
+        default => 'Zu den Produkten',
+    }];
 }
 
 /**
