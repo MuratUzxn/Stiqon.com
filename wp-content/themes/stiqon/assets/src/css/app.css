@@ -1,0 +1,478 @@
+@import 'tailwindcss' source(none);
+
+/* Self-hosted fonts (bundled by Vite; no font CDN at build time or in the browser).
+   Instrument Sans carries the whole interface. Instrument Serif only appears inside
+   some of the sample motifs – it is artwork there, not interface type – and loads
+   only on pages that show such a motif. */
+@import '@fontsource-variable/instrument-sans/wght.css';
+@import '@fontsource/instrument-serif/400-italic.css';
+
+/* Only this theme's and the plugin's own templates and scripts are scanned for classes. */
+@source '../../../';
+@source '../../../../../plugins/stiqon-shop';
+
+@plugin '@tailwindcss/typography';
+
+/*
+ | Design tokens
+ |
+ | The look follows mobbin.com as it was on 24 November 2026: white pages, one
+ | near-black for text and primary buttons, one neutral grey for surfaces, one
+ | sans-serif face, large radii, no borders and no shadows on the interface
+ | itself. Values measured there: text #141414, secondary text #707070,
+ | surfaces rgba(64,64,64,.06), headline 80/80 px at weight 650, section
+ | titles 44/48 px, buttons 44 px high with 16 px semibold labels.
+ |
+ | Where this differs from the model, it is for contrast:
+ |   muted  #6b6b6b – 5.3:1 on paper, 4.8:1 on mist (#707070 fails AA on mist)
+ |   control #8a8a8a – 3.5:1 on paper, for the edges of form fields
+ | Gold is the colour of the line inside the logo. In the interface it only
+ | marks keyboard focus on dark surfaces.
+ */
+/* "static": every token becomes a variable, used in this file or not – shop.css
+   is built on its own and relies on them. */
+@theme static {
+    --color-*: initial;
+    --color-transparent: transparent;
+    --color-current: currentColor;
+    --color-white: #ffffff;
+    --color-black: #000000;
+
+    --color-ink: #141414;
+    --color-ink-soft: #404040;
+    --color-muted: #6b6b6b;
+    --color-control: #8a8a8a;
+    --color-line: #e8e8e8;
+    --color-mist: #f3f3f3;
+    --color-mist-deep: #e9e9e9;
+    --color-paper: #ffffff;
+
+    --color-night: #141414;
+    --color-on-night: #ffffff;
+    --color-on-night-muted: #a3a3a3;
+    --color-gold: #d6b92c;
+    /* A field that needs another look, and the sentence that says why: 6.5:1 on paper, 5.9:1 on mist. */
+    --color-alert: #b3261e;
+
+    --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
+    /* Used by sample motifs only. */
+    --font-accent: 'Instrument Serif', ui-serif, Georgia, serif;
+
+    --radius-control: 0.875rem;
+    --radius-card: 1.5rem;
+    --radius-tile: 2rem;
+
+    --ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@layer base {
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        scroll-padding-top: 2rem;
+    }
+
+    body {
+        background-color: var(--color-paper);
+        color: var(--color-ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* One focus style everywhere: ink ring on light surfaces, gold on dark ones. */
+    :focus-visible {
+        outline: 2px solid var(--color-ink);
+        outline-offset: 3px;
+    }
+
+    .on-night :focus-visible {
+        outline-color: var(--color-gold);
+    }
+
+    ::selection {
+        background-color: var(--color-ink);
+        color: var(--color-paper);
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* A motif stored by an earlier page is about to replace the samples (see
+       inc/site.php); until then they stay out of sight but keep their place. */
+    [data-motif='pending'] [data-motif-sample] {
+        visibility: hidden;
+    }
+
+    /* WordPress' and WooCommerce's class for text that is only for screen readers.
+       WordPress styles it in a stylesheet this theme does not always load. */
+    .screen-reader-text {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+/* Type styles. Sizes are fluid between phone and desktop; the largest values are
+   the ones measured on the model. */
+@utility text-display {
+    font-size: clamp(2.5rem, 1.25rem + 5.6vw, 5rem);
+    font-weight: 650;
+    letter-spacing: -0.0075em;
+    line-height: 1;
+    text-wrap: balance;
+}
+
+@utility text-cta {
+    font-size: clamp(2.125rem, 1.45rem + 3vw, 3.75rem);
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    text-wrap: balance;
+}
+
+@utility text-title {
+    font-size: clamp(1.75rem, 1.4rem + 1.7vw, 2.75rem);
+    font-weight: 650;
+    letter-spacing: -0.009em;
+    line-height: 1.09;
+    text-wrap: balance;
+}
+
+@utility text-heading {
+    font-size: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);
+    font-weight: 650;
+    letter-spacing: -0.005em;
+    line-height: 1.25;
+}
+
+@utility text-lead {
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+    font-weight: 450;
+    line-height: 1.3;
+    text-wrap: pretty;
+}
+
+/* Small labels: breadcrumbs, captions, notes. */
+@utility text-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.0125em;
+    line-height: 1.43;
+}
+
+/* Labels of buttons, chips and navigation links. (Not "text-control": that
+   name is already the text colour of the "control" token.) */
+@utility text-action {
+    font-weight: 600;
+    letter-spacing: 0.0125em;
+}
+
+/* Page gutter and maximum width (the model's content column is 1125 px wide).
+   Not called "page": WordPress puts that class on the body of every page, which
+   would indent the whole document a second time. */
+@utility wrap {
+    margin-inline: auto;
+    max-width: calc(70.5rem + 2 * clamp(1.25rem, 4vw, 2rem));
+    padding-inline: clamp(1.25rem, 4vw, 2rem);
+}
+
+/* A row of cards that scrolls sideways across the whole window: its first card
+   lines up with the page column, the rest runs out under the window's edge. The
+   scroll padding keeps snapped cards on that same line. */
+@utility bleed-row {
+    --bleed-gutter: max(clamp(1.25rem, 4vw, 2rem), calc((100% - 70.5rem) / 2));
+    display: flex;
+    overflow-x: auto;
+    padding-inline: var(--bleed-gutter);
+    scroll-padding-inline: var(--bleed-gutter);
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* Depth for mockups – the only shadows on the site: a tight contact shadow plus
+   a soft, wider one. */
+@utility lift {
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.1)) drop-shadow(0 12px 16px rgb(0 0 0 / 0.13));
+}
+
+@utility lift-faint {
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.06)) drop-shadow(0 8px 12px rgb(0 0 0 / 0.07));
+}
+
+/* A mockup set into a line of headline type, the way the model sets app icons
+   between its words. The drawing has air around the sticker, so it is sized a
+   little over one em and pulled into the line. */
+@utility inline-mockup {
+    display: inline-block;
+    width: 1.06em;
+    height: auto;
+    margin-inline: -0.03em;
+    margin-block: -0.2em;
+    vertical-align: -0.2em;
+}
+
+/* The quick view of a gallery and the search: sheets over the dimmed page.
+   While one is open the page behind it does not scroll, and keeps its width. */
+@layer components {
+    .quick-view::backdrop,
+    .search-panel::backdrop {
+        background-color: rgb(20 20 20 / 0.55);
+    }
+
+    /* Where scrollbars take up room, that room is kept, or the page would jump
+       sideways. The strip shows the colour of the root element – given here the
+       colour the dimmed page has, or it would stand out as a white stripe. */
+    html:has(.quick-view[open], .search-panel[open]) {
+        overflow: hidden;
+        scrollbar-gutter: stable;
+        background-color: #7e7e7e;
+    }
+
+    /* The browser's own "clear" cross in search fields: the sheet has a button
+       to close it, and the results page keeps the query to be edited. */
+    input[type='search']::-webkit-search-cancel-button {
+        display: none;
+    }
+
+    /* A search result's small picture: the outline of what was found – a round
+       sticker unless the entry says otherwise – as a paper shape on a grey tile. */
+    .search-glyph {
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: var(--radius-control);
+        background-color: color-mix(in srgb, var(--color-ink) 8%, transparent);
+    }
+
+    .search-glyph::before {
+        width: 1.375rem;
+        height: 1.375rem;
+        border-radius: 999px;
+        background-color: var(--color-paper);
+        content: '';
+        filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.16));
+    }
+
+    .search-glyph[data-glyph='sticker-square']::before {
+        border-radius: 0.3125rem;
+    }
+
+    .search-glyph[data-glyph='sticker-rect']::before,
+    .search-glyph[data-glyph='sticker-oval']::before {
+        width: 1.625rem;
+        height: 1.0625rem;
+        border-radius: 0.25rem;
+    }
+
+    .search-glyph[data-glyph='sticker-oval']::before {
+        border-radius: 50%;
+    }
+
+    .search-glyph[data-glyph='sticker-contour']::before {
+        border-radius: 62% 38% 46% 54% / 44% 58% 42% 56%;
+    }
+
+    .search-glyph[data-glyph^='flyer']::before {
+        width: 1.0625rem;
+        height: 1.5rem;
+        border-radius: 0.125rem;
+    }
+
+    .search-glyph[data-glyph='flyer-lang']::before {
+        width: 0.75rem;
+    }
+
+    .search-glyph[data-glyph='flyer-quadrat']::before {
+        width: 1.3125rem;
+        height: 1.3125rem;
+    }
+}
+
+/*
+ | Markup that WooCommerce and Germanized print themselves. It carries their
+ | class names, not this theme's, so it is styled here by those names. Their
+ | own stylesheets are not loaded on the pages this covers (see inc/shop.php).
+ */
+@layer components {
+    /* --- Product page: the price and the notes around it ------------------------ */
+    .summary .price {
+        margin-top: 1.25rem;
+        font-size: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);
+        font-weight: 650;
+        letter-spacing: -0.01em;
+        line-height: 1.1;
+    }
+
+    .summary .price del {
+        margin-right: 0.5rem;
+        color: var(--color-muted);
+        font-weight: 450;
+    }
+
+    .summary .price ins {
+        text-decoration: none;
+    }
+
+    /* "inkl. MwSt.", "zzgl. Versandkosten", delivery time … */
+    .wc-gzd-additional-info {
+        color: var(--color-muted);
+        font-size: 0.875rem;
+        font-weight: 500;
+        letter-spacing: 0.0125em;
+        line-height: 1.43;
+    }
+
+    .wc-gzd-additional-info a {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    .wc-gzd-additional-info a:hover {
+        color: var(--color-ink);
+    }
+
+    /* Germanized keeps empty places for notes a variation may bring. */
+    .wc-gzd-additional-info-placeholder:empty {
+        display: none;
+    }
+
+    .legal-price-info {
+        margin-top: 0.5rem;
+    }
+
+    /* How long delivery takes, below the product's short description. */
+    .summary .delivery-time-info {
+        margin-top: 0.75rem;
+    }
+
+    /* --- Product page: what WooCommerce says about the chosen variation --------- */
+    /* Its price is the one shown above; the copy here stays for screen readers,
+       which hear this block when the choice changes. */
+    .woocommerce-variation-price {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .woocommerce-variation-description:not(:empty),
+    .woocommerce-variation-availability:not(:empty) {
+        margin-bottom: 1rem;
+        color: var(--color-muted);
+    }
+
+    /* WooCommerce marks the button like this while no variation is chosen. */
+    .single_add_to_cart_button.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .quantity .qty {
+        width: 5rem;
+        height: 3rem;
+        border-radius: 999px;
+        background-color: color-mix(in srgb, var(--color-ink) 8%, transparent);
+        font-weight: 600;
+        text-align: center;
+    }
+
+    /* --- Messages ("… wurde Ihrem Warenkorb hinzugefügt") ----------------------- */
+    .woocommerce-notices-wrapper:not(:empty) {
+        display: grid;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+    }
+
+    /* The theme's templates set shop-notice. Messages that scripts write into the
+       page themselves (a failed order, Germanized's withdrawal form) carry only
+       WooCommerce's classes – they get the same card. */
+    .shop-notice,
+    :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem 1.5rem;
+        border-radius: var(--radius-card);
+        background-color: var(--color-mist);
+        padding: 1rem 1.5rem;
+    }
+
+    :is(.shop-notice, .woocommerce-error, .woocommerce-message, .woocommerce-info):focus-visible {
+        outline-offset: -2px;
+    }
+
+    /* Several messages in one card (what went wrong at the checkout): a line each. */
+    .shop-notice--list {
+        display: grid;
+        justify-content: stretch;
+        gap: 0.5rem;
+    }
+
+    /* A line with a button is laid out like a card of its own. The others are
+       running text: WooCommerce's checkout script wraps each in a link to its
+       field, which falls into pieces where the message has links itself. */
+    .shop-notice--list > li:has(> .button) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem 1.5rem;
+    }
+
+    .shop-notice--list > li > a:not(.button) {
+        font-weight: 500;
+    }
+
+    :is(.shop-notice, .woocommerce-error, .woocommerce-message, .woocommerce-info) a:not(.button) {
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    /* The button that belongs to a message stands after its sentence (inc/shop.php). */
+    :is(.shop-notice, .woocommerce-error, .woocommerce-message, .woocommerce-info) .button {
+        display: inline-flex;
+        height: 2.75rem;
+        flex-shrink: 0;
+        align-items: center;
+        border-radius: 999px;
+        background-color: var(--color-ink);
+        padding-inline: 1rem;
+        color: var(--color-paper);
+        font-weight: 600;
+        letter-spacing: 0.0125em;
+        white-space: nowrap;
+        transition: background-color 200ms var(--ease-soft);
+    }
+
+    :is(.shop-notice, .woocommerce-error, .woocommerce-message, .woocommerce-info) .button:hover {
+        background-color: var(--color-ink-soft);
+    }
+}

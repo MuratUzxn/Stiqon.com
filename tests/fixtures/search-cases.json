@@ -1,0 +1,524 @@
+{
+    "comment": "Shared by tests/php/Search/MatcherTest.php and tests/e2e/search-logic.spec.js: the results page (PHP) and the instant results (script) have to agree. Written by hand, except for \"t\", \"k\", \"w\" and \"m\" of the entries: those are what the plugin computes from the fields before them. The PHP test checks that they still are; tests/fixtures/update-search-cases.php writes them anew.",
+    "fold": [
+        [
+            "Runde Sticker",
+            "runde sticker"
+        ],
+        [
+            "Weißes Vinyl",
+            "weisses vinyl"
+        ],
+        [
+            "Größe: 7,5 cm",
+            "groesse 7 5 cm"
+        ],
+        [
+            "Flyer DIN A5 – 250 g/m²",
+            "flyer din a5 250 g m"
+        ],
+        [
+            "  Café\tCrème ",
+            "cafe creme"
+        ],
+        [
+            "ÄÖÜ",
+            "aeoeue"
+        ],
+        [
+            "STRASSE",
+            "strasse"
+        ],
+        [
+            "ẞ",
+            "ss"
+        ],
+        [
+            "Grün",
+            "gruen"
+        ],
+        [
+            "Café",
+            "cafe"
+        ],
+        [
+            "İstanbul",
+            "istanbul"
+        ],
+        [
+            "",
+            ""
+        ]
+    ],
+    "foldLoosely": [
+        [
+            "Größe",
+            "grosse"
+        ],
+        [
+            "Weißes Vinyl",
+            "weisses vinyl"
+        ],
+        [
+            "Grün, schön & früh",
+            "grun schon fruh"
+        ]
+    ],
+    "stem": [
+        [
+            "rund",
+            "rund"
+        ],
+        [
+            "runde",
+            "rund"
+        ],
+        [
+            "runder",
+            "rund"
+        ],
+        [
+            "runden",
+            "rund"
+        ],
+        [
+            "rundes",
+            "rund"
+        ],
+        [
+            "rundem",
+            "rund"
+        ],
+        [
+            "sticker",
+            "stick"
+        ],
+        [
+            "stickern",
+            "stick"
+        ],
+        [
+            "flyer",
+            "flyer"
+        ],
+        [
+            "flyern",
+            "flyer"
+        ],
+        [
+            "aufkleber",
+            "aufkleb"
+        ],
+        [
+            "weiss",
+            "weis"
+        ],
+        [
+            "kraftpapier",
+            "kraftpapi"
+        ],
+        [
+            "oval",
+            "oval"
+        ],
+        [
+            "ovale",
+            "oval"
+        ],
+        [
+            "a5",
+            "a5"
+        ],
+        [
+            "250",
+            "250"
+        ],
+        [
+            "din",
+            "din"
+        ],
+        [
+            "b2b12",
+            "b2b12"
+        ]
+    ],
+    "entries": [
+        {
+            "kind": "area",
+            "n": "Sticker",
+            "s": "5 Produkte",
+            "keywords": "Aufkleber Klebeetiketten Etiketten Labels",
+            "t": "sticker",
+            "k": "aufkleber klebeetiketten etiketten labels",
+            "w": 3
+        },
+        {
+            "kind": "area",
+            "n": "Flyer",
+            "s": "5 Produkte",
+            "keywords": "Flugblatt Flugblätter Handzettel Werbezettel Prospekt",
+            "t": "flyer",
+            "k": "flugblatt flugblaetter handzettel werbezettel prospekt flugblatter",
+            "w": 3
+        },
+        {
+            "kind": "product",
+            "n": "Runde Sticker",
+            "s": "Sticker",
+            "keywords": "Aufkleber Klebeetiketten Etiketten Labels Sticker Der Klassiker für Logo, Siegel und Verpackung.",
+            "t": "runde sticker",
+            "k": "aufkleber klebeetiketten etiketten labels klassiker logo siegel verpackung",
+            "w": 2
+        },
+        {
+            "kind": "variant",
+            "n": "Runde Sticker",
+            "s": "Weißes Vinyl",
+            "keywords": "Material Aufkleber Klebeetiketten Etiketten Labels Sticker Der Klassiker für Logo, Siegel und Verpackung.",
+            "t": "weisses vinyl",
+            "k": "runde sticker material aufkleber klebeetiketten etiketten labels klassiker logo siegel verpackung",
+            "w": 1,
+            "m": true
+        },
+        {
+            "kind": "variant",
+            "n": "Runde Sticker",
+            "s": "Kraftpapier",
+            "keywords": "Material Aufkleber Klebeetiketten Etiketten Labels Sticker Der Klassiker für Logo, Siegel und Verpackung.",
+            "t": "kraftpapier",
+            "k": "runde sticker material aufkleber klebeetiketten etiketten labels klassiker logo siegel verpackung",
+            "w": 1,
+            "m": true
+        },
+        {
+            "kind": "product",
+            "n": "Quadratische Sticker",
+            "s": "Sticker",
+            "keywords": "Aufkleber Klebeetiketten Etiketten Labels Sticker Mit weichen Ecken – für Motive, die Fläche brauchen.",
+            "t": "quadratische sticker",
+            "k": "aufkleber klebeetiketten etiketten labels weichen ecken motive flaeche brauchen flache",
+            "w": 2
+        },
+        {
+            "kind": "variant",
+            "n": "Quadratische Sticker",
+            "s": "Holografische Folie",
+            "keywords": "Material Aufkleber Klebeetiketten Etiketten Labels Sticker Mit weichen Ecken – für Motive, die Fläche brauchen.",
+            "t": "holografische folie",
+            "k": "quadratische sticker material aufkleber klebeetiketten etiketten labels weichen ecken motive flaeche brauchen flache",
+            "w": 1,
+            "m": true
+        },
+        {
+            "kind": "product",
+            "n": "Rechteckige Sticker mit abgerundeten Ecken",
+            "s": "Sticker",
+            "keywords": "Aufkleber Klebeetiketten Etiketten Labels Sticker",
+            "t": "rechteckige sticker mit abgerundeten ecken",
+            "k": "aufkleber klebeetiketten etiketten labels",
+            "w": 2
+        },
+        {
+            "kind": "product",
+            "n": "Flyer DIN A5",
+            "s": "Flyer",
+            "keywords": "Flugblatt Flugblätter Handzettel Werbezettel Prospekt Flyer Genug Platz für Angebot, Termin und Anfahrt.",
+            "t": "flyer din a5",
+            "k": "flugblatt flugblaetter handzettel werbezettel prospekt genug platz angebot termin anfahrt flugblatter",
+            "w": 2
+        },
+        {
+            "kind": "variant",
+            "n": "Flyer DIN A5",
+            "s": "250 g Bilderdruck",
+            "keywords": "Papier Flugblatt Flugblätter Handzettel Werbezettel Prospekt Flyer Genug Platz für Angebot, Termin und Anfahrt.",
+            "t": "250 g bilderdruck",
+            "k": "flyer din a5 papier flugblatt flugblaetter handzettel werbezettel prospekt genug platz angebot termin anfahrt flugblatter",
+            "w": 1,
+            "m": true
+        },
+        {
+            "kind": "product",
+            "n": "Flyer Grün",
+            "s": "Flyer",
+            "keywords": "Flugblatt Flugblätter Handzettel Werbezettel Prospekt Flyer",
+            "t": "flyer gruen",
+            "k": "flugblatt flugblaetter handzettel werbezettel prospekt grun flugblatter",
+            "w": 2
+        },
+        {
+            "kind": "variant",
+            "n": "Flyer Grün",
+            "s": "135 g Bilderdruck",
+            "keywords": "Papier Flugblatt Flugblätter Handzettel Werbezettel Prospekt Flyer",
+            "t": "135 g bilderdruck",
+            "k": "flyer gruen papier flugblatt flugblaetter handzettel werbezettel prospekt grun flugblatter",
+            "w": 1,
+            "m": true
+        }
+    ],
+    "queries": [
+        {
+            "query": "sticker",
+            "limit": 8,
+            "expect": [
+                0,
+                2,
+                5,
+                7
+            ],
+            "why": "the area first, then the products; their variants are not listed one by one"
+        },
+        {
+            "query": "rund",
+            "limit": 8,
+            "expect": [
+                2,
+                7
+            ],
+            "why": "\"Runde\" begins with it; \"abgerundeten\" only has it inside, so that product comes second"
+        },
+        {
+            "query": "kraft rund",
+            "limit": 8,
+            "expect": [
+                4
+            ],
+            "why": "every word has to occur; the variant is asked for by its own name"
+        },
+        {
+            "query": "KRAFT",
+            "limit": 8,
+            "expect": [
+                4
+            ],
+            "why": "case does not matter"
+        },
+        {
+            "query": "aufkleber",
+            "limit": 8,
+            "expect": [
+                0,
+                2,
+                5,
+                7
+            ],
+            "why": "found by another word for it"
+        },
+        {
+            "query": "etiketten",
+            "limit": 8,
+            "expect": [
+                0,
+                2,
+                5,
+                7
+            ],
+            "why": "another word, in the plural"
+        },
+        {
+            "query": "stickern",
+            "limit": 8,
+            "expect": [
+                0,
+                2,
+                5,
+                7
+            ],
+            "why": "with an ending of German grammar"
+        },
+        {
+            "query": "runder sticker",
+            "limit": 8,
+            "expect": [
+                2,
+                7
+            ],
+            "why": "an ending on one of two words"
+        },
+        {
+            "query": "holografischer",
+            "limit": 8,
+            "expect": [
+                6
+            ],
+            "why": "an ending on the name of an option"
+        },
+        {
+            "query": "weiß",
+            "limit": 8,
+            "expect": [
+                3
+            ],
+            "why": "ß is ss"
+        },
+        {
+            "query": "weisses",
+            "limit": 8,
+            "expect": [
+                3
+            ],
+            "why": "typed without ß"
+        },
+        {
+            "query": "grün",
+            "limit": 8,
+            "expect": [
+                10
+            ],
+            "why": "umlaut typed"
+        },
+        {
+            "query": "gruen",
+            "limit": 8,
+            "expect": [
+                10
+            ],
+            "why": "umlaut written out"
+        },
+        {
+            "query": "grun",
+            "limit": 8,
+            "expect": [
+                10
+            ],
+            "why": "dots left away"
+        },
+        {
+            "query": "grün",
+            "limit": 8,
+            "expect": [
+                10
+            ],
+            "why": "umlaut stored as a letter and a combining mark"
+        },
+        {
+            "query": "Flugblätter",
+            "limit": 8,
+            "expect": [
+                1,
+                8,
+                10
+            ],
+            "why": "another word for flyers, with umlaut and ending"
+        },
+        {
+            "query": "flugblatter",
+            "limit": 8,
+            "expect": [
+                1,
+                8,
+                10
+            ],
+            "why": "the same without the dots"
+        },
+        {
+            "query": "a5",
+            "limit": 8,
+            "expect": [
+                8
+            ],
+            "why": "the product, not each of its papers"
+        },
+        {
+            "query": "a5 250",
+            "limit": 8,
+            "expect": [
+                9
+            ],
+            "why": "a product and one of its options"
+        },
+        {
+            "query": "250 g",
+            "limit": 8,
+            "expect": [
+                9
+            ],
+            "why": "numbers and single letters are words too"
+        },
+        {
+            "query": "bilderdruck",
+            "limit": 8,
+            "expect": [
+                9,
+                11
+            ],
+            "why": "equal hits stay in the order of the index"
+        },
+        {
+            "query": "papier",
+            "limit": 8,
+            "expect": [
+                4
+            ],
+            "why": "inside the name of an option; the label \"Papier\" of an option does not name a variant"
+        },
+        {
+            "query": "papier 250",
+            "limit": 8,
+            "expect": [
+                9
+            ],
+            "why": "the label of an option helps to find it once its name is asked for"
+        },
+        {
+            "query": "siegel",
+            "limit": 8,
+            "expect": [
+                2
+            ],
+            "why": "a word from the sentence about the product"
+        },
+        {
+            "query": "siegel kraft",
+            "limit": 8,
+            "expect": [
+                4
+            ],
+            "why": "the sentence about the product also leads to its variants"
+        },
+        {
+            "query": "für",
+            "limit": 8,
+            "expect": [],
+            "why": "filler words of the sentences are not searched"
+        },
+        {
+            "query": "sticker",
+            "limit": 2,
+            "expect": [
+                0,
+                2
+            ],
+            "why": "the limit cuts after ranking"
+        },
+        {
+            "query": "tasse",
+            "limit": 8,
+            "expect": [],
+            "why": "nothing fits"
+        },
+        {
+            "query": "",
+            "limit": 8,
+            "expect": [],
+            "why": "nothing typed"
+        },
+        {
+            "query": " -- ! ",
+            "limit": 8,
+            "expect": [],
+            "why": "nothing but punctuation"
+        },
+        {
+            "query": "flyer flyer flyer flyer flyer flyer flyer flyer tasse",
+            "limit": 8,
+            "expect": [
+                1,
+                8,
+                10
+            ],
+            "why": "only the first eight words count"
+        }
+    ]
+}
