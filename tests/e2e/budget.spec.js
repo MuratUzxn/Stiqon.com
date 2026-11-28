@@ -23,16 +23,22 @@ const pages = {
     // The home page's assortment: ten pictures of together 53 kB. The test's browser fetches them
     // with the page – without a known connection type Chromium loads lazy pictures up to about
     // 5000 px ahead – where a phone on 4G waits until they are about 1250 px away.
-    '/': { document: 14, total: 175, elements: 1500, image: 80, requests: 17 },
+    // Its document shows the whole range drawn inline: a shirt, a tote, a calendar, a roll-up
+    // or a mug weighs 1.3 to 1.8 kB compressed where a sticker weighs 0.8 kB – 20.4 kB in all.
+    '/': { document: 21, total: 180, elements: 1500, image: 80, requests: 17 },
     // Twenty cards, each an inline drawing: about 800 elements. On top of what the
     // home page loads come the gallery's own script and the serif face of the samples.
     // Every page carries about 0.3 kB for a header that knows when it is older than
     // the cart (the Back button, a cache in front of the shop) and asks again.
-    '/sticker/': { document: 11.3, total: 138, elements: 900 },
+    // Every page names the twelve areas three times – in the header's row, the phone's menu and
+    // the footer: about 0.6 kB and 40 elements more than the two areas did.
+    '/sticker/': { document: 12.2, total: 138, elements: 980 },
+    // The heaviest of the other areas: shirts, hoodies and totes, drawn with their folds and fabric.
+    '/textilien/': { document: 15.2, total: 145, elements: 850 },
     // A page of text from the editor – the legal pages. It carries the styles for
     // editor content in its document and nothing of WooCommerce: no stylesheet, no
     // script, no jQuery (it used to load 180 kB of each).
-    '/impressum/': { document: 9, total: 113, elements: 160 },
+    '/impressum/': { document: 9.4, total: 116, elements: 200 },
     // The pages WooCommerce draws, measured with a product in the cart. They bring
     // what its cart and checkout run on: jQuery (30 kB), the script behind the
     // select fields (21 kB), its own scripts and Germanized's. The classic pages,
