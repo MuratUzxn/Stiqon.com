@@ -1,10 +1,11 @@
 <?php
 /**
- * An area of the shop (Sticker, Flyer), laid out like a category page of
- * mobbin.com: path, large centred title, a sentence, filters as pills, then a
- * dense grid of cards – one per product and material or paper.
+ * An area of the shop (Sticker, Visitenkarten, Plakate …), laid out like a
+ * category page of mobbin.com: path, large centred title, a sentence, filters
+ * as pills, then a dense grid of cards – one per product and per option that
+ * can be seen in the drawing (a sticker's material, a flyer's paper, a shirt's colour).
  *
- * @var array{name: string, lead: string, category: string, other: array{label: string, url: string}} $args
+ * @var array{name: string, lead: string, category: string, other: array{label: string, url: string}|null} $args
  */
 
 defined('ABSPATH') || exit;
@@ -44,7 +45,9 @@ $count = $shown === $total ? sprintf('%d Ausführungen', $total) : sprintf('%d v
     <p class="text-lead mx-auto mt-6 max-w-xl text-muted"><?php echo esc_html($args['lead']); ?></p>
     <div class="mt-8 flex flex-wrap items-center justify-center gap-2">
         <?php echo stiqon_motif_button('Motiv wählen'); ?>
-        <?php echo stiqon_button(esc_html($args['other']['label']), ['variant' => 'secondary', 'href' => $args['other']['url']]); ?>
+        <?php if ($args['other'] !== null) : ?>
+            <?php echo stiqon_button(esc_html($args['other']['label']), ['variant' => 'secondary', 'href' => $args['other']['url']]); ?>
+        <?php endif; ?>
     </div>
 </section>
 

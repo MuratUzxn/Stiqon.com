@@ -103,7 +103,7 @@ test.describe('cart', () => {
         await expect(cartLink(page).locator('span')).toBeHidden();
 
         // From the empty cart the way leads to the products – not to WooCommerce's own list page.
-        await page.getByRole('link', { name: 'Sticker und Flyer ansehen' }).click();
+        await page.getByRole('link', { name: 'Sortiment ansehen' }).click();
         await expect(page.getByRole('heading', { level: 1, name: 'Werbemittel, die haften bleiben.' })).toBeVisible();
     });
 

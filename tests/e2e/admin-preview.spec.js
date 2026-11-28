@@ -53,7 +53,8 @@ test.describe('the tab "Vorschau" of a product', () => {
         await expect(views.nth(3)).toContainText('gezeichnet als Kraftpapier, matt');
 
         // The fields are found by their labels.
-        await expect(panel(page).getByLabel('Art')).toHaveAttribute('name', 'stiqon_mockup[type]');
+        // Exactly: a folded leaflet's field is called "Falzart".
+        await expect(panel(page).getByLabel('Art', { exact: true })).toHaveAttribute('name', 'stiqon_mockup[type]');
         await expect(panel(page).getByLabel('Form', { exact: true })).toHaveAttribute('name', 'stiqon_mockup[shape]');
 
         await expect(field(page, 'type')).toHaveValue('sticker');

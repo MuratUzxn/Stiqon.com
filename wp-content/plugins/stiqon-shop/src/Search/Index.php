@@ -5,6 +5,7 @@ namespace Stiqon\Shop\Search;
 use Stiqon\Shop\Catalog\Areas;
 use Stiqon\Shop\Catalog\Gallery;
 use Stiqon\Shop\Catalog\ProductView;
+use Stiqon\Shop\Mockup\Kinds;
 use Stiqon\Shop\Plugin;
 use WC_Product;
 use WP_Post;
@@ -30,10 +31,29 @@ final class Index
 
     public const REST_ROUTE = '/suchindex';
 
-    /** What these kinds of products are called besides their names. */
+    /** What these kinds of products are called besides their names (see Mockup\Kinds). */
     private const ALSO_CALLED = [
         'sticker' => 'Aufkleber Klebeetiketten Etiketten Labels',
         'flyer' => 'Flugblatt Flugblätter Handzettel Werbezettel Prospekt',
+        'card' => 'Karten Kärtchen Geschäftskarten Grußkarten Einladungskarten Einladungen',
+        'calendar' => 'Kalender Planer Jahresplaner Monatskalender',
+        'folder' => 'Mappe Mappen Angebotsmappe Präsentationsmappe',
+        'leaflet' => 'Faltblatt Faltblätter Falzflyer Prospekt Folder',
+        'envelope' => 'Briefumschlag Briefumschläge Kuvert Couvert Umschlag',
+        'letter' => 'Briefbogen Briefpapier Geschäftspapier Geschäftsausstattung',
+        'notepad' => 'Block Blöcke Notizblock Schreibblock Notizen',
+        'brochure' => 'Heft Hefte Katalog Kataloge Prospekt Magazin',
+        'standee' => 'Aufsteller Kundenstopper Plakatständer Werbetechnik',
+        'poster' => 'Poster Plakat Plakate Aushang',
+        'rollup' => 'Rollup Roll-up Banner Messe Display Werbetechnik',
+        'banner' => 'Banner Plane Planen Werbebanner Werbetechnik',
+        'box' => 'Karton Kartons Versandkarton Schachtel Verpackung Verpackungen',
+        'bag' => 'Tüte Tüten Tragetasche Papiertüte Verpackung',
+        'tote' => 'Stofftasche Baumwolltasche Jutebeutel Beutel Tasche',
+        'shirt' => 'T-Shirt Shirt Shirts Textil Textilien Kleidung Hoodie',
+        'mug' => 'Tasse Tassen Becher Kaffeebecher Werbeartikel',
+        'bottle' => 'Flasche Flaschen Trinkflasche Werbeartikel',
+        'coaster' => 'Bierdeckel Untersetzer Werbeartikel',
     ];
 
     /** The fields of an entry the page's script gets. The others are for the results page. */
@@ -296,7 +316,7 @@ final class Index
         foreach ($products as $product) {
             $view = ProductView::resolve($product);
             $type = $view['type'] ?? '';
-            $form = $view['spec'][$type === 'sticker' ? 'shape' : 'format'] ?? null;
+            $form = $type !== '' && Kinds::has($type) ? ($view['spec'][Kinds::of($type)::form()['key']] ?? null) : null;
             $visible = ProductView::visible($product);
             $cards = Gallery::cards($product, $visible);
             $prices = array_filter(array_column($cards, 'price'), 'is_float');

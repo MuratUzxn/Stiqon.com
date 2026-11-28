@@ -32,7 +32,7 @@ $key = 'inline-flex h-6 min-w-6 items-center justify-center rounded-md bg-paper 
                     <?php echo stiqon_icon('search', 'size-6'); ?>
                 </label>
                 <input
-                    id="suche-feld" type="search" name="s" maxlength="<?php echo esc_attr((string) STIQON_SEARCH_MAX_LENGTH); ?>" placeholder="Sticker, Flyer, Material …"
+                    id="suche-feld" type="search" name="s" maxlength="<?php echo esc_attr((string) STIQON_SEARCH_MAX_LENGTH); ?>" placeholder="Visitenkarten, Plakate, Material …"
                     autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"
                     role="combobox" aria-autocomplete="list" aria-controls="suche-treffer" aria-expanded="false"
                     class="h-12 min-w-0 flex-1 bg-transparent text-xl font-medium outline-none placeholder:font-normal placeholder:text-muted"
@@ -66,7 +66,7 @@ $key = 'inline-flex h-6 min-w-6 items-center justify-center rounded-md bg-paper 
             <div class="px-5 py-7 text-center" x-show="nothing">
                 <?php if (stiqon_shop_is_concealed()) : ?>
                     <p class="font-semibold">Der Shop öffnet bald.</p>
-                    <p class="text-label mx-auto mt-1 max-w-sm text-muted">Bis dahin finden Sie hier noch keine Sticker und Flyer.</p>
+                    <p class="text-label mx-auto mt-1 max-w-sm text-muted">Bis dahin finden Sie hier noch keine Produkte.</p>
                 <?php else : ?>
                     <p class="font-semibold">Dazu haben wir nichts gefunden.</p>
                     <p class="text-label mx-auto mt-1 max-w-sm text-muted">Versuchen Sie es mit einer Form, einem Format oder einem Material – etwa „rund“, „DIN A5“ oder „Kraftpapier“.</p>

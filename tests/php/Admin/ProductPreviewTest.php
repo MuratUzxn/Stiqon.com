@@ -33,7 +33,7 @@ final class ProductPreviewTest extends TestCase
 
     public function test_values_the_drawings_do_not_know_are_dropped(): void
     {
-        $this->assertSame([], ProductPreview::chosen(['type' => 'banner', 'shape' => 'hexagon', 'sticker_motif' => '../../wp-config'], 'Runde Sticker'));
+        $this->assertSame([], ProductPreview::chosen(['type' => 'tapete', 'shape' => 'hexagon', 'sticker_motif' => '../../wp-config'], 'Runde Sticker'));
         $this->assertSame(['type' => 'flyer'], ProductPreview::chosen(['type' => 'flyer', 'format' => 'a3', 'flyer_motif' => 'siegel'], 'Plakat'));
     }
 

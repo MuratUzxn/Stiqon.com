@@ -331,8 +331,16 @@ ensure_page() { # slug title status
     fi
 }
 
-ensure_page sticker Sticker publish
-ensure_page flyer Flyer publish
+# One page per area of the shop, as the theme lists them (stiqon_area_definitions()).
+# Asked for first, so that the script stops if the theme cannot say.
+areas="$(wp eval 'foreach (stiqon_required_pages() as $slug => $title) { echo $slug, "\t", $title, "\n"; }')"
+
+while IFS=$'\t' read -r slug title; do
+    if [ -n "$slug" ]; then
+        ensure_page "$slug" "$title" publish
+    fi
+done <<<"$areas"
+
 # The sample sheet is a working document: private, and its template turns away
 # everybody who does not look after the site's appearance.
 ensure_page musterbogen Musterbogen private

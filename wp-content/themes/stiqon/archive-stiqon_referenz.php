@@ -22,7 +22,7 @@ get_header();
         </ol>
     </nav>
     <h1 class="text-display mt-4">Referenzen</h1>
-    <p class="text-lead mx-auto mt-6 max-w-xl text-muted">Sticker und Flyer, die wir gedruckt haben – und was aus ihnen geworden ist.</p>
+    <p class="text-lead mx-auto mt-6 max-w-xl text-muted">Werbemittel, die wir gedruckt haben – und was aus ihnen geworden ist.</p>
 </section>
 
 <section class="wrap pb-16 lg:pb-28" aria-labelledby="arbeiten">

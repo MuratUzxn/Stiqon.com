@@ -5,7 +5,7 @@ namespace Stiqon\Shop\Admin;
 use Stiqon\Shop\Catalog\Guess;
 use Stiqon\Shop\Catalog\ProductView;
 use Stiqon\Shop\Catalog\Spec;
-use Stiqon\Shop\Mockup\Flyer;
+use Stiqon\Shop\Mockup\Kinds;
 use Stiqon\Shop\Mockup\Sticker;
 use WC_Product;
 
@@ -25,14 +25,11 @@ final class ProductPreview
 
     private const PANEL = 'stiqon_preview_product_data';
 
-    private const TYPES = ['sticker' => 'Sticker', 'flyer' => 'Flyer'];
-
-    private const SHAPES = ['circle' => 'Rund', 'square' => 'Quadratisch', 'rect' => 'Rechteckig', 'oval' => 'Oval', 'contour' => 'Konturschnitt'];
-
-    private const MATERIALS = ['vinyl' => 'weißes Vinyl', 'clear' => 'transparente Folie', 'holo' => 'holografische Folie', 'kraft' => 'Kraftpapier'];
-
-    /** What the fields of the tab decide; anything else stored for the drawing is left alone. */
-    private const DECIDED = ['type', 'shape', 'format', 'motif'];
+    /**
+     * Names of the fields for a kind's form that came before there were more
+     * kinds than stickers and flyers. Every other kind sends "<type>_form".
+     */
+    private const FORM_FIELDS = ['sticker' => 'shape', 'flyer' => 'format'];
 
     public static function register(): void
     {
@@ -58,22 +55,23 @@ final class ProductPreview
      * What to store for a product, from what the fields of the tab sent. Only
      * values the drawings know are kept; an empty value means "automatic".
      *
-     * @param  array<string, string>  $sent  type, shape, format, sticker_motif, flyer_motif
+     * @param  array<string, string>  $sent  type, and for each kind its form ("shape" for stickers, "format" for flyers, "<type>_form" otherwise) and "<type>_motif"
      * @param  list<string>  $categories  names of the product's categories
      * @return array<string, string>
      */
     public static function chosen(array $sent, string $name, array $categories = []): array
     {
-        $chosen = in_array($sent['type'] ?? '', Spec::TYPES, true) ? ['type' => $sent['type']] : [];
+        $chosen = is_string($sent['type'] ?? null) && Kinds::has($sent['type']) ? ['type' => $sent['type']] : [];
         $type = $chosen['type'] ?? Guess::type($name, ...$categories);
 
         if ($type === null) {
             return $chosen;
         }
 
-        $wanted = $type === 'sticker'
-            ? ['shape' => $sent['shape'] ?? '', 'motif' => $sent['sticker_motif'] ?? '']
-            : ['format' => $sent['format'] ?? '', 'motif' => $sent['flyer_motif'] ?? ''];
+        $wanted = [
+            Kinds::of($type)::form()['key'] => $sent[self::formField($type)] ?? '',
+            'motif' => $sent[$type.'_motif'] ?? '',
+        ];
 
         return $chosen + Spec::known($type, array_filter($wanted, 'strlen'));
     }
@@ -89,7 +87,7 @@ final class ProductPreview
         // phpcs:enable
 
         $stored = $product->get_meta(ProductView::META);
-        $kept = array_diff_key(is_array($stored) ? $stored : [], array_flip(self::DECIDED));
+        $kept = array_diff_key(is_array($stored) ? $stored : [], array_flip(self::decided()));
         $chosen = self::chosen($sent, $product->get_name(), self::categories($product)) + $kept;
 
         if ($chosen === []) {
@@ -110,10 +108,8 @@ final class ProductPreview
 
         // What the names alone say – the meaning of "Automatisch" in each field.
         $guessedType = Guess::type($name, ...self::categories($product));
-        $type = in_array($stored['type'] ?? null, Spec::TYPES, true) ? $stored['type'] : $guessedType;
+        $type = is_string($stored['type'] ?? null) && Kinds::has($stored['type']) ? $stored['type'] : $guessedType;
         $known = $type === null ? [] : Spec::known($type, $stored);
-        $guessedShape = Guess::product('sticker', $name)['shape'] ?? null;
-        $guessedFormat = Guess::product('flyer', $name)['format'] ?? null;
 
         $automatic = static fn (?string $made, string $drawn = ''): string => $made !== null
             ? 'Automatisch – erkannt: '.$made
@@ -140,7 +136,7 @@ final class ProductPreview
 
                 <?php if ($views['views'] === []) : ?>
                     <p class="form-field"><em><?php echo esc_html($product->get_id() > 0
-                        ? 'Aus Name und Kategorie geht nicht hervor, ob dies ein Sticker oder ein Flyer ist. Ohne Angabe unter „Art“ erscheint das Produkt ohne Zeichnung.'
+                        ? 'Aus Name und Kategorie geht nicht hervor, was für ein Produkt dies ist. Ohne Angabe unter „Art“ erscheint das Produkt ohne Zeichnung.'
                         : 'Die Zeichnung erscheint, sobald das Produkt gespeichert ist.'); ?></em></p>
                 <?php else : ?>
                     <div class="stiqon-views" role="group" aria-label="So wird das Produkt gezeichnet">
@@ -164,35 +160,34 @@ final class ProductPreview
                     'name' => self::FIELD.'[type]',
                     'label' => 'Art',
                     'value' => $stored['type'] ?? '',
-                    'options' => ['' => $automatic(self::TYPES[$guessedType] ?? null)] + self::TYPES,
+                    'options' => ['' => $automatic($guessedType !== null ? Kinds::of($guessedType)::label() : null)] + Kinds::labels(),
                 ]);
 
-                woocommerce_wp_select([
-                    'id' => 'stiqon_mockup_shape',
-                    'name' => self::FIELD.'[shape]',
-                    'label' => 'Form',
-                    'wrapper_class' => 'stiqon-for-sticker',
-                    'value' => $type === 'sticker' ? ($known['shape'] ?? '') : '',
-                    'options' => ['' => $automatic(self::SHAPES[$guessedShape] ?? null, self::SHAPES['circle'])] + self::SHAPES,
-                ]);
+                // Each kind's own fields; the script below shows those of the product's kind.
+                foreach (Kinds::types() as $kind) {
+                    $form = Kinds::of($kind)::form();
+                    $guessedForm = Guess::product($kind, $name)[$form['key']] ?? null;
+                    $field = self::formField($kind);
 
-                woocommerce_wp_select([
-                    'id' => 'stiqon_mockup_format',
-                    'name' => self::FIELD.'[format]',
-                    'label' => 'Format',
-                    'wrapper_class' => 'stiqon-for-flyer',
-                    'value' => $type === 'flyer' ? ($known['format'] ?? '') : '',
-                    'options' => ['' => $automatic(Flyer::FORMATS[$guessedFormat]['label'] ?? null, Flyer::FORMATS['a6']['label'])] + array_map(static fn (array $format): string => $format['label'], Flyer::FORMATS),
-                ]);
+                    woocommerce_wp_select([
+                        'id' => 'stiqon_mockup_'.$field,
+                        'name' => self::FIELD.'['.$field.']',
+                        'label' => $form['label'],
+                        'wrapper_class' => 'stiqon-for-'.$kind,
+                        'value' => $type === $kind ? ($known[$form['key']] ?? '') : '',
+                        // A kind's first form is the one it is drawn in when nothing says otherwise.
+                        'options' => ['' => $automatic($form['values'][$guessedForm] ?? null, (string) reset($form['values']))] + $form['values'],
+                    ]);
 
-                foreach (['sticker' => Sticker::motifs(), 'flyer' => Flyer::motifs()] as $kind => $motifs) {
+                    $motifs = Kinds::of($kind)::motifs();
+
                     woocommerce_wp_select([
                         'id' => 'stiqon_mockup_'.$kind.'_motif',
                         'name' => self::FIELD.'['.$kind.'_motif]',
                         'label' => 'Beispielmotiv',
                         'wrapper_class' => 'stiqon-for-'.$kind,
                         'value' => $type === $kind ? ($known['motif'] ?? '') : '',
-                        'options' => ['' => 'Automatisch – nach dem Namen gewählt'] + array_combine($motifs, array_map([self::class, 'motifLabel'], $motifs)),
+                        'options' => ['' => 'Automatisch – nach dem Namen gewählt'] + array_combine($motifs, array_map(static fn (string $motif): string => self::motifLabel($motif, $kind), $motifs)),
                         'description' => 'Steht für das Motiv der Kundschaft, solange sie kein eigenes gewählt hat.',
                         'desc_tip' => true,
                     ]);
@@ -205,11 +200,11 @@ final class ProductPreview
                     var panel = document.getElementById(<?php echo wp_json_encode(self::PANEL); ?>);
                     var type = document.getElementById('stiqon_mockup_type');
 
-                    // Form belongs to stickers, Format to flyers: only the fields of the product's kind are shown.
+                    // Every kind has fields of its own (a sticker's shape, a flyer's format …): only those of the product's kind are shown.
                     function show() {
                         var kind = type.value || panel.getAttribute('data-type');
 
-                        ['sticker', 'flyer'].forEach(function (other) {
+                        <?php echo wp_json_encode(Kinds::types()); ?>.forEach(function (other) {
                             panel.querySelectorAll('.stiqon-for-' + other).forEach(function (field) {
                                 field.hidden = other !== kind;
                             });
@@ -233,20 +228,50 @@ final class ProductPreview
 
         if ($type === 'sticker') {
             return isset($says['material'])
-                ? 'gezeichnet als '.self::MATERIALS[$says['material']].(($says['finish'] ?? null) === 'matte' ? ', matt' : '')
-                : 'Material nicht erkannt – gezeichnet als '.self::MATERIALS['vinyl'];
+                ? 'gezeichnet als '.Sticker::MATERIAL_NAMES[$says['material']].(($says['finish'] ?? null) === 'matte' ? ', matt' : '')
+                : 'Material nicht erkannt – gezeichnet als '.Sticker::MATERIAL_NAMES['vinyl'];
         }
 
-        if (! isset($says['heavy'])) {
-            return 'Grammatur nicht erkannt – gezeichnet als leichtes Papier';
+        if ($type === 'flyer') {
+            if (! isset($says['heavy'])) {
+                return 'Grammatur nicht erkannt – gezeichnet als leichtes Papier';
+            }
+
+            return $says['heavy'] ? 'gezeichnet als festes Papier' : 'gezeichnet als leichtes Papier';
         }
 
-        return $says['heavy'] ? 'gezeichnet als festes Papier' : 'gezeichnet als leichtes Papier';
+        return $says === [] ? 'nichts erkannt – gezeichnet wie ohne Auswahl' : 'erkannt und gezeichnet';
     }
 
-    private static function motifLabel(string $motif): string
+    /**
+     * The field that sends a kind's form.
+     */
+    private static function formField(string $type): string
     {
-        return ['eroeffnung' => 'Eröffnung', 'sprechblase' => 'Sprechblase (Kontur)', 'stern' => 'Stern (Kontur)'][$motif] ?? ucfirst($motif);
+        return self::FORM_FIELDS[$type] ?? $type.'_form';
+    }
+
+    /**
+     * What the fields of the tab decide; anything else stored for the drawing is left alone.
+     *
+     * @return list<string>
+     */
+    private static function decided(): array
+    {
+        return array_values(array_unique(['type', 'motif', ...array_map(static fn (string $type): string => Kinds::of($type)::form()['key'], Kinds::types())]));
+    }
+
+    /**
+     * A motif's name in the field. "(Kontur)" says that a sticker with this
+     * motif is cut along its outline – on every other kind it is just a picture.
+     */
+    private static function motifLabel(string $motif, string $kind): string
+    {
+        if ($kind === 'sticker' && in_array($motif, Sticker::CONTOUR_MOTIFS, true)) {
+            return ucfirst($motif).' (Kontur)';
+        }
+
+        return ['eroeffnung' => 'Eröffnung', 'cafe' => 'Café'][$motif] ?? ucfirst($motif);
     }
 
     /**

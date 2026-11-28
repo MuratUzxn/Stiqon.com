@@ -3,15 +3,22 @@
  * Sample motif, drawn in a 100 x 100 box.
  * Bold word with a small burst.
  *
- * @var string $uid  prefix for ids, unique on the page
- * @var bool   $bare without a background of its own (the sticker material shows through)
+ * @var string      $uid  prefix for ids, unique on the page
+ * @var bool        $bare without a background of its own (the sticker material shows through)
+ * @var string|null $ink  ink of a bare print: "dark" for white and light materials, "deep" for mid-tones (kraft board and paper, grey cloth), "light" for dark ones (black, navy); null as on sticker film and kraft stickers
  */
 
 defined('ABSPATH') || exit;
+
+$ink ??= null;
+// White on the motif's own black ground, and so in light ink. The small gold burst all
+// but vanishes on kraft and grey cloth, which are as light as gold: in deep ink it is a deep bronze.
+$lettering = $bare && $ink !== 'light' ? '#0f0f0e' : '#ffffff';
+$burst = $bare && $ink === 'deep' ? '#7a5a1e' : '#d9a441';
 ?>
 <?php if (! $bare) : ?>
     <rect width="100" height="100" fill="#0f0f0e" />
 <?php endif; ?>
-<text x="50" y="63" text-anchor="middle" font-size="36" font-weight="700" letter-spacing="-1.6" fill="<?php echo esc_attr($bare ? '#0f0f0e' : '#ffffff'); ?>">NEU</text>
-<path d="M77 17l2.6 6.2 6.6-1.4-3.6 5.7 4.6 4.9-6.7.6-1.4 6.6-4-5.4-6.1 2.7 1.9-6.4-5.8-3.4 6.3-2.2-.4-6.7z" fill="#d9a441" />
-<path d="M22 78h56" stroke="<?php echo esc_attr($bare ? '#0f0f0e' : '#ffffff'); ?>" stroke-width="1" />
+<text x="50" y="63" text-anchor="middle" font-size="36" font-weight="700" letter-spacing="-1.6" fill="<?php echo esc_attr($lettering); ?>">NEU</text>
+<path d="M77 17l2.6 6.2 6.6-1.4-3.6 5.7 4.6 4.9-6.7.6-1.4 6.6-4-5.4-6.1 2.7 1.9-6.4-5.8-3.4 6.3-2.2-.4-6.7z" fill="<?php echo esc_attr($burst); ?>" />
+<path d="M22 78h56" stroke="<?php echo esc_attr($lettering); ?>" stroke-width="1" />

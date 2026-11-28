@@ -248,11 +248,10 @@ final class SupplierCatalogue
                 $product->set_name($title.' ('.$catalogue['name'].')');
                 $product->set_status('draft');
                 $product->set_catalog_visibility('hidden');
-                if (in_array($family, Spec::TYPES, true)) {
-                    $category = get_term_by('slug', $family, 'product_cat');
-                    if ($category instanceof WP_Term) {
-                        $product->set_category_ids([(int) $category->term_id]);
-                    }
+                // Filed under the shop's category of the same name, where there is one ("sticker", "kalender" …).
+                $category = get_term_by('slug', $family, 'product_cat');
+                if ($category instanceof WP_Term) {
+                    $product->set_category_ids([(int) $category->term_id]);
                 }
                 $product->add_meta_data(self::PROVIDER_META, $provider, true);
                 $product->add_meta_data(self::FAMILY_META, $key, true);

@@ -31,10 +31,11 @@ test.describe('gallery', () => {
         await expect(card.getByRole('link')).toHaveText('Runde Sticker');
     });
 
-    test('flyers are shown once per paper', async ({ page }) => {
+    test('flyers and folded leaflets are shown once per paper', async ({ page }) => {
         await page.goto('/flyer/');
 
-        await expect(cards(page)).toHaveCount(10);
+        // Five flyers and two folded leaflets, each in 135 g and in 250 g.
+        await expect(cards(page)).toHaveCount(14);
         await expect(page.getByRole('group', { name: 'Nach Papier filtern' }).getByRole('link')).toHaveText(['Jedes Papier', '135 g Bilderdruck', '250 g Bilderdruck']);
         await expect(cards(page).filter({ hasText: 'Flyer DIN lang' }).filter({ hasText: '250 g' })).toContainText('ab 29,90 €');
     });
@@ -95,8 +96,8 @@ test.describe('gallery', () => {
         await chip(page, '250 g Bilderdruck').click();
 
         await expect(page).toHaveURL(/\/flyer\/\?papier=250-g$/);
-        await expect(shown(page)).toHaveCount(5);
-        await expect(page.locator('[data-count]')).toHaveText('5 von 10 Ausführungen');
+        await expect(shown(page)).toHaveCount(7);
+        await expect(page.locator('[data-count]')).toHaveText('7 von 14 Ausführungen');
 
         await chip(page, 'Flyer Quadrat').click();
         await expect(page).toHaveURL(/\/flyer\/\?produkt=flyer-quadrat&papier=250-g$/);

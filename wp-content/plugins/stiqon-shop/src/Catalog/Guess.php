@@ -3,6 +3,7 @@
 namespace Stiqon\Shop\Catalog;
 
 use Stiqon\Shop\Mockup\Flyer;
+use Stiqon\Shop\Mockup\Kinds;
 use Stiqon\Shop\Mockup\Sticker;
 
 /**
@@ -11,111 +12,129 @@ use Stiqon\Shop\Mockup\Sticker;
  * Products and their options arrive from elsewhere – typed in by the owner or
  * imported by a supplier's plugin – and say nothing about how to draw them. Most
  * of the time the names do: "Runde Sticker", "Transparente Folie", "Flyer DIN
- * lang". What cannot be read here is left out, and the drawing falls back to its
- * defaults; the owner can always set it by hand.
+ * lang", "Tassen", "Schwarz". What cannot be read here is left out, and the
+ * drawing falls back to its defaults; the owner can always set it by hand.
+ *
+ * Which words mean what is said by each kind of drawing (Mockup\Kind::names())
+ * and, for the kind itself, by Mockup\Kinds.
  */
 final class Guess
 {
-    /** Checked in this order: a rectangle "mit abgerundeten Ecken" is not round. */
-    private const SHAPES = [
-        'contour' => 'kontur|freiform|formgestanzt|die[ -]?cut',
-        'oval' => 'oval|ellip',
-        'rect' => 'rechteck|rectang',
-        'square' => 'quadrat|square',
-        'circle' => 'rund|kreis|round|circle',
-    ];
-
-    private const MATERIALS = [
-        'holo' => 'holo|regenbogen|irisierend',
-        'clear' => 'transparent|durchsichtig|glasklar|clear',
-        'kraft' => 'kraft|naturpapier|graspapier',
-        'vinyl' => 'vinyl|weiß|weiss|white',
-    ];
-
-    private const FORMATS = [
-        'lang' => 'din ?lang|\bdl\b|lang',
-        'quadrat' => 'quadrat|square',
-        'a6' => '\ba ?6\b',
-        'a5' => '\ba ?5\b',
-        'a4' => '\ba ?4\b',
-    ];
-
-    /** Sample motifs that bring a cut line of their own. */
-    private const CONTOUR_MOTIFS = ['sprechblase', 'stern'];
-
     /**
-     * "sticker", "flyer", or null when none of the texts says. Pass the
-     * product's name and the names of its categories.
+     * The kind of product ("sticker", "card", …), or null when none of the
+     * texts says. Pass the product's name first, then the names of its
+     * categories: the first text that names a kind decides, so "Tassen" in
+     * the category "Werbeartikel" are mugs, and "Etiketten" in the category
+     * "Sticker" are stickers.
      */
     public static function type(string ...$texts): ?string
     {
-        $text = self::fold(implode(' ', $texts));
+        foreach ($texts as $text) {
+            $text = self::fold($text);
 
-        return match (true) {
-            self::has($text, 'sticker|aufkleber|etikett|label') => 'sticker',
-            self::has($text, 'flyer|flugbl[aä]tt|handzettel') => 'flyer',
-            default => null,
-        };
+            foreach (Kinds::types() as $type) {
+                if (self::has($text, Kinds::pattern($type))) {
+                    return $type;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
-     * What a product's name says about its drawing.
+     * What a product's name says about its drawing: the value of the kind's
+     * form ("shape" for a sticker, "format" for a flyer …).
      *
-     * @return array{shape?: string, format?: string}
+     * @return array<string, string>
      */
     public static function product(string $type, string $name): array
     {
-        $name = self::fold($name);
+        $kind = Kinds::of($type);
+        $form = self::first($kind::names()['form'], self::fold($name));
 
-        if ($type === 'sticker') {
-            $shape = self::first(self::SHAPES, $name);
-
-            return $shape !== null ? ['shape' => $shape] : [];
-        }
-
-        $format = self::first(self::FORMATS, $name);
-
-        return $format !== null ? ['format' => $format] : [];
+        return $form !== null ? [$kind::form()['key'] => $form] : [];
     }
 
     /**
-     * What the name of a chosen option says: a material, a finish, a paper.
+     * What else a product's name says, beyond its form: the values and
+     * switches its options would otherwise say. A "Klappkarte" is folded,
+     * "Broschüren mit Klebebindung" are perfect-bound, "Transparente Sticker"
+     * are on clear film, "Poster auf Fotopapier" glossy. Products imported
+     * from a supplier say such things in their names rather than in an
+     * option; a chosen option still has the last word (see Spec::resolve()).
+     *
+     * @return array<string, string|bool>
+     */
+    public static function named(string $type, string $name): array
+    {
+        $name = self::fold($name);
+        $kind = Kinds::of($type);
+        $form = $kind::form()['key'];
+        $says = [];
+
+        foreach ($kind::names()['options'] as $key => $patterns) {
+            // The form is read by product() – with the patterns made for product names.
+            $value = $key === $form ? null : self::first($patterns, $name);
+
+            if ($value !== null) {
+                $says[$key] = $value;
+            }
+        }
+
+        foreach ($kind::names()['switches'] as $key => [$on, $off]) {
+            if (self::has($name, $on)) {
+                $says[$key] = true;
+            } elseif (self::has($name, $off)) {
+                $says[$key] = false;
+            }
+        }
+
+        return $says;
+    }
+
+    /**
+     * What the name of a chosen option says: a material, a finish, a paper, a colour.
      *
      * @return array<string, string|bool>
      */
     public static function option(string $type, string $name): array
     {
         $name = self::fold($name);
+        $kind = Kinds::of($type);
+        $names = $kind::names();
         $says = [];
 
-        if ($type === 'sticker') {
-            $material = self::first(self::MATERIALS, $name);
+        // Paper from 250 g/m² is drawn as the stiffer sheet, by every kind that can draw one.
+        if (array_key_exists('heavy', $kind::keys()) && preg_match('/(\d{2,3})\s?g(?![a-zäöü])/u', $name, $grams) === 1) {
+            $says['heavy'] = (int) $grams[1] >= 250;
+        }
 
-            if ($material !== null) {
-                $says['material'] = $material;
+        foreach ($names['options'] as $key => $patterns) {
+            $value = self::first($patterns, $name);
+
+            if ($value !== null) {
+                $says[$key] = $value;
             }
+        }
 
+        foreach ($names['switches'] as $key => [$on, $off]) {
+            if (self::has($name, $on)) {
+                $says[$key] = true;
+            } elseif (self::has($name, $off)) {
+                $says[$key] = false;
+            }
+        }
+
+        if ($type === 'sticker') {
             if (self::has($name, 'matt')) {
                 $says['finish'] = 'matte';
             } elseif (self::has($name, 'gl[aä]nz|gloss')) {
                 $says['finish'] = 'gloss';
-            } elseif ($material === 'kraft') {
+            } elseif (($says['material'] ?? null) === 'kraft') {
                 // Uncoated paper does not shine.
                 $says['finish'] = 'matte';
             }
-
-            return $says;
-        }
-
-        // Paper from 250 g/m² is drawn as the stiffer sheet.
-        if (preg_match('/(\d{2,3})\s?g(?![a-zäöü])/u', $name, $grams) === 1) {
-            $says['heavy'] = (int) $grams[1] >= 250;
-        }
-
-        if (self::has($name, 'gl[aä]nz|gloss')) {
-            $says['gloss'] = true;
-        } elseif (self::has($name, 'matt')) {
-            $says['gloss'] = false;
         }
 
         return $says;
@@ -129,8 +148,9 @@ final class Guess
     {
         $motifs = match (true) {
             $type === 'flyer' => Flyer::motifs(),
-            $shape === 'contour' => self::CONTOUR_MOTIFS,
-            default => array_values(array_diff(Sticker::motifs(), self::CONTOUR_MOTIFS)),
+            $type === 'sticker' && $shape === 'contour' => Sticker::CONTOUR_MOTIFS,
+            $type === 'sticker' => array_values(array_diff(Sticker::motifs(), Sticker::CONTOUR_MOTIFS)),
+            default => Kinds::of($type)::motifs(),
         };
 
         return $motifs[crc32(self::fold($name)) % count($motifs)];
@@ -155,7 +175,7 @@ final class Guess
     {
         foreach ($patterns as $value => $pattern) {
             if (self::has($text, $pattern)) {
-                return $value;
+                return (string) $value;
             }
         }
 

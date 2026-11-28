@@ -2,8 +2,7 @@
 
 namespace Stiqon\Shop\Catalog;
 
-use Stiqon\Shop\Mockup\Flyer;
-use Stiqon\Shop\Mockup\Sticker;
+use Stiqon\Shop\Mockup\Kinds;
 
 /**
  * How to draw a product with a given choice of options.
@@ -18,10 +17,6 @@ use Stiqon\Shop\Mockup\Sticker;
  */
 final class Spec
 {
-    public const TYPES = ['sticker', 'flyer'];
-
-    private const SWITCHES = ['peel', 'stack', 'heavy', 'gloss'];
-
     /**
      * @param  array{name: string, categories?: list<string>, stored?: array<string, mixed>}  $product
      * @param  list<array{name: string, stored?: array<string, mixed>}>  $options  the chosen options, in the product's order
@@ -30,7 +25,7 @@ final class Spec
     public static function resolve(array $product, array $options = []): ?array
     {
         $stored = $product['stored'] ?? [];
-        $type = in_array($stored['type'] ?? null, self::TYPES, true)
+        $type = is_string($stored['type'] ?? null) && Kinds::has($stored['type'])
             ? $stored['type']
             : Guess::type($product['name'], ...($product['categories'] ?? []));
 
@@ -40,6 +35,7 @@ final class Spec
 
         $spec = array_merge(
             Guess::product($type, $product['name']),
+            Guess::named($type, $product['name']),
             self::known($type, $stored),
         );
 
@@ -57,25 +53,26 @@ final class Spec
     }
 
     /**
-     * The part of stored values the drawing of this type understands.
+     * The part of stored values the drawing of this type understands (see
+     * Mockup\Kind::keys()): a listed value, or true or false for a switch.
      *
      * @param  array<string, mixed>  $stored
      * @return array<string, string|bool>
      */
     public static function known(string $type, array $stored): array
     {
-        $allowed = $type === 'sticker'
-            ? ['shape' => Sticker::SHAPES, 'material' => Sticker::MATERIALS, 'finish' => Sticker::FINISHES, 'motif' => Sticker::motifs(), 'peel' => null]
-            : ['format' => array_keys(Flyer::FORMATS), 'motif' => Flyer::motifs(), 'stack' => null, 'heavy' => null, 'gloss' => null];
+        if (! Kinds::has($type)) {
+            return [];
+        }
 
         $known = [];
 
-        foreach ($allowed as $key => $values) {
+        foreach (Kinds::of($type)::keys() as $key => $values) {
             if (! array_key_exists($key, $stored)) {
                 continue;
             }
 
-            if (in_array($key, self::SWITCHES, true)) {
+            if ($values === null) {
                 $switch = filter_var($stored[$key], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
                 if ($switch !== null) {

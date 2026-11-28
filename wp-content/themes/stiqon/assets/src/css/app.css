@@ -212,6 +212,47 @@
     }
 }
 
+/* A row that scrolls sideways fades out at the edge it can still scroll towards.
+   Touch shows that a row moves; a mouse does not, and a cut-off word may look like
+   the end. Driven by the row's own scroll position, without script; a row that fits
+   has no scroll timeline and no fade. Browsers without scroll-driven animations show
+   the row as before. */
+@property --fade-start {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+}
+
+@property --fade-end {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+}
+
+@keyframes fade-edges {
+    0% {
+        --fade-start: 0px;
+        --fade-end: 2.5rem;
+    }
+    8%,
+    92% {
+        --fade-start: 2.5rem;
+        --fade-end: 2.5rem;
+    }
+    100% {
+        --fade-start: 2.5rem;
+        --fade-end: 0px;
+    }
+}
+
+@utility fade-edges {
+    @supports (animation-timeline: scroll()) {
+        mask-image: linear-gradient(to right, transparent, #000 var(--fade-start), #000 calc(100% - var(--fade-end)), transparent);
+        animation: fade-edges linear both;
+        animation-timeline: scroll(self inline);
+    }
+}
+
 /* Depth for mockups – the only shadows on the site: a tight contact shadow plus
    a soft, wider one. */
 @utility lift {

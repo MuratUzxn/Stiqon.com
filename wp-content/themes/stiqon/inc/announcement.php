@@ -31,7 +31,7 @@ add_filter('pre_render_block', static function (mixed $rendered, mixed $block): 
     if (! empty($block['attrs']['storeOnly'])) {
         return '<section class="wrap py-24 text-center sm:py-32">'
             .'<h1 class="text-title">Der Shop öffnet bald.</h1>'
-            .'<p class="text-lead mx-auto mt-4 max-w-xl text-muted">Wir richten gerade alles ein. In Kürze können Sie hier Sticker und Flyer mit Ihrem Motiv bestellen.</p>'
+            .'<p class="text-lead mx-auto mt-4 max-w-xl text-muted">Wir richten gerade alles ein. In Kürze können Sie hier Werbemittel mit Ihrem Motiv bestellen – von Sticker und Visitenkarte bis Roll-up.</p>'
             .'</section>';
     }
 
@@ -44,7 +44,7 @@ add_filter('pre_render_block', static function (mixed $rendered, mixed $block): 
         .'<header class="wrap py-6">'.stiqon_logo().'</header>'
         .'<main class="wrap flex flex-1 flex-col items-center justify-center py-16 text-center">'
         .'<h1 class="text-title">Stiqon öffnet bald.</h1>'
-        .'<p class="text-lead mt-4 max-w-xl text-muted">Sticker und Flyer mit Ihrem Motiv – erst ansehen, dann bestellen. Wir richten gerade alles ein.</p>'
+        .'<p class="text-lead mt-4 max-w-xl text-muted">Werbemittel mit Ihrem Motiv – erst ansehen, dann bestellen. Wir richten gerade alles ein.</p>'
         .'</main>'
         .'<footer class="wrap text-label flex flex-wrap justify-center gap-x-6 gap-y-2 py-8 text-muted">'.stiqon_announcement_footer().'</footer>'
         .'</div>';

@@ -103,7 +103,9 @@ test.describe('sample sheet', () => {
 
         expect(response.status()).toBe(200);
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Musterbogen');
-        await expect(page.locator('[data-mockup]')).toHaveCount(20);
+        // 15 stickers, 5 flyers and 36 drawings of the kinds beyond them – none left out.
+        await expect(page.locator('[data-mockup]')).toHaveCount(56);
+        await expect(page.locator('[data-mockup="shirt"]')).toHaveCount(2);
 
         expect(await accessibilityViolations(page)).toEqual([]);
         expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
