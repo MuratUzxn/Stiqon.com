@@ -119,6 +119,13 @@ export const test = base.extend({
                 return;
             }
 
+            // WordPress' own administration scripts (jQuery, TinyMCE, the editor's data)
+            // listen for "unload", which Chromium now forbids by default. That is
+            // WordPress' business, not the shop's – and only there, in its administration.
+            if (/^Permissions policy violation: unload is not allowed in this document\.?$/.test(message.text()) && new URL(page.url()).pathname.includes('/wp-admin/')) {
+                return;
+            }
+
             problems.push(`console error: ${message.text()}`);
         });
 
