@@ -143,7 +143,9 @@ Kategorien. In der Verwaltung zeigt der Reiter „Vorschau“ am Produkt, was da
 Art, Form bzw. Format und Beispielmotiv festlegen (`src/Admin/ProductPreview.php`).
 Jede Zeichnung druckt über `templates/mockup/parts/motif.php`; so erscheint das Motiv der Kundschaft
 auf allen Arten gleich. Beispielmotive füllen die Druckfläche; ein eigenes Motiv bleibt auf Bannern und
-Roll-ups ganz sichtbar, statt zu einem Streifen beschnitten zu werden (`ownFit`). `php tools/dev/mockup-sheet.php > blatt.html` zeigt alle Zeichnungen auf
+Roll-ups ganz sichtbar, statt zu einem Streifen beschnitten zu werden (`ownFit`). Auf Stoff, Karton,
+Papier und Keramik drucken die Beispielmotive ohne eigenen Grund (`bare`) – in dunkler Farbe auf hellem
+Material, in heller auf dunklem (`ink`: `dark`, `light`; ohne Angabe wie auf Stickern). `php tools/dev/mockup-sheet.php > blatt.html` zeigt alle Zeichnungen auf
 einer Seite, ohne WordPress (`--own` mit einem Kundenmotiv, Arten als Argumente: `card mug`).
 Eine neue Art braucht eine Klasse und eine Vorlage, einen Eintrag in `Mockup\Kinds` und einen
 Unit-Test wie die vorhandenen (`tests/php/Mockup`).
