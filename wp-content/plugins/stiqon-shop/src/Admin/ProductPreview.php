@@ -187,7 +187,7 @@ final class ProductPreview
                         'label' => 'Beispielmotiv',
                         'wrapper_class' => 'stiqon-for-'.$kind,
                         'value' => $type === $kind ? ($known['motif'] ?? '') : '',
-                        'options' => ['' => 'Automatisch – nach dem Namen gewählt'] + array_combine($motifs, array_map([self::class, 'motifLabel'], $motifs)),
+                        'options' => ['' => 'Automatisch – nach dem Namen gewählt'] + array_combine($motifs, array_map(static fn (string $motif): string => self::motifLabel($motif, $kind), $motifs)),
                         'description' => 'Steht für das Motiv der Kundschaft, solange sie kein eigenes gewählt hat.',
                         'desc_tip' => true,
                     ]);
@@ -261,9 +261,17 @@ final class ProductPreview
         return array_values(array_unique(['type', 'motif', ...array_map(static fn (string $type): string => Kinds::of($type)::form()['key'], Kinds::types())]));
     }
 
-    private static function motifLabel(string $motif): string
+    /**
+     * A motif's name in the field. "(Kontur)" says that a sticker with this
+     * motif is cut along its outline – on every other kind it is just a picture.
+     */
+    private static function motifLabel(string $motif, string $kind): string
     {
-        return ['eroeffnung' => 'Eröffnung', 'sprechblase' => 'Sprechblase (Kontur)', 'stern' => 'Stern (Kontur)', 'cafe' => 'Café'][$motif] ?? ucfirst($motif);
+        if ($kind === 'sticker' && in_array($motif, Sticker::CONTOUR_MOTIFS, true)) {
+            return ucfirst($motif).' (Kontur)';
+        }
+
+        return ['eroeffnung' => 'Eröffnung', 'cafe' => 'Café'][$motif] ?? ucfirst($motif);
     }
 
     /**

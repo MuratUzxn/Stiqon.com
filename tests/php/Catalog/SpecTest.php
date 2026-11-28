@@ -124,6 +124,25 @@ final class SpecTest extends TestCase
         $this->assertGreaterThan(2, count($distinct), 'Different products should not all show the same sample.');
     }
 
+    public function test_a_products_own_name_says_what_its_options_would(): void
+    {
+        $spec = static fn (string $name, string ...$options): array => Spec::resolve(
+            ['name' => $name],
+            array_map(static fn (string $option): array => ['name' => $option], $options),
+        )['spec'];
+
+        // Products from a supplier name such things rather than offer them as an option.
+        $this->assertSame('clear', $spec('Transparente Sticker')['material']);
+        $this->assertTrue($spec('Klappkarten DIN A6')['fold']);
+        $this->assertSame('perfect', $spec('Broschüren mit Klebebindung')['binding']);
+        $this->assertTrue($spec('Poster auf Fotopapier')['gloss']);
+        // A chosen option still has the last word.
+        $this->assertSame('kraft', $spec('Transparente Sticker', 'Kraftpapier')['material']);
+        $this->assertSame('staple', $spec('Broschüren mit Klebebindung', 'Rückstichheftung')['binding']);
+        // The form stays the product name's own business: a format option of a poster is not read twice.
+        $this->assertSame('a2', $spec('Plakate DIN A3', 'DIN A2')['format']);
+    }
+
     public function test_whatever_is_resolved_can_be_drawn(): void
     {
         $names = ['Runde Sticker', 'Sticker mit Konturschnitt', 'Etiketten', 'Aufkleber', 'Flyer', 'Flyer DIN lang', 'Handzettel A6', 'Label square'];

@@ -57,19 +57,32 @@ final class Guess
     }
 
     /**
-     * What a product's name says through the kind's switches: a "Klappkarte"
-     * is folded, a "Poster auf Fotopapier" glossy, "Briefumschläge mit
-     * Fenster" have a window. Products imported from a supplier say such
-     * things in their names rather than in an option.
+     * What else a product's name says, beyond its form: the values and
+     * switches its options would otherwise say. A "Klappkarte" is folded,
+     * "Broschüren mit Klebebindung" are perfect-bound, "Transparente Sticker"
+     * are on clear film, "Poster auf Fotopapier" glossy. Products imported
+     * from a supplier say such things in their names rather than in an
+     * option; a chosen option still has the last word (see Spec::resolve()).
      *
-     * @return array<string, bool>
+     * @return array<string, string|bool>
      */
-    public static function switches(string $type, string $name): array
+    public static function named(string $type, string $name): array
     {
         $name = self::fold($name);
+        $kind = Kinds::of($type);
+        $form = $kind::form()['key'];
         $says = [];
 
-        foreach (Kinds::of($type)::names()['switches'] as $key => [$on, $off]) {
+        foreach ($kind::names()['options'] as $key => $patterns) {
+            // The form is read by product() – with the patterns made for product names.
+            $value = $key === $form ? null : self::first($patterns, $name);
+
+            if ($value !== null) {
+                $says[$key] = $value;
+            }
+        }
+
+        foreach ($kind::names()['switches'] as $key => [$on, $off]) {
             if (self::has($name, $on)) {
                 $says[$key] = true;
             } elseif (self::has($name, $off)) {

@@ -347,7 +347,8 @@ final class BrochureTest extends TestCase
             [['name' => 'DIN lang'], ['name' => 'Glänzend']],
         );
 
-        $this->assertSame(['motif' => 'karte', 'binding' => 'perfect', 'format' => 'lang', 'gloss' => true], $stored['spec']);
+        // The same values in whatever order the sources added them (the binding is also in the product's name).
+        $this->assertEquals(['motif' => 'karte', 'binding' => 'perfect', 'format' => 'lang', 'gloss' => true], $stored['spec']);
     }
 
     public function test_a_width_class_from_the_caller_replaces_the_full_width_default(): void
