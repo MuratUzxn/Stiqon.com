@@ -38,10 +38,11 @@ final class Kinds
         'poster' => [Poster::class, self::PREFIX.'plakat|'.self::PREFIX.'poster'],
         'rollup' => [Rollup::class, 'roll-?ups?(?![a-zäöüß])'],
         'banner' => [Banner::class, self::PREFIX.'banner|'.self::PREFIX.'plane(?![a-zäöüß])|'.self::PREFIX.'planen'],
-        'box' => [Box::class, self::PREFIX.'karton|'.self::PREFIX.'schachtel|'.self::PREFIX.'box|'.self::PREFIX.'verpackung'],
+        'box' => [Box::class, self::PREFIX.'karton|'.self::PREFIX.'schachtel|'.self::PREFIX.'box(?!er)|'.self::PREFIX.'verpackung'],
         'bag' => [Bag::class, 'papiert[uü]te|papiertrage|'.self::PREFIX.'t[uü]te|tragetasche'],
-        'tote' => [Tote::class, 'baumwoll|stoff|jute|'.self::PREFIX.'beutel|einkaufstasche'],
+        // Garments before bags: a hoodie may have a "Kängurubeutel", a shirt is "aus Baumwolle".
         'shirt' => [Shirt::class, 't-?shirt|'.self::PREFIX.'shirt|hoodie|kapuzen|pullover|sweat|polo'],
+        'tote' => [Tote::class, '(?:baumwoll|stoff|canvas)-?(?:trage)?(?:tasche|beutel)|jute|'.self::PREFIX.'beutel|einkaufstasche'],
         'mug' => [Mug::class, self::PREFIX.'tasse|'.self::PREFIX.'becher'],
         'bottle' => [Bottle::class, self::PREFIX.'flasche'],
         'coaster' => [Coaster::class, 'bierdeckel|'.self::PREFIX.'untersetzer|'.self::PREFIX.'deckel'],

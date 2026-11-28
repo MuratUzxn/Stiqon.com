@@ -18,7 +18,7 @@ final class KindsTest extends TestCase
     public function test_every_kind_listed_has_its_drawing(): void
     {
         $this->assertSame(
-            ['sticker', 'calendar', 'folder', 'card', 'leaflet', 'flyer', 'envelope', 'letter', 'notepad', 'brochure', 'standee', 'poster', 'rollup', 'banner', 'box', 'bag', 'tote', 'shirt', 'mug', 'bottle', 'coaster'],
+            ['sticker', 'calendar', 'folder', 'card', 'leaflet', 'flyer', 'envelope', 'letter', 'notepad', 'brochure', 'standee', 'poster', 'rollup', 'banner', 'box', 'bag', 'shirt', 'tote', 'mug', 'bottle', 'coaster'],
             Kinds::types(),
         );
 
@@ -64,6 +64,13 @@ final class KindsTest extends TestCase
         yield 'a hoodie' => ['Sweatshirts', 'shirt'];
         yield 'an enamel mug' => ['Emaillebecher', 'mug'];
         yield 'a beer mat' => ['Glasuntersetzer', 'coaster'];
+        // Cotton makes shirts as well as bags.
+        yield 'a shirt of cotton' => ['T-Shirts aus Baumwolle', 'shirt'];
+        yield 'a hoodie of cotton' => ['Baumwoll-Hoodie mit Kängurubeutel', 'shirt'];
+        yield 'a bag of cloth' => ['Stofftaschen', 'tote'];
+        yield 'a bag of jute' => ['Jutebeutel', 'tote'];
+        yield 'a gym bag' => ['Turnbeutel', 'tote'];
+        yield 'a gift box' => ['Geschenkboxen', 'box'];
     }
 
     /**
@@ -84,6 +91,8 @@ final class KindsTest extends TestCase
         // A name that says nothing leaves it to the category.
         $this->assertSame('letter', Guess::type('Geschäftsausstattung', 'Briefpapier'));
         $this->assertNull(Guess::type('Geschenkidee', 'Werbetechnik'));
+        // Boxer shorts are no box.
+        $this->assertNull(Guess::type('Boxershorts'));
     }
 
     public function test_options_of_the_example_assortment_change_the_drawing(): void
