@@ -133,7 +133,7 @@ $streaks = [
     </defs>
 
     <?php // Where the bottle stands on the table ?>
-    <ellipse cx="60" cy="<?php echo esc_attr(round($mockup->floor - 0.5, 2)); ?>" rx="<?php echo esc_attr(round(0.62 * $w, 2)); ?>" ry="2.4" fill="url(#<?php echo esc_attr($uid); ?>-contact)" />
+    <ellipse cx="60" cy="<?php echo esc_attr(round($mockup->floor - 0.5, 2)); ?>" rx="<?php echo esc_attr(round(0.62 * $w, 2)); ?>" ry="2.5" fill="url(#<?php echo esc_attr($uid); ?>-contact)" />
 
     <?php // The body ?>
     <path d="<?php echo esc_attr($mockup->outline); ?>" fill="url(#<?php echo esc_attr($uid); ?>-coat)" />
@@ -197,6 +197,6 @@ $streaks = [
     <path d="<?php echo esc_attr($mockup->loop); ?>" fill="none" stroke="<?php echo esc_attr($tone['loop']); ?>" stroke-width="<?php echo esc_attr(Bottle::LOOP['band']); ?>" />
     <path d="<?php echo esc_attr($mockup->loop); ?>" fill="none" stroke="<?php echo esc_attr($tone['loopLight']); ?>" stroke-opacity="0.7" stroke-width="<?php echo esc_attr(round(Bottle::LOOP['band'] * 0.3, 2)); ?>" transform="translate(-0.35 -0.3)" />
     <?php foreach ([60 - Bottle::LOOP['span'] / 2, 60 + Bottle::LOOP['span'] / 2] as $foot) : ?>
-        <rect x="<?php echo esc_attr(round($foot - 1.45, 2)); ?>" y="<?php echo esc_attr(round($capTop - 0.9, 2)); ?>" width="2.9" height="1.5" rx="0.6" fill="<?php echo esc_attr($tone['loop']); ?>" stroke="#0a0a0a" stroke-opacity="0.22" stroke-width="0.3" />
+        <rect x="<?php echo esc_attr(round($foot - 1.55, 2)); ?>" y="<?php echo esc_attr(round($capTop - 0.95, 2)); ?>" width="3.1" height="1.6" rx="0.65" fill="<?php echo esc_attr($tone['loop']); ?>" stroke="#0a0a0a" stroke-opacity="0.22" stroke-width="0.3" />
     <?php endforeach; ?>
 </svg>

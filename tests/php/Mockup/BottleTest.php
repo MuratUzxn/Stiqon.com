@@ -25,7 +25,7 @@ final class BottleTest extends TestCase
 
     public function test_every_motif_renders_in_every_size_and_colour(): void
     {
-        $this->assertGreaterThanOrEqual(12, count(Bottle::motifs()));
+        $this->assertGreaterThanOrEqual(10, count(Bottle::motifs()));
 
         foreach (Bottle::motifs() as $motif) {
             foreach (array_keys(Bottle::form()['values']) as $size) {
@@ -54,6 +54,22 @@ final class BottleTest extends TestCase
 
         Uid::reset();
         $this->assertSame($plain, stiqon_mockup('bottle'), 'The same values draw the same bottle.');
+    }
+
+    public function test_motifs_that_are_only_an_outline_on_a_sticker_are_not_offered(): void
+    {
+        // A contour motif's shape is the sticker's outline. Printed bare on the
+        // body, "stern" left a small "Top!" and "sprechblase" a greeting without
+        // its bubble: a bottle that looked unprinted.
+        $this->assertSame(array_values(array_diff(Sticker::motifs(), ['sprechblase', 'stern'])), Bottle::motifs());
+
+        // A product that stored one of them still gets a bottle with a logo on it.
+        foreach (Sticker::CONTOUR_MOTIFS as $motif) {
+            $resolved = Spec::resolve(['name' => 'Trinkflaschen', 'stored' => ['type' => 'bottle', 'motif' => $motif]]);
+
+            $this->assertContains($resolved['spec']['motif'], Bottle::motifs(), $motif);
+            $this->assertWellFormed(Kinds::draw($resolved['type'], $resolved['spec']), $motif);
+        }
     }
 
     public function test_the_logo_is_printed_on_the_body_and_shaded_with_it(): void
@@ -100,14 +116,15 @@ final class BottleTest extends TestCase
         foreach ([$small, $large] as $bottle) {
             // A shadow where it stands, and room for the one it casts.
             $this->assertMatchesRegularExpression('/<ellipse cx="60" cy="[\d.]+" rx="[\d.]+" ry="[\d.]+" fill="url\(#'.$bottle->uid.'-contact\)" \/>/', $bottle->render(), $bottle->size);
-            $this->assertGreaterThanOrEqual(9.0, $bottle->top, $bottle->size);
-            $this->assertLessThanOrEqual(105.0, $bottle->floor, $bottle->size);
+            $this->assertGreaterThanOrEqual(6.0, $bottle->top, $bottle->size);
+            $this->assertLessThanOrEqual(108.0, $bottle->floor, $bottle->size);
             $this->assertGreaterThanOrEqual(10.0, 60 - $bottle->width / 2, $bottle->size);
             $this->assertEqualsWithDelta(56.5, ($bottle->top + $bottle->floor) / 2, 0.01, "{$bottle->size}: centred a little above the middle");
 
-            // Upright and narrow, but tall enough to stand beside the other products.
+            // Upright and narrow, but as large as the other products in a mixed grid:
+            // even the smaller one spans nearly three quarters of the box.
             $this->assertGreaterThan(2.5 * $bottle->width, $bottle->height, $bottle->size);
-            $this->assertGreaterThan(0.68 * 120, $bottle->height, $bottle->size);
+            $this->assertGreaterThan(0.72 * 120, $bottle->height, $bottle->size);
 
             // Cap, mouth, shoulder, body and foot from the top down.
             $this->assertLessThan($bottle->cap['y'], $bottle->top, $bottle->size);
@@ -235,6 +252,8 @@ final class BottleTest extends TestCase
             'motif' => [static fn () => new Bottle(motif: 'gibt-es-nicht'), 'Unknown bottle motif [gibt-es-nicht].'],
             'motif outside the directory' => [static fn () => new Bottle(motif: '../mockup/flyer'), 'Unknown bottle motif'],
             'flyer motif' => [static fn () => Bottle::fromArray(['motif' => 'prozent']), 'Unknown bottle motif [prozent].'],
+            'outline motif' => [static fn () => new Bottle(motif: 'stern'), 'Unknown bottle motif [stern].'],
+            'outline motif from a spec' => [static fn () => Bottle::fromArray(['motif' => 'sprechblase']), 'Unknown bottle motif [sprechblase].'],
             'color' => [static fn () => new Bottle(color: 'rot'), 'Unknown bottle color [rot].'],
             'color in German' => [static fn () => Bottle::fromArray(['color' => 'silber']), 'Unknown bottle color [silber].'],
             'color of cotton' => [static fn () => Bottle::fromArray(['color' => 'natural']), 'Unknown bottle color [natural].'],
@@ -296,7 +315,6 @@ final class BottleTest extends TestCase
         $this->assertSame(['500', '750'], $keys['size']);
         $this->assertSame(array_map('strval', array_keys($form['values'])), $keys[$form['key']]);
         $this->assertSame(Bottle::motifs(), $keys['motif']);
-        $this->assertSame(Sticker::motifs(), Bottle::motifs());
         $this->assertSame(['silver', 'black', 'white'], $keys['color']);
 
         $names = Bottle::names();

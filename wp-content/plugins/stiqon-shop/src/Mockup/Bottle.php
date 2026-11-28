@@ -24,11 +24,13 @@ final class Bottle implements Kind
      * Width of the body and height of the whole bottle, loop included, in the
      * drawing's units. True to scale, bottles of 7 x 26 cm and 8 x 29 cm would
      * stand like sticks beside the other products: both are drawn stouter, and
-     * the larger one a little taller than true, so it stands out.
+     * the larger one a little taller than true, so it stands out. Even the
+     * smaller one spans nearly three quarters of the box's height, as large as
+     * the other products are drawn in a mixed grid.
      */
     public const SIZES = [
-        '500' => ['label' => '500 ml', 'width' => 30.0, 'height' => 83.0],
-        '750' => ['label' => '750 ml', 'width' => 33.0, 'height' => 95.0],
+        '500' => ['label' => '500 ml', 'width' => 31.8, 'height' => 88.0],
+        '750' => ['label' => '750 ml', 'width' => 35.0, 'height' => 100.7],
     ];
 
     public const COLORS = ['silver', 'black', 'white'];
@@ -37,13 +39,13 @@ final class Bottle implements Kind
     public const COLOR_NAMES = ['silver' => 'Silber', 'black' => 'Schwarz', 'white' => 'Weiß'];
 
     /** The screw cap: the same on every size. */
-    public const CAP = ['width' => 17.4, 'height' => 10.6];
+    public const CAP = ['width' => 18.4, 'height' => 11.2];
 
     /** The carry loop on the cap: how high it rises, how far apart its feet are and how thick it is. */
-    public const LOOP = ['height' => 6.6, 'span' => 11.6, 'band' => 1.9];
+    public const LOOP = ['height' => 7.0, 'span' => 12.3, 'band' => 2.0];
 
     /** The bare steel of the bottle's mouth, showing as a narrow band under the cap. */
-    public const RING = 1.4;
+    public const RING = 1.5;
 
     /**
      * How much of a circle on the bottle shows from a little above: its
@@ -220,13 +222,17 @@ final class Bottle implements Kind
     }
 
     /**
-     * Names of the sample motifs printed on bottles: the sticker motifs, as a logo.
+     * Names of the sample motifs printed on bottles, as a logo: the sticker
+     * motifs that keep their shape when printed bare. A contour motif's shape
+     * is the sticker's outline, so on the body "stern" would leave a small
+     * "Top!" and "sprechblase" its greeting without the bubble – the bottle
+     * would look unprinted.
      *
      * @return list<string>
      */
     public static function motifs(): array
     {
-        return Template::names('motif');
+        return array_values(array_diff(Template::names('motif'), Sticker::CONTOUR_MOTIFS));
     }
 
     /**
@@ -258,7 +264,7 @@ final class Bottle implements Kind
      */
     public function ring(): array
     {
-        $width = round(self::CAP['width'] - 1.4, 2);
+        $width = round(self::CAP['width'] - 1.5, 2);
 
         return Svg::box(round(60 - $width / 2, 2), round($this->cap['y'] + $this->cap['height'], 2), $width, self::RING);
     }
