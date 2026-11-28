@@ -127,7 +127,7 @@ Adresse an.
 | `/?s=…` | `search.php` | Ergebnisseite der Suche |
 | `/warenkorb/`, `/kasse/`, `/mein-konto/` | `page.php` | Die Seiten, die WooCommerce zeichnet – siehe „Kaufen“ |
 | `/agb/`, `/impressum/` … | `page.php` | Geschriebene Seiten aus dem Editor. Welche davon AGB, Widerruf, Versand, Datenschutz und Impressum sind, steht in den Einstellungen von WooCommerce und Germanized; der Fuß verlinkt sie von dort |
-| `/design/` | `archive-stiqon_design.php` | Die Designs (Inhaltstyp des Plugins, in der Verwaltung unter „Designs“): Übersicht nach Werbemittel und Anlass, Umschalter und Reiter als Filter, 24 Karten je Seite. Gefiltert wird über `?werbemittel=…` und `?anlass=…` – Links, die ohne Skript funktionieren. Ohne gezeigtes Design steht dort „Die ersten Designs entstehen gerade.“ |
+| `/design/` | `archive-stiqon_design.php` | Die Designs (Inhaltstyp des Plugins, in der Verwaltung unter „Designs“): Übersicht nach Werbemittel und Anlass (nur auf der ersten, ungefilterten Seite), Umschalter und Reiter als Filter, 24 Karten je Seite. Gefiltert wird über `?werbemittel=…` und `?anlass=…` – Links, die ohne Skript funktionieren. Ohne gezeigtes Design steht dort „Die ersten Designs entstehen gerade.“ |
 | `/design/<name>/` | `single-stiqon_design.php` | Ein Design groß, Werbemittel und Anlass als Links zur gefilterten Liste, „Als Motiv ausprobieren“ und der Weg zum Bereich, darunter weitere Designs für dasselbe Werbemittel |
 | `/referenzen/` | `archive-stiqon_referenz.php` | Referenzen: gelieferte Arbeiten mit Foto, Name und ein, zwei Sätzen (Inhaltstyp des Plugins, in der Verwaltung unter „Referenzen“). Die Seite und alle Links darauf gibt es erst, wenn eine Referenz veröffentlicht ist und ein Foto hat |
 | `/musterbogen/` | `page-musterbogen.php` | Logo, Schrift, Farben und Mockups auf einer Seite. Nur wer das Erscheinungsbild der Website verwalten darf, sieht sie; alle anderen bekommen „nicht gefunden“ – auch wenn die Seite versehentlich veröffentlicht wurde |
@@ -139,10 +139,12 @@ Das Register der Seite steht in Schwarz, das andere in Grau, ohne Unterstrich
 Designs; zu „Produkte“ Startseite, Bereiche, Produkte, Suche, Warenkorb, Kasse und Kundenkonto.
 Rechtstexte, Referenzen, „nicht gefunden“ und die Ankündigung gehören zu keinem. Die Startseite
 eines Registers trägt `aria-current="page"`, jede andere Seite darin `aria-current="true"`.
-Bereiche und Referenzen stehen nicht mehr im Kopf, sondern im Fuß, im Menü für kleine Bildschirme
-(unter den Registern) und – die Bereiche – im Umschalter oben auf jeder Bereichsseite. Unter
-768 px passen die Register nicht mit 44 px hohen Flächen neben Suche, Warenkorb und Menü; dort
-stehen sie oben im Menü. Ohne das Plugin gibt es keine Designs, und der Kopf nennt nur „Produkte“.
+Bereiche und Referenzen stehen nicht mehr im Kopf, sondern im Fuß (unter „Übersicht“, nach
+„Designs“), im Menü für kleine Bildschirme (die Bereiche eingerückt unter „Produkte“) und – die
+Bereiche – im Umschalter oben auf jeder Bereichsseite. Unter 768 px passen die Register nicht mit
+44 px hohen Flächen neben Suche, Warenkorb und Menü; dort bekommen sie eine eigene Zeile unter der
+Leiste und stehen zusätzlich oben im Menü. Ohne das Plugin gibt es keine Designs, und der Kopf
+nennt nur „Produkte“.
 
 Fehlt eine der beiden Bereichsseiten oder fehlen dem Theme seine gebauten Dateien, weist die
 Verwaltung darauf hin (`inc/checks.php`).

@@ -39,51 +39,54 @@ get_header();
     </section>
 <?php else : ?>
     <?php // The model's explore block: a small grey label over each column, then large links. ?>
-    <nav aria-label="Designs entdecken" class="wrap grid grid-cols-2 gap-x-6 gap-y-10 pb-12 lg:grid-cols-4 lg:pb-16">
-        <?php foreach ([['werbemittel', 'Werbemittel', $data['media']], ['anlass', 'Anlässe', $data['occasions']]] as [$filter, $label, $terms]) : ?>
-            <?php if ($terms !== []) : ?>
-                <div>
-                    <h2 class="text-label text-muted"><?php echo esc_html($label); ?></h2>
-                    <ul class="mt-2">
-                        <?php foreach ($terms as $term) : ?>
-                            <li>
-                                <a
-                                    href="<?php echo esc_url(stiqon_designs_url([$filter => $term['slug']])); ?>"
-                                    class="inline-block rounded-sm py-0.5 text-[1.375rem] leading-tight font-medium tracking-[-0.005em] transition-colors duration-200 ease-soft hover:text-muted lg:text-[1.625rem]"
-                                ><?php echo esc_html($term['name']); ?></a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
-        <?php endforeach; ?>
-    </nav>
+    <?php // Only on the list's start, as on the model's landing: below, the toolbar says the same and keeps the other filter. ?>
+    <?php if (array_filter($selection) === [] && $page === 1) : ?>
+        <nav aria-label="Designs entdecken" class="wrap grid grid-cols-2 gap-x-6 gap-y-10 pb-12 sm:grid-cols-[repeat(2,minmax(0,18rem))] lg:pb-16">
+            <?php foreach ([['werbemittel', 'Werbemittel', $data['media']], ['anlass', 'Anlässe', $data['occasions']]] as [$filter, $label, $terms]) : ?>
+                <?php if ($terms !== []) : ?>
+                    <div>
+                        <h2 class="text-label text-muted"><?php echo esc_html($label); ?></h2>
+                        <ul class="mt-2">
+                            <?php foreach ($terms as $term) : ?>
+                                <li>
+                                    <?php // 44 px tall where a finger taps; with a mouse the model's tight column. ?>
+                                    <a
+                                        href="<?php echo esc_url($with($filter, $term['slug'])); ?>"
+                                        class="inline-flex min-h-11 items-center rounded-sm text-[1.375rem] leading-tight font-medium tracking-[-0.005em] transition-colors duration-200 ease-soft hover:text-muted lg:min-h-0 lg:py-0.5 lg:text-[1.625rem]"
+                                    ><?php echo esc_html($term['name']); ?></a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </nav>
+    <?php endif; ?>
 
     <section class="wrap pb-16 lg:pb-28" aria-labelledby="alle-designs">
         <h2 id="alle-designs" class="sr-only">Alle Designs</h2>
 
-        <?php // One row, as on the model. On a phone it scrolls sideways instead of breaking. ?>
-        <div class="flex items-center gap-4">
-            <div class="-my-1 flex min-w-0 flex-1 items-center gap-4 overflow-x-auto py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <?php
-                $media = [['label' => 'Alle', 'url' => $with('werbemittel', null), 'current' => $selection['werbemittel'] === null]];
+        <?php
+        $media = [['label' => 'Alle', 'url' => $with('werbemittel', null), 'current' => $selection['werbemittel'] === null]];
 
-                foreach ($data['media'] as $term) {
-                    $media[] = ['label' => $term['name'], 'url' => $with('werbemittel', $term['slug']), 'current' => $selection['werbemittel'] === $term['slug']];
-                }
+        foreach ($data['media'] as $term) {
+            $media[] = ['label' => $term['name'], 'url' => $with('werbemittel', $term['slug']), 'current' => $selection['werbemittel'] === $term['slug']];
+        }
 
-                $occasions = [['label' => 'Alle Anlässe', 'url' => $with('anlass', null), 'current' => $selection['anlass'] === null]];
+        $occasions = [['label' => 'Alle Anlässe', 'url' => $with('anlass', null), 'current' => $selection['anlass'] === null]];
 
-                foreach ($data['occasions'] as $term) {
-                    $occasions[] = ['label' => $term['name'], 'url' => $with('anlass', $term['slug']), 'current' => $selection['anlass'] === $term['slug']];
-                }
-
-                echo stiqon_segments($media, 'Werbemittel');
-                ?>
-                <span class="h-6 w-px shrink-0 bg-line" aria-hidden="true"></span>
-                <?php echo stiqon_tabs($occasions, 'Anlass', 'pr-1'); ?>
-            </div>
-            <p class="text-label shrink-0 text-muted max-sm:hidden">
+        foreach ($data['occasions'] as $term) {
+            $occasions[] = ['label' => $term['name'], 'url' => $with('anlass', $term['slug']), 'current' => $selection['anlass'] === $term['slug']];
+        }
+        ?>
+        <?php // One row, as on the model. On a phone the occasions get a row of their own and wrap: every filter, and the chosen one above all, stays in sight. ?>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <nav aria-label="Designs filtern" class="flex min-w-0 flex-1 flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4">
+                <?php echo stiqon_segments($media, 'Werbemittel', '', false); ?>
+                <span class="h-6 w-px shrink-0 bg-line max-sm:hidden" aria-hidden="true"></span>
+                <?php echo stiqon_tabs($occasions, 'Anlass', '', false); ?>
+            </nav>
+            <p class="text-label shrink-0 text-muted">
                 <?php echo esc_html(sprintf($found === 1 ? '%d Design' : '%d Designs', $found)); ?>
             </p>
         </div>

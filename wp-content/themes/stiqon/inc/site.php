@@ -83,11 +83,16 @@ function stiqon_current_register(): ?string
         return null;
     }
 
+    // A search started on the list of designs (/design/?s=…) still shows the shop's results page.
+    if (is_search()) {
+        return 'produkte';
+    }
+
     if (is_post_type_archive('stiqon_design') || is_singular('stiqon_design')) {
         return 'design';
     }
 
-    if (is_front_page() || is_search() || is_page(array_keys(stiqon_required_pages()))
+    if (is_front_page() || is_page(array_keys(stiqon_required_pages()))
         || (function_exists('is_product') && is_product()) || stiqon_is_woocommerce_page()) {
         return 'produkte';
     }
@@ -109,7 +114,7 @@ function stiqon_registers(): array
     $registers = [];
 
     if (post_type_exists('stiqon_design') && function_exists('stiqon_designs_url')) {
-        $start = is_post_type_archive('stiqon_design') && ! is_paged() && array_filter(stiqon_designs()['selection']) === [];
+        $start = $current === 'design' && is_post_type_archive('stiqon_design') && ! is_paged() && array_filter(stiqon_designs()['selection']) === [];
 
         $registers[] = [
             'slug' => 'design',

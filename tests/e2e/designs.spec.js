@@ -1,4 +1,4 @@
-import { test, expect, cli, accessibilityViolations } from './fixtures.js';
+import { test, expect, cli, accessibilityViolations, logInAsAdministrator } from './fixtures.js';
 
 /**
  * The register "Design" beside "Produkte": the header names the two registers
@@ -17,19 +17,18 @@ const cards = (page) => page.locator('section[aria-labelledby="alle-designs"] li
 const titles = (page) => cards(page).locator('h3');
 
 /**
- * The registers as the header has them: [label, aria-current]. The bar's and the
- * menu's are read both – only one of them is exposed at a width – and must agree.
+ * The registers as the header has them: [label, aria-current]. The bar's, the
+ * phones' row below it and the menu's are read all – only one row is exposed at
+ * a width – and must agree. In the menu the areas follow "Produkte".
  */
 async function registers(page) {
     const navigations = page.locator('header nav[aria-label="Hauptnavigation"]');
-    const read = (navigation, count) => navigation.locator('a').evaluateAll(
-        (links, n) => links.slice(0, n).map((link) => [link.textContent.trim(), link.getAttribute('aria-current')]),
-        count,
-    );
+    const read = (links) => links.evaluateAll((elements) => elements.map((link) => [link.textContent.trim(), link.getAttribute('aria-current')]));
 
-    const bar = await read(navigations.nth(0), 10);
+    const bar = await read(navigations.nth(0).locator('a'));
 
-    expect(await read(navigations.nth(1), bar.length)).toEqual(bar);
+    expect(await read(page.locator('header nav[aria-label="Register"] a'))).toEqual(bar);
+    expect(await read(navigations.nth(1).locator('a.text-heading'))).toEqual(bar);
 
     return bar;
 }
@@ -55,6 +54,10 @@ test.describe('the registers in the header', () => {
         ['/produkt/runde-sticker/', [['Design', null], ['Produkte', 'true']]],
         ['/?s=folie', [['Design', null], ['Produkte', 'true']]],
         ['/warenkorb/', [['Design', null], ['Produkte', 'true']]],
+        ['/kasse/', [['Design', null], ['Produkte', 'true']]],
+        ['/mein-konto/', [['Design', null], ['Produkte', 'true']]],
+        // A search started on the list of designs shows the shop's results page.
+        ['/design/?s=Herbstmarkt', [['Design', null], ['Produkte', 'true']]],
         ['/design/', [['Design', 'page'], ['Produkte', null]]],
         // A filter nobody can choose is no filter: still the start of the register.
         ['/design/?werbemittel=plakat', [['Design', 'page'], ['Produkte', null]]],
@@ -96,6 +99,8 @@ test.describe('the registers in the header', () => {
         await areas.getByRole('link', { name: 'Flyer' }).click();
         await expect(page).toHaveURL(/\/flyer\/$/);
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Flyer');
+        await expect(areas.getByRole('link', { name: 'Flyer' })).toHaveAttribute('aria-current', 'page');
+        await expect(areas.getByRole('link', { name: 'Sticker' })).not.toHaveAttribute('aria-current');
 
         if (isMobile) {
             await page.locator('header summary').click();
@@ -149,19 +154,66 @@ test.describe('the registers in the header', () => {
         await context.close();
     });
 
-    test('fit a phone of 375 px without scrolling sideways', async ({ page, isMobile }) => {
-        test.skip(!isMobile, 'Phone width.');
+    for (const width of [375, 390]) {
+        test(`stand in a row of their own on a phone of ${width} px, without scrolling sideways`, async ({ page, isMobile }) => {
+            test.skip(!isMobile, 'Phone width.');
 
-        await page.setViewportSize({ width: 375, height: 812 });
+            await page.setViewportSize({ width, height: 812 });
 
-        for (const path of ['/', '/design/', '/design/beispiel-neu-eroeffnet/', '/sticker/']) {
-            await page.goto(path);
-            expect(await noScroll(page), path).toBe(0);
+            for (const path of ['/', '/design/', '/design/beispiel-neu-eroeffnet/', '/sticker/', '/design/?werbemittel=flyer&anlass=feier']) {
+                await page.goto(path);
+                expect(await noScroll(page), path).toBe(0);
 
-            await page.locator('header summary').click();
-            await expect(page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Design' })).toBeVisible();
-            expect(await noScroll(page), path).toBe(0);
-        }
+                // Every page names both registers, without opening the menu, with room for a finger.
+                const row = page.getByRole('navigation', { name: 'Register' });
+
+                for (const name of ['Design', 'Produkte']) {
+                    const link = row.getByRole('link', { name });
+
+                    await expect(link, path).toBeVisible();
+                    expect((await link.boundingBox()).height, `${path} ${name}`).toBeGreaterThanOrEqual(44);
+                }
+
+                await page.locator('header summary').click();
+
+                const menu = page.getByRole('navigation', { name: 'Hauptnavigation' });
+
+                for (const name of ['Design', 'Produkte']) {
+                    expect((await menu.getByRole('link', { name, exact: true }).boundingBox()).height, `${path} menu ${name}`).toBeGreaterThanOrEqual(44);
+                }
+
+                expect(await noScroll(page), path).toBe(0);
+            }
+        });
+    }
+
+    test('are both set in ink in the menu, and the areas below "Produkte"', async ({ page, isMobile }) => {
+        test.skip(!isMobile, 'The menu only exists on small screens.');
+
+        await page.goto('/design/');
+        await page.locator('header summary').click();
+
+        const menu = page.getByRole('navigation', { name: 'Hauptnavigation' });
+        const ink = await page.evaluate(() => getComputedStyle(document.body).color);
+        const products = await menu.getByRole('link', { name: 'Produkte' }).boundingBox();
+        const sticker = await menu.getByRole('link', { name: 'Sticker' }).boundingBox();
+
+        await expect(menu.getByRole('link', { name: 'Design', exact: true })).toHaveCSS('color', ink);
+        await expect(menu.getByRole('link', { name: 'Produkte' })).toHaveCSS('color', ink);
+        expect(sticker.y).toBeGreaterThan(products.y);
+        // Set in below the register they belong to.
+        expect(await menu.getByRole('link', { name: 'Sticker' }).evaluate((link) => parseFloat(getComputedStyle(link).paddingLeft)))
+            .toBeGreaterThan(await menu.getByRole('link', { name: 'Kundenkonto' }).evaluate((link) => parseFloat(getComputedStyle(link).paddingLeft)));
+    });
+
+    test('the footer leads into both', async ({ page }) => {
+        await page.goto('/impressum/');
+
+        const overview = page.getByRole('navigation', { name: 'Übersicht' });
+
+        await expect(overview.getByRole('link')).toHaveText(['Designs', 'Sticker', 'Flyer']);
+        await overview.getByRole('link', { name: 'Designs' }).click();
+        await expect(page).toHaveURL(/\/design\/$/);
     });
 });
 
@@ -189,9 +241,9 @@ test.describe('the list of designs', () => {
         await expect(explore.getByRole('link')).toHaveText(['Sticker', 'Flyer', 'Eröffnung', 'Feier', 'Rabattaktion']);
         await expect(explore.getByRole('link', { name: 'Feier' })).toHaveAttribute('href', /\/design\/\?anlass=feier$/);
 
-        await expect(page.getByRole('navigation', { name: 'Werbemittel' }).getByRole('link')).toHaveText(['Alle', 'Sticker', 'Flyer']);
-        await expect(page.getByRole('navigation', { name: 'Anlass' }).getByRole('link')).toHaveText(['Alle Anlässe', 'Eröffnung', 'Feier', 'Rabattaktion']);
-        await expect(page.getByRole('navigation', { name: 'Werbemittel' }).getByRole('link', { name: 'Alle' })).toHaveAttribute('aria-current', 'page');
+        await expect(page.getByRole('group', { name: 'Werbemittel' }).getByRole('link')).toHaveText(['Alle', 'Sticker', 'Flyer']);
+        await expect(page.getByRole('group', { name: 'Anlass' }).getByRole('link')).toHaveText(['Alle Anlässe', 'Eröffnung', 'Feier', 'Rabattaktion']);
+        await expect(page.getByRole('group', { name: 'Werbemittel' }).getByRole('link', { name: 'Alle' })).toHaveAttribute('aria-current', 'page');
         await expect(page.getByText('Beispieldesigns für die Entwicklung.')).toBeVisible();
 
         // The pictures arrive, from this shop's own address (the guard on every test sees to that).
@@ -205,12 +257,22 @@ test.describe('the list of designs', () => {
     test('filters by links, without JavaScript, and keeps the other filter', async ({ browser, baseURL, isMobile }) => {
         const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: isMobile ? { width: 390, height: 844 } : { width: 1440, height: 900 } });
         const page = await context.newPage();
-        const media = page.getByRole('navigation', { name: 'Werbemittel' });
-        const occasions = page.getByRole('navigation', { name: 'Anlass' });
+        const media = page.getByRole('group', { name: 'Werbemittel' });
+        const occasions = page.getByRole('group', { name: 'Anlass' });
 
         await page.goto('/design/');
         await media.getByRole('link', { name: 'Flyer' }).click();
         await expect(page).toHaveURL(/\/design\/\?werbemittel=flyer$/);
+
+        // Every occasion keeps the medium, and with none chosen "Alle Anlässe" is the current one.
+        for (const href of await occasions.getByRole('link').evaluateAll((links) => links.map((link) => link.getAttribute('href')))) {
+            expect(href).toContain('werbemittel=flyer');
+        }
+
+        await expect(occasions.getByRole('link', { name: 'Alle Anlässe' })).toHaveAttribute('aria-current', 'page');
+        // The filters are one landmark, the count says what they leave – on a phone, too.
+        await expect(page.getByRole('navigation', { name: 'Designs filtern' })).toBeVisible();
+        await expect(page.getByText('3 Designs')).toBeVisible();
         await expect(titles(page)).toHaveText(['Große Eröffnung', 'Gartenfest', 'Wochenangebot']);
         await expect(media.getByRole('link', { name: 'Flyer' })).toHaveAttribute('aria-current', 'page');
         await expect(media.getByRole('link', { name: 'Alle' })).not.toHaveAttribute('aria-current', 'page');
@@ -224,8 +286,11 @@ test.describe('the list of designs', () => {
         await expect(page).toHaveURL(/\/design\/\?anlass=feier$/);
         await expect(titles(page)).toHaveText(['Konfetti', 'Gartenfest']);
 
-        // The explore block leads to a filtered list, too.
+        // The explore block stands on the list's start only; it leads to a filtered list, too.
+        await expect(page.getByRole('navigation', { name: 'Designs entdecken' })).toHaveCount(0);
+        await page.goto('/design/');
         await page.getByRole('navigation', { name: 'Designs entdecken' }).getByRole('link', { name: 'Rabattaktion' }).click();
+        await expect(page).toHaveURL(/\/design\/\?anlass=rabattaktion$/);
         await expect(titles(page)).toHaveText(['Prozente', 'Wochenangebot']);
 
         await context.close();
@@ -235,7 +300,7 @@ test.describe('the list of designs', () => {
         await page.goto('/design/?werbemittel=plakat&anlass=%3Cb%3E');
 
         await expect(titles(page)).toHaveText(shown);
-        await expect(page.getByRole('navigation', { name: 'Werbemittel' }).getByRole('link', { name: 'Alle' })).toHaveAttribute('aria-current', 'page');
+        await expect(page.getByRole('group', { name: 'Werbemittel' }).getByRole('link', { name: 'Alle' })).toHaveAttribute('aria-current', 'page');
         expect(await page.content()).not.toContain('<b>');
     });
 
@@ -272,6 +337,59 @@ test.describe('the list of designs', () => {
     });
 });
 
+test.describe('a list longer than a page', () => {
+    // 22 more sticker designs, newer than the examples: 28 shown, 25 of them stickers.
+    let copies = [];
+
+    test.beforeAll(() => {
+        const source = designId('beispiel-konfetti');
+
+        copies = cli('eval', `
+            $source = ${source};
+            $image = (int) get_post_thumbnail_id($source);
+            $ids = [];
+            for ($i = 1; $i <= 22; $i++) {
+                $id = wp_insert_post(['post_type' => 'stiqon_design', 'post_status' => 'publish', 'post_title' => "Kopie {$i}", 'post_name' => "kopie-{$i}", 'post_date' => gmdate('Y-m-d H:i:s', time() - $i * 60)]);
+                set_post_thumbnail($id, $image);
+                update_post_meta($id, '_stiqon_design_released', (string) $image);
+                wp_set_object_terms($id, ['sticker'], 'stiqon_design_medium');
+                $ids[] = $id;
+            }
+            echo implode(' ', $ids);
+        `).split(' ');
+    });
+
+    test.afterAll(() => {
+        cli('post', 'delete', ...copies, '--force');
+    });
+
+    test('is paged, 24 designs to a page, and keeps its filter from page to page', async ({ page }) => {
+        const pages = page.getByRole('navigation', { name: 'Seiten' });
+
+        await page.goto('/design/');
+        await expect(cards(page)).toHaveCount(24);
+        await expect(pages).toContainText('Seite 1 von 2');
+        await expect(pages.getByRole('link', { name: 'Vorherige Seite' })).toHaveCount(0);
+        await pages.getByRole('link', { name: 'Nächste Seite' }).click();
+
+        await expect(page).toHaveURL(/\/design\/page\/2\/$/);
+        await expect(cards(page)).toHaveCount(4);
+        // The oldest four, newest first.
+        await expect(titles(page)).toHaveText(['Konfetti', 'Gartenfest', 'Prozente', 'Wochenangebot']);
+        await expect(pages.getByRole('link', { name: 'Vorherige Seite' })).toHaveAttribute('href', /\/design\/$/);
+        // Inside the register, not its start; and no explore block beyond the first page.
+        expect(await registers(page)).toEqual([['Design', 'true'], ['Produkte', null]]);
+        await expect(page.getByRole('navigation', { name: 'Designs entdecken' })).toHaveCount(0);
+
+        await page.goto('/design/?werbemittel=sticker');
+        await expect(cards(page)).toHaveCount(24);
+        await expect(pages.getByRole('link', { name: 'Nächste Seite' })).toHaveAttribute('href', /\/design\/page\/2\/\?werbemittel=sticker$/);
+        await pages.getByRole('link', { name: 'Nächste Seite' }).click();
+        await expect(titles(page)).toHaveText(['Prozente']);
+        await expect(page.getByRole('group', { name: 'Werbemittel' }).getByRole('link', { name: 'Sticker' })).toHaveAttribute('aria-current', 'page');
+    });
+});
+
 test.describe('a term that only designs no one sees carry', () => {
     let term;
 
@@ -287,7 +405,7 @@ test.describe('a term that only designs no one sees carry', () => {
     test('is neither offered nor counted, and filters nothing', async ({ page }) => {
         await page.goto('/design/?anlass=herbst');
 
-        await expect(page.getByRole('navigation', { name: 'Anlass' }).getByRole('link')).toHaveText(['Alle Anlässe', 'Eröffnung', 'Feier', 'Rabattaktion']);
+        await expect(page.getByRole('group', { name: 'Anlass' }).getByRole('link')).toHaveText(['Alle Anlässe', 'Eröffnung', 'Feier', 'Rabattaktion']);
         await expect(page.getByRole('navigation', { name: 'Designs entdecken' })).not.toContainText('Herbst');
         await expect(titles(page)).toHaveText(shown);
     });
@@ -319,7 +437,7 @@ test.describe('the list without designs to show', () => {
             await expect(page.getByRole('heading', { level: 1 })).toHaveText('Designs');
             await expect(page.getByRole('main')).toContainText('Die ersten Designs entstehen gerade.');
             await expect(page.getByRole('navigation', { name: 'Designs entdecken' })).toHaveCount(0);
-            await expect(page.getByRole('navigation', { name: 'Werbemittel' })).toHaveCount(0);
+            await expect(page.getByRole('navigation', { name: 'Designs filtern' })).toHaveCount(0);
             await expect(cards(page)).toHaveCount(0);
             expect(await accessibilityViolations(page)).toEqual([]);
 
@@ -566,5 +684,75 @@ test.describe('designs the shop does not show', () => {
         }
 
         expect((await page.goto('/design/beispiel-konfetti/')).status()).toBe(200);
+    });
+});
+
+test.describe('the release in the administration', () => {
+    test.use({ expectedStatuses: [404] });
+
+    test('is given for the picture, taken back by unticking, and lost with a new picture', async ({ page, request, isMobile }) => {
+        test.skip(isMobile, 'The administration is tested on the desktop.');
+
+        const id = designId('beispiel-herbstmarkt');
+        const picture = cli('post', 'meta', 'get', id, '_thumbnail_id');
+        const visitor = async () => (await request.get('/design/beispiel-herbstmarkt/')).status();
+        const edit = async () => {
+            await page.goto(`/wp-admin/post.php?post=${id}&action=edit`);
+
+            return page.getByLabel('Freigegeben: Ähnlichkeits- und Markenprüfung erledigt');
+        };
+        const save = async () => {
+            await page.locator('#publish').click();
+            await expect(page.locator('#message')).toContainText('aktualisiert');
+        };
+        const release = async () => page.locator('#the-list tr', { hasText: 'Herbstmarkt' }).locator('td.column-stiqon_release').textContent();
+
+        await logInAsAdministrator(page);
+
+        try {
+            let box = await edit();
+
+            // What it takes for a design to appear, said under the title; and the box for its provenance.
+            await expect(page.getByText('Ein Design erscheint im Shop erst, wenn es veröffentlicht ist, ein Vorschaubild hat und dieses Bild')).toBeVisible();
+            await expect(page.locator('#stiqon-design-provenance').getByRole('heading', { name: 'Herkunft und Freigabe' })).toBeVisible();
+            await expect(box).not.toBeChecked();
+
+            // Before the release the editor may look at it; nobody else.
+            expect((await page.goto('/design/beispiel-herbstmarkt/?preview=true')).status()).toBe(200);
+            await expect(page.getByRole('heading', { level: 1 })).toHaveText('Herbstmarkt');
+            expect((await request.get('/design/beispiel-herbstmarkt/?preview=true')).status()).toBe(404);
+
+            box = await edit();
+            await box.check();
+            await save();
+            expect(cli('post', 'meta', 'get', id, '_stiqon_design_released')).toBe(picture);
+            expect(await visitor()).toBe(200);
+
+            await page.goto('/wp-admin/edit.php?post_type=stiqon_design');
+            expect(await release()).toBe('Ja – im Shop');
+
+            // Another picture: not the one that was checked.
+            cli('post', 'meta', 'update', id, '_thumbnail_id', cli('post', 'meta', 'get', designId('beispiel-konfetti'), '_thumbnail_id'));
+            expect(await visitor()).toBe(404);
+            await page.reload();
+            expect(await release()).toBe('Nein – neues Vorschaubild, nicht freigegeben');
+            box = await edit();
+            await expect(box).not.toBeChecked();
+            await expect(page.getByText('Das Vorschaubild ist nicht mehr das freigegebene.')).toBeVisible();
+            cli('post', 'meta', 'update', id, '_thumbnail_id', picture);
+
+            box = await edit();
+            await expect(box).toBeChecked();
+            await box.uncheck();
+            await save();
+            expect(cli('post', 'meta', 'list', id, '--keys=_stiqon_design_released', '--format=count')).toBe('0');
+            expect(await visitor()).toBe(404);
+
+            await page.goto('/wp-admin/edit.php?post_type=stiqon_design');
+            expect(await release()).toBe('Nein – nicht freigegeben');
+        } finally {
+            cli('post', 'meta', 'update', id, '_thumbnail_id', picture);
+            cli('eval', `delete_post_meta(${Number(id)}, '_stiqon_design_released');`);
+        }
     });
 });

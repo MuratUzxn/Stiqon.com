@@ -1,6 +1,6 @@
 <?php
 /**
- * Closes every page: the dark footer with the shop's areas and its legal pages,
+ * Closes every page: the dark footer with the designs, the shop's areas and its legal pages,
  * the bar that reports the visitor's motif, and the search that opens over the
  * page.
  */
@@ -10,6 +10,13 @@ defined('ABSPATH') || exit;
 $links = stiqon_legal_links();
 $withdrawal = stiqon_withdrawal_link();
 $legal = $links !== [] || $withdrawal !== null;
+
+// The site's overview: the register of designs first, then what lies within the products and beside them.
+$overview = stiqon_navigation();
+
+if (post_type_exists('stiqon_design')) {
+    array_unshift($overview, ['slug' => 'design', 'label' => 'Designs', 'url' => stiqon_designs_url(), 'current' => is_post_type_archive('stiqon_design')]);
+}
 ?>
 </main>
 
@@ -36,7 +43,7 @@ $legal = $links !== [] || $withdrawal !== null;
             <nav aria-labelledby="footer-areas">
                 <h2 id="footer-areas" class="text-label text-on-night-muted">Übersicht</h2>
                 <ul class="mt-3">
-                    <?php foreach (stiqon_navigation() as $area) : ?>
+                    <?php foreach ($overview as $area) : ?>
                         <li><a href="<?php echo esc_url($area['url']); ?>" class="text-action inline-flex h-11 items-center rounded-sm transition-opacity hover:opacity-60"><?php echo esc_html($area['label']); ?></a></li>
                     <?php endforeach; ?>
                 </ul>

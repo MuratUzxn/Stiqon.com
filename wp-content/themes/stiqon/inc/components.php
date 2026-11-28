@@ -170,39 +170,56 @@ function stiqon_chip(string $label, array $options = []): string
  * the areas, a filter – and works without script, because every segment is a
  * link. The current one carries aria-current="page", and the look follows it.
  *
+ * Its own navigation landmark by default (the areas); a filter among others of
+ * one list is a labelled group inside that list's navigation instead.
+ *
  * @param  list<array{label: string, url: string, current: bool}>  $items
  */
-function stiqon_segments(array $items, string $label, string $class = ''): string
+function stiqon_segments(array $items, string $label, string $class = '', bool $landmark = true): string
 {
-    $html = '<nav aria-label="'.esc_attr($label).'" class="'.esc_attr(stiqon_classes(['inline-flex shrink-0 items-center rounded-full bg-mist p-1', $class])).'">';
+    $html = stiqon_link_group($label, $landmark, stiqon_classes(['inline-flex shrink-0 items-center rounded-full bg-mist px-1', $class]));
 
     foreach ($items as $item) {
+        // The link is as tall as a finger needs (44 px); the pill inside keeps the model's 36 px.
         $html .= '<a href="'.esc_url($item['url']).'"'.($item['current'] ? ' aria-current="page"' : '')
-            .' class="text-action inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full px-4 text-sm text-muted transition-colors duration-200 ease-soft hover:text-ink aria-[current=page]:bg-paper aria-[current=page]:text-ink">'
-            .esc_html($item['label']).'</a>';
+            .' class="group/segment text-action inline-flex h-11 shrink-0 items-center whitespace-nowrap rounded-full text-[0.9375rem] text-muted transition-colors duration-200 ease-soft hover:text-ink aria-[current=page]:text-ink focus-visible:outline-offset-0">'
+            .'<span class="inline-flex h-9 items-center rounded-full px-4 transition-colors duration-200 ease-soft group-aria-[current=page]/segment:bg-paper">'
+            .esc_html($item['label']).'</span></a>';
     }
 
-    return $html.'</nav>';
+    return $html.($landmark ? '</nav>' : '</div>');
 }
 
 /**
  * Text tabs as on mobbin.com ("Latest | Most popular"): the current one in ink
- * and underlined, the others grey. Links, like the segments above.
+ * and underlined, the others grey. Links, like the segments above; where there
+ * are more than the row holds, they wrap rather than hide.
  *
  * @param  list<array{label: string, url: string, current: bool}>  $items
  */
-function stiqon_tabs(array $items, string $label, string $class = ''): string
+function stiqon_tabs(array $items, string $label, string $class = '', bool $landmark = true): string
 {
-    $html = '<nav aria-label="'.esc_attr($label).'" class="'.esc_attr(stiqon_classes(['flex shrink-0 items-center gap-5', $class])).'">';
+    $html = stiqon_link_group($label, $landmark, stiqon_classes(['flex flex-wrap items-center gap-x-5', $class]));
 
     foreach ($items as $item) {
         $html .= '<a href="'.esc_url($item['url']).'"'.($item['current'] ? ' aria-current="page"' : '')
-            .' class="text-action relative inline-flex h-11 shrink-0 items-center whitespace-nowrap text-[0.9375rem] text-muted transition-colors duration-200 ease-soft hover:text-ink'
+            .' class="text-action relative inline-flex h-11 shrink-0 items-center whitespace-nowrap rounded-md text-[0.9375rem] text-muted transition-colors duration-200 ease-soft hover:text-ink focus-visible:outline-offset-0'
             .' aria-[current=page]:text-ink aria-[current=page]:after:absolute aria-[current=page]:after:inset-x-0 aria-[current=page]:after:bottom-1 aria-[current=page]:after:h-0.5 aria-[current=page]:after:rounded-full aria-[current=page]:after:bg-ink">'
             .esc_html($item['label']).'</a>';
     }
 
-    return $html.'</nav>';
+    return $html.($landmark ? '</nav>' : '</div>');
+}
+
+/**
+ * Opens the element around segments or tabs: a navigation landmark, or a
+ * labelled group within one.
+ */
+function stiqon_link_group(string $label, bool $landmark, string $class): string
+{
+    return $landmark
+        ? '<nav aria-label="'.esc_attr($label).'" class="'.esc_attr($class).'">'
+        : '<div role="group" aria-label="'.esc_attr($label).'" class="'.esc_attr($class).'">';
 }
 
 /**
