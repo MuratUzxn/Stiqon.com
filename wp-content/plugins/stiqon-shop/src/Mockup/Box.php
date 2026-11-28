@@ -158,13 +158,16 @@ final class Box implements Kind
     }
 
     /**
-     * Names of the sample motifs printed on boxes: the sticker motifs, as a logo.
+     * Names of the sample motifs printed on boxes, as a logo: the sticker
+     * motifs that keep their shape in print. A contour motif's shape is the
+     * sticker's outline (Sticker::CONTOUR_MOTIFS): printed straight onto the
+     * board, only a few words would be left, and the box would look unprinted.
      *
      * @return list<string>
      */
     public static function motifs(): array
     {
-        return Template::names('motif');
+        return array_values(array_diff(Template::names('motif'), Sticker::CONTOUR_MOTIFS));
     }
 
     /**
@@ -178,14 +181,16 @@ final class Box implements Kind
     /**
      * How the sample logo is printed: straight onto the board, without a
      * ground of its own, so the brown or the white shows through. In dark ink
-     * on both (see $ink in the motif templates): white lettering would vanish
-     * on white board and fade into kraft, and so would a small gold label.
+     * on white board, in deep ink on kraft (see $ink in the motif templates):
+     * white lettering would vanish on white board and fade into kraft, and so
+     * would a small gold label; kraft is as light as gold, so thin gold lines
+     * on it turn bronze as well.
      *
-     * @return array{bare: true, ink: 'dark'|'light'}
+     * @return array{bare: true, ink: 'dark'|'deep'}
      */
     public function motifVars(): array
     {
-        return ['bare' => true, 'ink' => 'dark'];
+        return ['bare' => true, 'ink' => $this->color === 'kraft' ? 'deep' : 'dark'];
     }
 
     /** A face as an SVG transform (see $faces). */

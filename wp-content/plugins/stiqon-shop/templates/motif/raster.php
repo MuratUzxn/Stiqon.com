@@ -5,14 +5,16 @@
  *
  * @var string      $uid  prefix for ids, unique on the page
  * @var bool        $bare without a background of its own (the sticker material shows through)
- * @var string|null $ink  ink of a bare print: "dark" for white and light materials, "light" for dark ones (black, navy); null as on sticker film and kraft
+ * @var string|null $ink  ink of a bare print: "dark" for white and light materials, "deep" for mid-tones (kraft board and paper, grey cloth), "light" for dark ones (black, navy); null as on sticker film and kraft stickers
  */
 
 defined('ABSPATH') || exit;
 
 $ink ??= null;
 // In light ink the squares are white, the colour of the motif's own ground, and the
-// label is cut out of the print: the dark material shows through its letters.
+// label is cut out of the print: the dark material shows through its letters. In deep
+// ink the plate stays gold: a bronze one would bury the dark label, and a plate this
+// large shows on kraft and grey cloth by its hue.
 $light = $bare && $ink === 'light';
 ?>
 <?php if (! $bare) : ?>

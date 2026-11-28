@@ -5,13 +5,14 @@
  *
  * @var string      $uid  prefix for ids, unique on the page
  * @var bool        $bare without a background of its own (the sticker material shows through)
- * @var string|null $ink  ink of a bare print: "dark" for white and light materials, "light" for dark ones (black, navy); null as on sticker film and kraft
+ * @var string|null $ink  ink of a bare print: "dark" for white and light materials, "deep" for mid-tones (kraft board and paper, grey cloth), "light" for dark ones (black, navy); null as on sticker film and kraft stickers
  */
 
 defined('ABSPATH') || exit;
 
 $ink ??= null;
-// In light ink the mark is white, the colour of the motif's own ground.
+// In light ink the mark is white, the colour of the motif's own ground. The gold dot
+// lies on the mark, not on the material, so it stays gold in every ink.
 $mark = $bare && $ink === 'light' ? '#ffffff' : '#0f0f0e';
 ?>
 <?php if (! $bare) : ?>

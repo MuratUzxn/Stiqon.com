@@ -23,7 +23,7 @@ final class BoxTest extends TestCase
 
     public function test_every_motif_renders_in_every_size_and_colour(): void
     {
-        $this->assertGreaterThanOrEqual(12, count(Box::motifs()));
+        $this->assertGreaterThanOrEqual(10, count(Box::motifs()));
 
         foreach (Box::motifs() as $motif) {
             foreach (array_keys(Box::form()['values']) as $size) {
@@ -120,18 +120,25 @@ final class BoxTest extends TestCase
         $this->assertLessThan(0.75 * $extent['l']['height'], $extent['s']['height'], 'S is clearly flatter.');
     }
 
-    public function test_the_logo_is_printed_straight_onto_brown_and_white_board_in_dark_ink(): void
+    public function test_the_logo_is_printed_straight_onto_the_board_in_deep_ink_on_brown_and_dark_ink_on_white(): void
     {
         // The sample "siegel" brings a cream background of its own; on board it is left out.
         $background = '<rect width="100" height="100" fill="#f1ebdd" />';
+        $ink = ['kraft' => 'deep', 'white' => 'dark'];
 
         foreach (Box::COLORS as $color) {
-            $this->assertSame(['bare' => true, 'ink' => 'dark'], (new Box(color: $color))->motifVars(), $color);
+            $this->assertSame(['bare' => true, 'ink' => $ink[$color]], (new Box(color: $color))->motifVars(), $color);
             $this->assertStringNotContainsString($background, stiqon_mockup('box', ['color' => $color, 'motif' => 'siegel']), $color);
 
-            // Light lettering would fade into kraft and vanish on white: the star's is dark.
-            $this->assertStringContainsString('fill="#1d1d1b">Top!', stiqon_mockup('box', ['color' => $color, 'motif' => 'stern']), $color);
+            // A small gold label would fade into kraft and be too pale on white: the offer's is dark.
+            $this->assertStringContainsString('fill="#141412">AKTION', $this->sample(stiqon_mockup('box', ['color' => $color, 'motif' => 'aktion'])), $color);
         }
+
+        // Kraft is as light as gold, so on brown board the offer's thin rings are bronze; white board keeps them gold.
+        $kraft = $this->sample(stiqon_mockup('box', ['color' => 'kraft', 'motif' => 'aktion']));
+        $this->assertSame(2, substr_count($kraft, 'stroke="#7a5a1e"'));
+        $this->assertStringNotContainsString('#d9a441', $kraft);
+        $this->assertSame(2, substr_count($this->sample(stiqon_mockup('box', ['color' => 'white', 'motif' => 'aktion'])), 'stroke="#d9a441"'));
 
         // Kraft board has fibres, white board has none; the visitor's motif gets no backing on either.
         $this->assertStringContainsString('-fibre)', stiqon_mockup('box', ['color' => 'kraft']));
@@ -142,6 +149,12 @@ final class BoxTest extends TestCase
 
             $this->assertSame(0, preg_match('/<g x-show="active" style="display:none">\s*<rect/', $svg), $color);
         }
+    }
+
+    public function test_motifs_that_are_only_an_outline_on_a_sticker_are_not_offered(): void
+    {
+        // Printed straight onto the board, the star and the speech bubble would be a few words on an empty box.
+        $this->assertSame(array_values(array_diff(Sticker::motifs(), ['sprechblase', 'stern'])), Box::motifs());
     }
 
     public function test_tape_seals_the_lid_on_every_size(): void
@@ -188,6 +201,8 @@ final class BoxTest extends TestCase
             'motif' => [static fn () => new Box(motif: 'gibt-es-nicht'), 'Unknown box motif [gibt-es-nicht].'],
             'motif outside the directory' => [static fn () => new Box(motif: '../mockup/flyer'), 'Unknown box motif'],
             'flyer motif' => [static fn () => Box::fromArray(['motif' => 'fest']), 'Unknown box motif [fest].'],
+            'outline motif' => [static fn () => new Box(motif: 'stern'), 'Unknown box motif [stern].'],
+            'outline motif from a spec' => [static fn () => Box::fromArray(['motif' => 'sprechblase']), 'Unknown box motif [sprechblase].'],
             'color' => [static fn () => new Box(color: 'gold'), 'Unknown box color [gold].'],
             'color in German' => [static fn () => Box::fromArray(['color' => 'braun']), 'Unknown box color [braun].'],
         ];
@@ -243,7 +258,6 @@ final class BoxTest extends TestCase
         $this->assertSame(['s' => 'S', 'm' => 'M', 'l' => 'L'], $form['values']);
         $this->assertSame(array_keys($form['values']), $keys[$form['key']]);
         $this->assertSame(Box::motifs(), $keys['motif']);
-        $this->assertSame(Sticker::motifs(), Box::motifs());
         $this->assertSame(['kraft', 'white'], $keys['color']);
 
         $names = Box::names();
@@ -317,6 +331,14 @@ final class BoxTest extends TestCase
         $this->assertMatchesRegularExpression('/class="[^"]*\bw-full\b[^"]*\blift\b/', stiqon_mockup('box'));
         $this->assertDoesNotMatchRegularExpression('/class="[^"]*\bw-full\b/', stiqon_mockup('box', [], 'w-40'));
         $this->assertStringContainsString('viewBox="0 0 120 120"', stiqon_mockup('box'));
+    }
+
+    /** The sample motif as printed: the inner <svg> of the print layer. */
+    private function sample(string $svg): string
+    {
+        $this->assertSame(1, preg_match('/<svg[^>]*data-motif-sample[^>]*>.*?<\/svg>/s', $svg, $sample));
+
+        return $sample[0];
     }
 
     /**

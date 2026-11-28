@@ -122,13 +122,17 @@ final class Envelope implements Kind
     }
 
     /**
-     * Names of the sample motifs: the sticker motifs, printed as the sender's logo.
+     * Names of the sample motifs, printed as the sender's logo: the sticker
+     * motifs that keep their shape on paper, as on the letterhead (see
+     * Letter::motifs()). A contour motif's shape is the sticker's outline
+     * (Sticker::CONTOUR_MOTIFS): printed on the envelope, only a few small
+     * words would be left in its corner.
      *
      * @return list<string>
      */
     public static function motifs(): array
     {
-        return Template::names('motif');
+        return array_values(array_diff(Template::names('motif'), Sticker::CONTOUR_MOTIFS));
     }
 
     /**
@@ -147,9 +151,10 @@ final class Envelope implements Kind
     /**
      * How the sample logo is printed: without a ground of its own, so it looks
      * printed on the paper, and in dark ink (see $ink in the motif templates)
-     * – white lettering, as the star's, would vanish on white paper.
+     * – white lettering would vanish on white paper, and a small gold label
+     * would be too pale to read.
      *
-     * @return array{bare: true, ink: 'dark'|'light'}
+     * @return array{bare: true, ink: 'dark'}
      */
     public function motifVars(): array
     {

@@ -25,7 +25,7 @@ final class EnvelopeTest extends TestCase
 
     public function test_every_logo_renders_on_every_format_with_and_without_a_window(): void
     {
-        $this->assertSame(Envelope::motifs(), Sticker::motifs(), 'The logos are the sticker motifs.');
+        $this->assertGreaterThanOrEqual(10, count(Envelope::motifs()));
 
         foreach (Envelope::motifs() as $motif) {
             foreach (array_keys(Envelope::FORMATS) as $format) {
@@ -50,15 +50,22 @@ final class EnvelopeTest extends TestCase
         $this->assertStringNotContainsString('preserveAspectRatio="xMidYMid slice"', $svg);
         $this->assertStringNotContainsString('<rect width="100" height="100" fill="#1f3d2e"', $svg, 'The monogram comes without its green ground.');
 
-        // Every logo in dark ink, the star as well: its white lettering would vanish on white paper.
+        // Every logo in dark ink: white lettering would vanish on white paper, a small gold label be too pale.
         foreach (Envelope::motifs() as $motif) {
             $this->assertSame(['bare' => true, 'ink' => 'dark'], (new Envelope(motif: $motif))->motifVars(), $motif);
+            $logo = $this->sample(stiqon_mockup('envelope', ['motif' => $motif]));
+
+            $this->assertStringNotContainsString('"#ffffff"', $logo, $motif);
+            $this->assertStringNotContainsString('"#fff"', $logo, $motif);
         }
 
-        $star = stiqon_mockup('envelope', ['motif' => 'stern']);
-        $this->assertStringNotContainsString('fill="#c8553d"', $star, 'The star comes without its red ground.');
-        $this->assertStringContainsString('fill="#1d1d1b">Top!', $star);
-        $this->assertStringNotContainsString('fill="#ffffff"', $star);
+        $this->assertStringContainsString('fill="#141412">AKTION', stiqon_mockup('envelope', ['motif' => 'aktion']));
+    }
+
+    public function test_motifs_that_are_only_an_outline_on_a_sticker_are_not_offered(): void
+    {
+        // As on the letterhead: in the envelope's corner the star and the speech bubble would be a few small words.
+        $this->assertSame(array_values(array_diff(Sticker::motifs(), ['sprechblase', 'stern'])), Envelope::motifs());
     }
 
     public function test_the_window_changes_the_drawing_and_keeps_the_address_inside(): void
@@ -147,6 +154,8 @@ final class EnvelopeTest extends TestCase
             'motif' => [static fn () => new Envelope(motif: 'gibt-es-nicht'), 'Unknown envelope motif [gibt-es-nicht].'],
             'flyer motif' => [static fn () => new Envelope(motif: 'fest'), 'Unknown envelope motif [fest].'],
             'card motif' => [static fn () => new Envelope(motif: 'atelier'), 'Unknown envelope motif [atelier].'],
+            'outline motif' => [static fn () => new Envelope(motif: 'stern'), 'Unknown envelope motif [stern].'],
+            'outline motif from a spec' => [static fn () => Envelope::fromArray(['motif' => 'sprechblase']), 'Unknown envelope motif [sprechblase].'],
             'motif outside the directory' => [static fn () => new Envelope(motif: '../mockup/envelope'), 'Unknown envelope motif [../mockup/envelope].'],
         ];
     }
@@ -300,6 +309,14 @@ final class EnvelopeTest extends TestCase
         $this->assertTrue($resolved['spec']['window']);
         $this->assertContains($resolved['spec']['motif'], Envelope::motifs());
         $this->assertWellFormed(Kinds::draw('envelope', $resolved['spec']), 'resolved product');
+    }
+
+    /** The sample logo as printed: the inner <svg> of the print layer. */
+    private function sample(string $svg): string
+    {
+        $this->assertSame(1, preg_match('/<svg[^>]*data-motif-sample[^>]*>.*?<\/svg>/s', $svg, $sample));
+
+        return $sample[0];
     }
 
     private function assertWellFormed(string $svg, string $what): void

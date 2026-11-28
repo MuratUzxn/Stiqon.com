@@ -23,7 +23,7 @@ final class ToteTest extends TestCase
 
     public function test_every_motif_renders_with_either_handles_in_every_colour(): void
     {
-        $this->assertGreaterThanOrEqual(12, count(Tote::motifs()));
+        $this->assertGreaterThanOrEqual(10, count(Tote::motifs()));
 
         foreach (Tote::motifs() as $motif) {
             foreach (array_keys(Tote::form()['values']) as $handles) {
@@ -131,6 +131,12 @@ final class ToteTest extends TestCase
         $this->assertStringNotContainsString('-flecks)', stiqon_mockup('tote', ['color' => 'white']));
     }
 
+    public function test_motifs_that_are_only_an_outline_on_a_sticker_are_not_offered(): void
+    {
+        // Printed straight onto the cloth, the star and the speech bubble would be a few words on an empty bag.
+        $this->assertSame(array_values(array_diff(Sticker::motifs(), ['sprechblase', 'stern'])), Tote::motifs());
+    }
+
     public function test_no_sample_is_printed_in_an_ink_its_cotton_swallows(): void
     {
         foreach (Tote::motifs() as $motif) {
@@ -181,6 +187,8 @@ final class ToteTest extends TestCase
             'motif' => [static fn () => new Tote(motif: 'gibt-es-nicht'), 'Unknown tote motif [gibt-es-nicht].'],
             'motif outside the directory' => [static fn () => new Tote(motif: '../mockup/flyer'), 'Unknown tote motif'],
             'flyer motif' => [static fn () => Tote::fromArray(['motif' => 'prozent']), 'Unknown tote motif [prozent].'],
+            'outline motif' => [static fn () => new Tote(motif: 'stern'), 'Unknown tote motif [stern].'],
+            'outline motif from a spec' => [static fn () => Tote::fromArray(['motif' => 'sprechblase']), 'Unknown tote motif [sprechblase].'],
             'color' => [static fn () => new Tote(color: 'rot'), 'Unknown tote color [rot].'],
             'color in German' => [static fn () => Tote::fromArray(['color' => 'natur']), 'Unknown tote color [natur].'],
             'color of paper' => [static fn () => Tote::fromArray(['color' => 'kraft']), 'Unknown tote color [kraft].'],
@@ -237,7 +245,6 @@ final class ToteTest extends TestCase
         $this->assertSame(['long' => 'Lange Henkel', 'short' => 'Kurze Henkel'], $form['values']);
         $this->assertSame(array_keys($form['values']), $keys[$form['key']]);
         $this->assertSame(Tote::motifs(), $keys['motif']);
-        $this->assertSame(Sticker::motifs(), Tote::motifs());
         $this->assertSame(['natural', 'black', 'white'], $keys['color']);
 
         $names = Tote::names();

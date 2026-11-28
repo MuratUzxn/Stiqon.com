@@ -5,7 +5,7 @@
  *
  * @var string      $uid  prefix for ids, unique on the page
  * @var bool        $bare without a background of its own (the sticker material shows through)
- * @var string|null $ink  ink of a bare print: "dark" for white and light materials, "light" for dark ones (black, navy); null as on sticker film and kraft
+ * @var string|null $ink  ink of a bare print: "dark" for white and light materials, "deep" for mid-tones (kraft board and paper, grey cloth), "light" for dark ones (black, navy); null as on sticker film and kraft stickers
  */
 
 defined('ABSPATH') || exit;

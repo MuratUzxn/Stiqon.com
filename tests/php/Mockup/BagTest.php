@@ -23,7 +23,7 @@ final class BagTest extends TestCase
 
     public function test_every_motif_renders_in_every_size_and_colour(): void
     {
-        $this->assertGreaterThanOrEqual(12, count(Bag::motifs()));
+        $this->assertGreaterThanOrEqual(10, count(Bag::motifs()));
 
         foreach (Bag::motifs() as $motif) {
             foreach (array_keys(Bag::form()['values']) as $size) {
@@ -119,23 +119,36 @@ final class BagTest extends TestCase
         }
     }
 
-    public function test_the_logo_is_printed_straight_onto_brown_and_white_paper_in_dark_ink(): void
+    public function test_the_logo_is_printed_straight_onto_the_paper_in_deep_ink_on_brown_and_dark_ink_on_white(): void
     {
         // The sample "siegel" brings a cream background of its own; on the bag it is left out.
         $background = '<rect width="100" height="100" fill="#f1ebdd" />';
+        $ink = ['kraft' => 'deep', 'white' => 'dark'];
 
         foreach (Bag::COLORS as $color) {
-            $this->assertSame(['bare' => true, 'ink' => 'dark'], (new Bag(color: $color))->motifVars(), $color);
+            $this->assertSame(['bare' => true, 'ink' => $ink[$color]], (new Bag(color: $color))->motifVars(), $color);
             $this->assertStringNotContainsString($background, stiqon_mockup('bag', ['color' => $color, 'motif' => 'siegel']), $color);
 
-            // Light lettering would fade into kraft and vanish on white: the star's is dark.
-            $this->assertStringContainsString('fill="#1d1d1b">Top!', stiqon_mockup('bag', ['color' => $color, 'motif' => 'stern']), $color);
+            // A small gold label would fade into kraft and be too pale on white: the offer's is dark.
+            $this->assertStringContainsString('fill="#141412">AKTION', $this->sample(stiqon_mockup('bag', ['color' => $color, 'motif' => 'aktion'])), $color);
         }
+
+        // Kraft is as light as gold, so on brown paper the sun over the waves is bronze; white paper keeps it gold.
+        $kraft = $this->sample(stiqon_mockup('bag', ['color' => 'kraft', 'motif' => 'wellen']));
+        $this->assertStringContainsString('<circle cx="72" cy="24" r="9" fill="#7a5a1e" />', $kraft);
+        $this->assertStringNotContainsString('#d9a441', $kraft);
+        $this->assertStringContainsString('<circle cx="72" cy="24" r="9" fill="#d9a441" />', $this->sample(stiqon_mockup('bag', ['color' => 'white', 'motif' => 'wellen'])));
 
         $this->assertStringContainsString('-fibre)', stiqon_mockup('bag', ['color' => 'kraft']));
         $this->assertStringNotContainsString('-fibre', stiqon_mockup('bag', ['color' => 'white']));
         $this->assertStringContainsString('fill="#c9a57c"', stiqon_mockup('bag', ['color' => 'kraft']));
         $this->assertStringNotContainsString('fill="#c9a57c"', stiqon_mockup('bag', ['color' => 'white']));
+    }
+
+    public function test_motifs_that_are_only_an_outline_on_a_sticker_are_not_offered(): void
+    {
+        // Printed straight onto the paper, the star and the speech bubble would be a few words on an empty bag.
+        $this->assertSame(array_values(array_diff(Sticker::motifs(), ['sprechblase', 'stern'])), Bag::motifs());
     }
 
     public function test_the_drawing_says_what_it_shows(): void
@@ -170,6 +183,8 @@ final class BagTest extends TestCase
             'motif' => [static fn () => new Bag(motif: 'gibt-es-nicht'), 'Unknown bag motif [gibt-es-nicht].'],
             'motif outside the directory' => [static fn () => new Bag(motif: '../mockup/flyer'), 'Unknown bag motif'],
             'flyer motif' => [static fn () => Bag::fromArray(['motif' => 'karte']), 'Unknown bag motif [karte].'],
+            'outline motif' => [static fn () => new Bag(motif: 'stern'), 'Unknown bag motif [stern].'],
+            'outline motif from a spec' => [static fn () => Bag::fromArray(['motif' => 'sprechblase']), 'Unknown bag motif [sprechblase].'],
             'color' => [static fn () => new Bag(color: 'black'), 'Unknown bag color [black].'],
             'color in capitals' => [static fn () => Bag::fromArray(['color' => 'Kraft']), 'Unknown bag color [Kraft].'],
         ];
@@ -225,7 +240,6 @@ final class BagTest extends TestCase
         $this->assertSame(['small' => 'Klein', 'large' => 'Groß'], $form['values']);
         $this->assertSame(array_keys($form['values']), $keys[$form['key']]);
         $this->assertSame(Bag::motifs(), $keys['motif']);
-        $this->assertSame(Sticker::motifs(), Bag::motifs());
         $this->assertSame(['kraft', 'white'], $keys['color']);
 
         $names = Bag::names();
@@ -312,6 +326,14 @@ final class BagTest extends TestCase
         [, $x0, $y0, , $y1, , $y2, $x3, $y3] = array_map('floatval', $m);
 
         return ['from' => $x0, 'to' => $x3, 'ends' => $y0, 'top' => 0.125 * $y0 + 0.375 * $y1 + 0.375 * $y2 + 0.125 * $y3];
+    }
+
+    /** The sample motif as printed: the inner <svg> of the print layer. */
+    private function sample(string $svg): string
+    {
+        $this->assertSame(1, preg_match('/<svg[^>]*data-motif-sample[^>]*>.*?<\/svg>/s', $svg, $sample));
+
+        return $sample[0];
     }
 
     /**

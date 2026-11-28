@@ -193,13 +193,16 @@ final class Tote implements Kind
     }
 
     /**
-     * Names of the sample motifs printed on totes: the sticker motifs.
+     * Names of the sample motifs printed on totes: the sticker motifs that
+     * keep their shape in print. A contour motif's shape is the sticker's
+     * outline (Sticker::CONTOUR_MOTIFS): printed straight onto the cotton,
+     * only a few words would be left, and the bag would look unprinted.
      *
      * @return list<string>
      */
     public static function motifs(): array
     {
-        return Template::names('motif');
+        return array_values(array_diff(Template::names('motif'), Sticker::CONTOUR_MOTIFS));
     }
 
     /**
