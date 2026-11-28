@@ -41,7 +41,7 @@ function stiqon_search_form(string $query = '', string $class = ''): string
     return '<form role="search" action="'.esc_url(home_url('/')).'" method="get" class="'.esc_attr(stiqon_classes(['relative flex items-center', $class])).'">'
         .'<label for="suchfeld" class="pointer-events-none absolute left-5 text-muted"><span class="sr-only">Suchbegriff</span>'.stiqon_icon('search', 'size-6').'</label>'
         .'<input id="suchfeld" type="search" name="s" value="'.esc_attr($query).'" maxlength="'.STIQON_SEARCH_MAX_LENGTH.'"'
-        .' placeholder="Sticker, Flyer, Material …" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"'
+        .' placeholder="Visitenkarten, Plakate, Material …" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"'
         .' class="h-14 w-full min-w-0 rounded-full bg-ink/8 pr-16 pl-14 text-lg font-medium placeholder:font-normal placeholder:text-muted">'
         .'<button type="submit" aria-label="Suchen" class="absolute right-1.5 inline-flex size-11 items-center justify-center rounded-full bg-ink text-paper transition-colors duration-200 ease-soft hover:bg-ink-soft">'
         .stiqon_icon('arrow-right').'</button>'

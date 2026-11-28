@@ -216,10 +216,10 @@ add_filter('woocommerce_account_menu_items', static function (mixed $items): mix
 
 /**
  * From an empty cart WooCommerce leads "back to the shop" – its list page,
- * which this shop does not have. The way back is the home page with both areas.
+ * which this shop does not have. The way back is the home page with all areas.
  */
-add_filter('woocommerce_return_to_shop_redirect', static fn (): string => home_url('/'));
-add_filter('woocommerce_return_to_shop_text', static fn (): string => 'Sticker und Flyer ansehen');
+add_filter('woocommerce_return_to_shop_redirect', static fn (): string => home_url('/#werbemittel'));
+add_filter('woocommerce_return_to_shop_text', static fn (): string => 'Sortiment ansehen');
 
 add_action('init', function (): void {
     // The drawing takes the place of product photos.
@@ -250,7 +250,7 @@ add_action('init', function (): void {
  * WooCommerce has list pages of its own: the shop page, one per category, tag
  * and option. The shop's lists are the area pages, so those addresses lead
  * there – a category to its area, everything else to the home page, which
- * shows both areas. A search for products goes to the shop's one search
+ * shows all areas. A search for products goes to the shop's one search
  * (inc/search.php).
  */
 add_action('template_redirect', function (): void {

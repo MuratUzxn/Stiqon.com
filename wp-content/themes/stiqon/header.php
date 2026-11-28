@@ -1,15 +1,16 @@
 <?php
 /**
- * Opens every page: document head, skip link and the header with the areas (and
- * the references, once there are any), the search, the motif button, the cart
- * and the menu for small screens.
+ * Opens every page: document head, skip link and the header – logo, search,
+ * motif button, account and cart in the first row; below it, on wide screens,
+ * the row of the shop's areas (and the references, once there are any). On
+ * small screens the areas are in the menu.
  */
 
 defined('ABSPATH') || exit;
 
 $areas = stiqon_navigation();
 $cart = stiqon_cart_link();
-$link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-offset-[6px] decoration-2 transition-opacity duration-200 hover:opacity-60';
+$link = 'text-action inline-flex h-10 items-center rounded-full px-2.5 text-[0.9375rem] whitespace-nowrap underline-offset-[6px] decoration-2 transition-opacity duration-200 hover:opacity-60';
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -33,15 +34,6 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
         <a href="<?php echo esc_url(home_url('/')); ?>" class="shrink-0 rounded-sm" aria-label="Stiqon – zur Startseite">
             <?php echo stiqon_logo(['class' => 'h-8 w-auto']); ?>
         </a>
-
-        <nav aria-label="Hauptnavigation" class="hidden items-center md:flex">
-            <?php foreach ($areas as $area) : ?>
-                <a
-                    href="<?php echo esc_url($area['url']); ?>"<?php echo $area['current'] ? ' aria-current="page"' : ''; ?>
-                    class="<?php echo esc_attr(stiqon_classes([$link, 'underline' => $area['current']])); ?>"
-                ><?php echo esc_html($area['label']); ?></a>
-            <?php endforeach; ?>
-        </nav>
 
         <div class="ml-auto flex items-center gap-2">
             <?php // Search: a link to the results page. The page's script opens the search over the page instead. ?>
@@ -81,14 +73,20 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
                     <?php echo stiqon_icon('menu', 'group-open/menu:hidden'); ?>
                     <?php echo stiqon_icon('x', 'hidden group-open/menu:block'); ?>
                 </summary>
-                <div class="absolute inset-x-0 top-full rounded-b-card bg-paper pb-2 shadow-[0_24px_32px_-16px_rgb(0_0_0/0.18)]">
+                <?php // As high as the window allows; a longer list scrolls inside. ?>
+                <div class="absolute inset-x-0 top-full max-h-[calc(100dvh-4.5rem)] overflow-y-auto overscroll-contain rounded-b-card bg-paper pb-2 shadow-[0_24px_32px_-16px_rgb(0_0_0/0.18)]">
                     <nav aria-label="Hauptnavigation" class="wrap flex flex-col gap-1 pt-1 pb-4">
-                        <?php foreach ($areas as $area) : ?>
-                            <a
-                                href="<?php echo esc_url($area['url']); ?>"<?php echo $area['current'] ? ' aria-current="page"' : ''; ?>
-                                class="<?php echo esc_attr(stiqon_classes(['text-action flex h-12 items-center rounded-control px-4 text-lg', 'bg-mist' => $area['current'], 'hover:bg-mist' => ! $area['current']])); ?>"
-                            ><?php echo esc_html($area['label']); ?></a>
-                        <?php endforeach; ?>
+                        <?php // The areas in two columns, the rest below them. ?>
+                        <ul class="grid grid-cols-2 gap-1">
+                            <?php foreach ($areas as $area) : ?>
+                                <li>
+                                    <a
+                                        href="<?php echo esc_url($area['url']); ?>"<?php echo $area['current'] ? ' aria-current="page"' : ''; ?>
+                                        class="<?php echo esc_attr(stiqon_classes(['text-action flex h-12 items-center rounded-control px-4 text-lg', 'bg-mist' => $area['current'], 'hover:bg-mist' => ! $area['current']])); ?>"
+                                    ><?php echo esc_html($area['label']); ?></a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
                         <?php if ($account !== null) : ?>
                             <a href="<?php echo esc_url($account); ?>" class="text-action flex h-12 items-center rounded-control px-4 text-lg hover:bg-mist">Kundenkonto</a>
                         <?php endif; ?>
@@ -98,6 +96,21 @@ $link = 'text-action inline-flex h-11 items-center rounded-full px-3 underline-o
             </details>
         </div>
     </div>
+
+    <?php // The areas on wide screens: one row under the logo that scrolls sideways when the window is too narrow for all of them. ?>
+    <nav aria-label="Hauptnavigation" class="hidden md:block">
+        <?php // The first word lines up with the logo; the padding above keeps the focus ring inside the scrolling row. ?>
+        <ul class="bleed-row -mt-3.5 gap-1 pt-1.5 pb-3 pl-[calc(var(--bleed-gutter)-0.625rem)] lg:-mt-5.5">
+            <?php foreach ($areas as $area) : ?>
+                <li class="shrink-0">
+                    <a
+                        href="<?php echo esc_url($area['url']); ?>"<?php echo $area['current'] ? ' aria-current="page"' : ''; ?>
+                        class="<?php echo esc_attr(stiqon_classes([$link, 'underline' => $area['current']])); ?>"
+                    ><?php echo esc_html($area['label']); ?></a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </nav>
 </header>
 
 <main id="inhalt" class="flex-1">

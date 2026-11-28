@@ -68,7 +68,7 @@ get_header();
             <?php if (stiqon_shop_is_concealed()) : ?>
                 <?php // Announced on the pages of the shop only: there is nothing to find yet. ?>
                 <p class="font-semibold">Der Shop öffnet bald.</p>
-                <p class="mt-1 text-muted">Bis dahin finden Sie hier noch keine Sticker und Flyer.</p>
+                <p class="mt-1 text-muted">Bis dahin finden Sie hier noch keine Produkte.</p>
             <?php elseif ($query === '') : ?>
                 <p class="font-semibold">Wonach suchen Sie?</p>
                 <p class="mt-1 text-muted">Zum Beispiel nach einer Form, einem Format oder einem Material: „rund“, „DIN A5“, „Kraftpapier“.</p>

@@ -6,15 +6,157 @@
 defined('ABSPATH') || exit;
 
 /**
- * The pages this theme has templates for (address => title). They have to exist
- * in WordPress under exactly these addresses.
+ * The areas of the shop, in the order the navigation shows them. Each is a
+ * page under its own address and the product category of the same slug
+ * (see Catalog\Areas in the plugin); every area page is drawn by
+ * page-bereich.php.
+ *
+ *   label    name of the area, in the navigation and as the page's heading
+ *   lead     the sentence under the heading
+ *   related  the area its page points to next
+ *   photo    picture of the range Stiqon supplied (assets/brand/sortiment/<photo>.webp) and its text
+ *   drawing  what stands for the area where there is no photo: a kind of drawing and its spec
+ *
+ * The assortment follows printworld.com (November 2026): what a small business
+ * orders from an online printer, from business card to roll-up.
+ *
+ * @return array<string, array{label: string, lead: string, related: string, photo?: array{file: string, alt: string}, drawing: array{type: string, spec: array<string, mixed>}}>
+ */
+function stiqon_area_definitions(): array
+{
+    return [
+        'sticker' => [
+            'label' => 'Sticker',
+            'lead' => 'Rund, quadratisch, rechteckig, oval oder mit Konturschnitt – auf weißem Vinyl, transparenter und holografischer Folie oder Kraftpapier.',
+            'related' => 'flyer',
+            'photo' => ['file' => 'aufkleber', 'alt' => 'Aufkleber in vier Formen und auf der Rolle, mit Stiqon-Logo'],
+            'drawing' => ['type' => 'sticker', 'spec' => ['shape' => 'circle', 'motif' => 'siegel']],
+        ],
+        'flyer' => [
+            'label' => 'Flyer',
+            'lead' => 'Von DIN A6 bis DIN A4, DIN lang und quadratisch – als Blatt oder gefalzt, auf leichtem oder festem Bilderdruckpapier.',
+            'related' => 'broschueren',
+            'drawing' => ['type' => 'flyer', 'spec' => ['format' => 'a5', 'motif' => 'eroeffnung', 'stack' => true]],
+        ],
+        'visitenkarten' => [
+            'label' => 'Visitenkarten',
+            'lead' => 'Klassisch auf 300 g Bilderdruck, mit Soft-Touch-Folie oder Goldprägung – auch als Klappvisitenkarte.',
+            'related' => 'briefpapier',
+            'photo' => ['file' => 'visitenkarten', 'alt' => 'Zwei Stapel Visitenkarten mit Stiqon-Logo'],
+            'drawing' => ['type' => 'card', 'spec' => ['format' => 'visitenkarte', 'stack' => true]],
+        ],
+        'karten' => [
+            'label' => 'Karten',
+            'lead' => 'Postkarten, quadratische Karten und Klappkarten – für Grüße, Einladungen und ein Dankeschön.',
+            'related' => 'visitenkarten',
+            'photo' => ['file' => 'karten', 'alt' => 'Klappkarte und Karte mit Stiqon-Logo'],
+            'drawing' => ['type' => 'card', 'spec' => ['format' => 'postkarte', 'fold' => true]],
+        ],
+        'briefpapier' => [
+            'label' => 'Briefpapier',
+            'lead' => 'Briefbogen, Umschläge, Notizblöcke und Präsentationsmappen – die Geschäftsausstattung in einem Look.',
+            'related' => 'visitenkarten',
+            'photo' => ['file' => 'briefpapier', 'alt' => 'Briefbogen, Umschlag und Karte mit Stiqon-Logo'],
+            'drawing' => ['type' => 'letter', 'spec' => ['format' => 'a4', 'stack' => true]],
+        ],
+        'broschueren' => [
+            'label' => 'Broschüren',
+            'lead' => 'Geheftet oder klebegebunden, von 8 bis 96 Seiten – für Katalog, Magazin und Preisliste.',
+            'related' => 'flyer',
+            'photo' => ['file' => 'broschueren', 'alt' => 'Aufgeschlagene und geschlossene Broschüre mit Stiqon-Logo'],
+            'drawing' => ['type' => 'brochure', 'spec' => ['format' => 'a5']],
+        ],
+        'plakate' => [
+            'label' => 'Plakate',
+            'lead' => 'Von DIN A3 bis DIN A0, auf Bilderdruck- oder Fotopapier – schon ab einem Stück.',
+            'related' => 'werbetechnik',
+            'photo' => ['file' => 'plakate', 'alt' => 'Plakat mit Stiqon-Logo'],
+            'drawing' => ['type' => 'poster', 'spec' => ['format' => 'a1']],
+        ],
+        'kalender' => [
+            'label' => 'Kalender',
+            'lead' => 'Wandkalender, Tischkalender und Jahresplaner – zwölf Monate mit Ihrem Motiv.',
+            'related' => 'karten',
+            'photo' => ['file' => 'kalender', 'alt' => 'Tischkalender mit Stiqon-Logo'],
+            'drawing' => ['type' => 'calendar', 'spec' => ['variant' => 'wall']],
+        ],
+        'werbetechnik' => [
+            'label' => 'Werbetechnik',
+            'lead' => 'Roll-ups, Banner und Kundenstopper – für Messe, Ladenlokal und Straße.',
+            'related' => 'plakate',
+            'photo' => ['file' => 'werbetechnik', 'alt' => 'Roll-up und Kundenstopper mit Stiqon-Logo'],
+            'drawing' => ['type' => 'rollup', 'spec' => ['format' => '85x200']],
+        ],
+        'verpackungen' => [
+            'label' => 'Verpackungen',
+            'lead' => 'Versandkartons und Papiertragetaschen mit Ihrem Logo – damit schon das Paket nach Ihnen aussieht.',
+            'related' => 'sticker',
+            'photo' => ['file' => 'verpackungen', 'alt' => 'Versandkarton und Papiertüte mit Stiqon-Logo'],
+            'drawing' => ['type' => 'box', 'spec' => ['size' => 'm']],
+        ],
+        'textilien' => [
+            'label' => 'Textilien',
+            'lead' => 'T-Shirts, Hoodies und Baumwolltaschen, bedruckt mit Ihrem Motiv.',
+            'related' => 'werbeartikel',
+            'photo' => ['file' => 'textilien', 'alt' => 'Zwei gefaltete T-Shirts mit Stiqon-Logo'],
+            'drawing' => ['type' => 'shirt', 'spec' => ['cut' => 'tshirt']],
+        ],
+        'werbeartikel' => [
+            'label' => 'Werbeartikel',
+            'lead' => 'Tassen, Trinkflaschen und Bierdeckel – kleine Dinge, die lange bleiben.',
+            'related' => 'textilien',
+            'drawing' => ['type' => 'mug', 'spec' => ['style' => 'classic']],
+        ],
+    ];
+}
+
+/**
+ * The pages this theme has templates for (address => title): the areas. They
+ * have to exist in WordPress under exactly these addresses.
  *
  * @return array<string, string>
  */
 function stiqon_required_pages(): array
 {
-    return ['sticker' => 'Sticker', 'flyer' => 'Flyer'];
+    return array_map(static fn (array $area): string => $area['label'], stiqon_area_definitions());
 }
+
+/**
+ * The area page that is being shown, or null on any other page.
+ *
+ * @return array{slug: string, label: string, lead: string, related: string, photo?: array{file: string, alt: string}, drawing: array{type: string, spec: array<string, mixed>}}|null
+ */
+function stiqon_current_area(): ?array
+{
+    $page = get_queried_object();
+
+    if (! $page instanceof WP_Post || $page->post_type !== 'page') {
+        return null;
+    }
+
+    $area = stiqon_area_definitions()[$page->post_name] ?? null;
+
+    return $area === null ? null : ['slug' => $page->post_name] + $area;
+}
+
+/**
+ * Every area page is drawn by page-bereich.php – unless the theme brings a
+ * template of its own for one of them (page-<slug>.php comes first).
+ */
+add_filter('page_template_hierarchy', static function (mixed $templates): mixed {
+    $page = get_queried_object();
+
+    if (! is_array($templates) || ! $page instanceof WP_Post || ! isset(stiqon_area_definitions()[$page->post_name])) {
+        return $templates;
+    }
+
+    $specific = array_search("page-{$page->post_name}.php", $templates, true);
+    $at = $specific === false ? 0 : $specific + 1;
+
+    array_splice($templates, $at, 0, ['page-bereich.php']);
+
+    return $templates;
+});
 
 /**
  * Address of one of those pages. It is taken from the page itself, so it is
@@ -212,7 +354,7 @@ add_action('wp_head', function (): void {
     echo '<meta name="theme-color" content="#ffffff">'."\n";
 
     if (is_front_page()) {
-        echo '<meta name="description" content="Sticker und Flyer mit Ihrem Motiv: Bild wählen, Vorschau auf allen Formen und Formaten ansehen.">'."\n";
+        echo '<meta name="description" content="Werbemittel mit Ihrem Motiv – Sticker, Flyer, Visitenkarten, Plakate, Kalender, Textilien und mehr: Bild wählen, Vorschau auf jedem Produkt ansehen.">'."\n";
     }
 }, 2);
 
@@ -233,7 +375,7 @@ add_action('do_faviconico', function (): void {
  */
 add_filter('document_title_parts', function (array $parts): array {
     if (is_front_page()) {
-        return ['title' => 'Stiqon', 'tagline' => 'Sticker und Flyer mit Ihrem Motiv'];
+        return ['title' => 'Stiqon', 'tagline' => 'Werbemittel mit Ihrem Motiv'];
     }
 
     return $parts;

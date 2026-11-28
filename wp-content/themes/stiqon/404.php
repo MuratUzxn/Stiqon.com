@@ -14,8 +14,7 @@ get_header();
     <p class="text-lead mx-auto mt-5 max-w-md text-muted">Vielleicht wurde sie verschoben, oder in der Adresse steckt ein Tippfehler.</p>
     <div class="mt-9 flex flex-wrap items-center justify-center gap-2">
         <?php echo stiqon_button('Zur Startseite', ['href' => home_url('/')]); ?>
-        <?php echo stiqon_button('Sticker ansehen', ['variant' => 'secondary', 'href' => stiqon_page_url('sticker')]); ?>
-        <?php echo stiqon_button('Flyer ansehen', ['variant' => 'secondary', 'href' => stiqon_page_url('flyer')]); ?>
+        <?php echo stiqon_button('Sortiment ansehen', ['variant' => 'secondary', 'href' => home_url('/#werbemittel')]); ?>
     </div>
 </section>
 <?php
