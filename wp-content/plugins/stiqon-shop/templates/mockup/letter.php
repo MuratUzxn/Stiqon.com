@@ -94,7 +94,8 @@ $columns = [[0.24, 0.19, 0.22], [0.2, 0.25, 0.16], [0.23, 0.17, 0.21]];
                 'motif' => 'motif/'.$mockup->motif,
                 'viewBox' => '0 0 100 100',
                 'fit' => 'meet',
-                'vars' => ['bare' => true],
+                // On white paper, like the envelope that goes with it: dark ink throughout.
+                'vars' => ['bare' => true, 'ink' => 'dark'],
                 'backing' => null,
             ]);
             ?>

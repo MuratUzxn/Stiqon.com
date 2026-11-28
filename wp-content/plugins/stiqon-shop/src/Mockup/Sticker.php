@@ -28,8 +28,10 @@ final class Sticker implements Kind
 
     /**
      * Sample motifs made for contour-cut stickers: their shape is the sticker's
-     * outline (see CONTOURS). Drawn on anything else they lose it – printed on
-     * paper, "stern" is white lettering only.
+     * outline (see CONTOURS). Printed bare on anything else they lose it and
+     * leave a few words on an empty-looking product, so every kind that prints
+     * the sticker motifs bare – letter, notepad, envelope, tote, box, bag,
+     * shirt, mug, bottle – leaves them out.
      */
     public const CONTOUR_MOTIFS = ['sprechblase', 'stern'];
 

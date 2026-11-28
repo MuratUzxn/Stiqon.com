@@ -198,15 +198,19 @@ final class Shirt implements Kind
 
     /**
      * How the sample motif is printed: straight onto the cloth, without a
-     * ground of its own – in dark ink on white and grey cloth, in light ink on
-     * black and navy, which would swallow dark ink (see $ink in the motif
-     * templates).
+     * ground of its own – in dark ink on white cloth, in deep ink on grey
+     * melange, on which gold would vanish, and in light ink on black and navy,
+     * which would swallow dark ink (see $ink in the motif templates).
      *
-     * @return array{bare: true, ink: 'dark'|'light'}
+     * @return array{bare: true, ink: 'dark'|'deep'|'light'}
      */
     public function motifVars(): array
     {
-        return ['bare' => true, 'ink' => in_array($this->color, self::DARK_COLORS, true) ? 'light' : 'dark'];
+        if (in_array($this->color, self::DARK_COLORS, true)) {
+            return ['bare' => true, 'ink' => 'light'];
+        }
+
+        return ['bare' => true, 'ink' => $this->color === 'grey' ? 'deep' : 'dark'];
     }
 
     public function describe(): string

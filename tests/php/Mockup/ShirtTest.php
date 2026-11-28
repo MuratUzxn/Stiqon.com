@@ -232,11 +232,12 @@ final class ShirtTest extends TestCase
     {
         // The sample "siegel" brings a cream background of its own. On cloth it is
         // left out and the seal printed straight onto the fabric: in dark ink on
-        // white and grey, in light ink on black and navy, which swallow dark ink.
+        // white, in deep ink on grey melange, in light ink on black and navy,
+        // which swallow dark ink.
         $background = '<rect width="100" height="100" fill="#f1ebdd" />';
         $cloth = ['white' => '#fbfbf9', 'black' => '#1f1f1f', 'navy' => '#1f2a44', 'grey' => '#b8babc'];
-        $ink = ['white' => 'dark', 'black' => 'light', 'navy' => 'light', 'grey' => 'dark'];
-        $seal = ['dark' => '#1d1d1b', 'light' => '#f1ebdd'];
+        $ink = ['white' => 'dark', 'black' => 'light', 'navy' => 'light', 'grey' => 'deep'];
+        $seal = ['dark' => '#1d1d1b', 'deep' => '#1d1d1b', 'light' => '#f1ebdd'];
 
         $this->assertSame(Shirt::COLORS, array_keys($cloth));
 
@@ -256,6 +257,11 @@ final class ShirtTest extends TestCase
                 }
             }
         }
+
+        // Gold would vanish on grey melange: the offer badge's rings turn bronze there, and stay gold on white.
+        $this->assertStringContainsString('stroke="#7a5a1e"', (new Shirt(color: 'grey', motif: 'aktion'))->render());
+        $this->assertStringNotContainsString('#d9a441', (new Shirt(color: 'grey', motif: 'aktion'))->render());
+        $this->assertStringContainsString('stroke="#d9a441"', (new Shirt(color: 'white', motif: 'aktion'))->render());
 
         // Grey melange is flecked with light and dark fibres; the other cloths are plain.
         $this->assertStringContainsString('-fleck)', stiqon_mockup('shirt', ['color' => 'grey']));
