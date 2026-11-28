@@ -103,17 +103,17 @@ $folds = [
         <path d="<?php echo esc_attr($mockup->outline); ?>" fill="<?php echo esc_attr($tone['cloth']); ?>" />
 
         <?php
-        // The samples keep their own background on every fabric, as a print with
-        // an underbase: drawn bare, most are inked dark for kraft and film, which
-        // black cotton would swallow, and "stern" is inked white, which natural
-        // and white cotton would. Screen-printing ink lets a little of the weave through.
+        // The samples are printed straight onto the cotton, without a ground of
+        // their own: in dark ink on natural and white cotton, in light ink on
+        // black, which would swallow dark ink (Tote::motifVars()). Screen-printing
+        // ink lets a little of the weave through.
         Template::output('mockup/parts/motif', [
             'uid' => $uid,
             'box' => $mockup->printBox,
             'motif' => 'motif/'.$mockup->motif,
             'viewBox' => '0 0 100 100',
             'fit' => 'meet',
-            'vars' => ['bare' => false],
+            'vars' => $mockup->motifVars(),
             'backing' => null,
             'attributes' => 'opacity="0.94"',
         ]);

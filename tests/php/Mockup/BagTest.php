@@ -119,15 +119,18 @@ final class BagTest extends TestCase
         }
     }
 
-    public function test_kraft_shows_through_the_logo_and_white_paper_takes_it_whole(): void
+    public function test_the_logo_is_printed_straight_onto_brown_and_white_paper_in_dark_ink(): void
     {
-        // The sample "siegel" brings a cream background of its own.
+        // The sample "siegel" brings a cream background of its own; on the bag it is left out.
         $background = '<rect width="100" height="100" fill="#f1ebdd" />';
 
-        $this->assertTrue((new Bag(color: 'kraft'))->bareMotif());
-        $this->assertFalse((new Bag(color: 'white'))->bareMotif());
-        $this->assertStringNotContainsString($background, stiqon_mockup('bag', ['color' => 'kraft', 'motif' => 'siegel']));
-        $this->assertStringContainsString($background, stiqon_mockup('bag', ['color' => 'white', 'motif' => 'siegel']));
+        foreach (Bag::COLORS as $color) {
+            $this->assertSame(['bare' => true, 'ink' => 'dark'], (new Bag(color: $color))->motifVars(), $color);
+            $this->assertStringNotContainsString($background, stiqon_mockup('bag', ['color' => $color, 'motif' => 'siegel']), $color);
+
+            // Light lettering would fade into kraft and vanish on white: the star's is dark.
+            $this->assertStringContainsString('fill="#1d1d1b">Top!', stiqon_mockup('bag', ['color' => $color, 'motif' => 'stern']), $color);
+        }
 
         $this->assertStringContainsString('-fibre)', stiqon_mockup('bag', ['color' => 'kraft']));
         $this->assertStringNotContainsString('-fibre', stiqon_mockup('bag', ['color' => 'white']));

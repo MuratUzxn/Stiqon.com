@@ -120,15 +120,18 @@ final class BoxTest extends TestCase
         $this->assertLessThan(0.75 * $extent['l']['height'], $extent['s']['height'], 'S is clearly flatter.');
     }
 
-    public function test_kraft_shows_through_the_logo_and_white_board_takes_it_whole(): void
+    public function test_the_logo_is_printed_straight_onto_brown_and_white_board_in_dark_ink(): void
     {
-        // The sample "siegel" brings a cream background of its own.
+        // The sample "siegel" brings a cream background of its own; on board it is left out.
         $background = '<rect width="100" height="100" fill="#f1ebdd" />';
 
-        $this->assertTrue((new Box(color: 'kraft'))->bareMotif());
-        $this->assertFalse((new Box(color: 'white'))->bareMotif());
-        $this->assertStringNotContainsString($background, stiqon_mockup('box', ['color' => 'kraft', 'motif' => 'siegel']));
-        $this->assertStringContainsString($background, stiqon_mockup('box', ['color' => 'white', 'motif' => 'siegel']));
+        foreach (Box::COLORS as $color) {
+            $this->assertSame(['bare' => true, 'ink' => 'dark'], (new Box(color: $color))->motifVars(), $color);
+            $this->assertStringNotContainsString($background, stiqon_mockup('box', ['color' => $color, 'motif' => 'siegel']), $color);
+
+            // Light lettering would fade into kraft and vanish on white: the star's is dark.
+            $this->assertStringContainsString('fill="#1d1d1b">Top!', stiqon_mockup('box', ['color' => $color, 'motif' => 'stern']), $color);
+        }
 
         // Kraft board has fibres, white board has none; the visitor's motif gets no backing on either.
         $this->assertStringContainsString('-fibre)', stiqon_mockup('box', ['color' => 'kraft']));

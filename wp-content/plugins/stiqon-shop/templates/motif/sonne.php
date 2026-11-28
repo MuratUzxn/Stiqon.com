@@ -3,11 +3,16 @@
  * Sample motif, drawn in a 100 x 100 box.
  * Half sun over stripes.
  *
- * @var string $uid  prefix for ids, unique on the page
- * @var bool   $bare without a background of its own (the sticker material shows through)
+ * @var string      $uid  prefix for ids, unique on the page
+ * @var bool        $bare without a background of its own (the sticker material shows through)
+ * @var string|null $ink  ink of a bare print: "dark" for white and light materials, "light" for dark ones (black, navy); null as on sticker film and kraft
  */
 
 defined('ABSPATH') || exit;
+
+$ink ??= null;
+// In light ink the rays take the sand of the motif's own ground.
+$rays = $bare && $ink === 'light' ? '#ead9c0' : '#1d1d1b';
 ?>
 <?php if (! $bare) : ?>
     <rect width="100" height="100" fill="#ead9c0" />
@@ -17,6 +22,6 @@ defined('ABSPATH') || exit;
 <g stroke="#c8553d" stroke-width="3.2" stroke-linecap="round">
     <path d="M22 66h56M28 74h44M34 82h32" />
 </g>
-<g stroke="#1d1d1b" stroke-width="1.4" stroke-linecap="round">
+<g stroke="<?php echo esc_attr($rays); ?>" stroke-width="1.4" stroke-linecap="round">
     <path d="M50 22v-8M30 30l-5-6M70 30l5-6M18 46l-8-2M82 46l8-2" />
 </g>

@@ -105,7 +105,7 @@ $turn = 3.8;
         'motif' => 'motif/'.$mockup->motif,
         'viewBox' => '0 0 100 100',
         'fit' => 'meet',
-        'vars' => ['bare' => $mockup->bareMotif()],
+        'vars' => $mockup->motifVars(),
         'backing' => null,
     ]);
     ?>

@@ -65,7 +65,7 @@ $senderY = round($logo['y'] + $logo['height'] / 2 - 2.2, 2);
             'motif' => 'motif/'.$mockup->motif,
             'viewBox' => '0 0 100 100',
             'fit' => 'meet',
-            'vars' => ['bare' => $mockup->bareMotif()],
+            'vars' => $mockup->motifVars(),
             'backing' => null,
         ]);
         ?>

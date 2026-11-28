@@ -100,17 +100,23 @@ final class ToteTest extends TestCase
         $this->assertStringContainsString('<g transform="rotate('.Tote::TILT.' 60 60)">', stiqon_mockup('tote'));
     }
 
-    public function test_each_fabric_shows_its_colour_and_keeps_the_print_visible(): void
+    public function test_each_fabric_shows_its_colour_and_takes_the_print_in_an_ink_that_shows(): void
     {
-        // The sample "siegel" brings a cream background of its own: drawn bare it
-        // would be dark ink, which black cotton swallows.
+        // The sample "siegel" brings a cream background of its own. On cotton it is
+        // left out and the seal printed straight onto the cloth: in dark ink on
+        // natural and white cotton, in light ink on black, which swallows dark ink.
         $background = '<rect width="100" height="100" fill="#f1ebdd" />';
         $cloth = ['natural' => '#efe7d6', 'black' => '#292927', 'white' => '#fbfbf9'];
+        $ink = ['natural' => 'dark', 'black' => 'light', 'white' => 'dark'];
+        $seal = ['dark' => '#1d1d1b', 'light' => '#f1ebdd'];
 
         foreach (Tote::COLORS as $color) {
-            $svg = stiqon_mockup('tote', ['color' => $color, 'motif' => 'siegel']);
+            $tote = new Tote(color: $color, motif: 'siegel');
+            $svg = $tote->render();
 
-            $this->assertStringContainsString($background, $svg, $color);
+            $this->assertSame(['bare' => true, 'ink' => $ink[$color]], $tote->motifVars(), $color);
+            $this->assertStringNotContainsString($background, $svg, $color);
+            $this->assertStringContainsString('fill="'.$seal[$ink[$color]].'" style="font-family:var(--font-accent);font-style:italic">Fein', $svg, $color);
             $this->assertStringContainsString('fill="'.$cloth[$color].'"', $svg, $color);
             $this->assertSame(0, preg_match('/<g x-show="active" style="display:none">\s*<rect/', $svg), "{$color}: the visitor's motif gets no backing");
 
@@ -123,6 +129,25 @@ final class ToteTest extends TestCase
         $this->assertStringContainsString('-flecks)', stiqon_mockup('tote', ['color' => 'natural']));
         $this->assertStringNotContainsString('-flecks)', stiqon_mockup('tote', ['color' => 'black']));
         $this->assertStringNotContainsString('-flecks)', stiqon_mockup('tote', ['color' => 'white']));
+    }
+
+    public function test_no_sample_is_printed_in_an_ink_its_cotton_swallows(): void
+    {
+        foreach (Tote::motifs() as $motif) {
+            $onBlack = $this->sample(stiqon_mockup('tote', ['color' => 'black', 'motif' => $motif]));
+
+            foreach (['#0f0f0e', '#141412', '#1d1d1b', '#1d3557', '#1f3d2e'] as $dark) {
+                $this->assertStringNotContainsString('"'.$dark.'"', $onBlack, "{$motif} on black cotton");
+            }
+
+            foreach (['natural', 'white'] as $color) {
+                $print = $this->sample(stiqon_mockup('tote', ['color' => $color, 'motif' => $motif]));
+
+                foreach (['#fff', '#ffffff'] as $white) {
+                    $this->assertStringNotContainsString('"'.$white.'"', $print, "{$motif} on {$color} cotton");
+                }
+            }
+        }
     }
 
     public function test_the_drawing_says_what_it_shows(): void
@@ -299,6 +324,14 @@ final class ToteTest extends TestCase
         $m = array_map('floatval', $m);
 
         return ['from' => $m[1], 'to' => $m[13], 'ends' => $m[2], 'apex' => $m[7], 'top' => $m[8]];
+    }
+
+    /** The sample motif as printed: the inner <svg> of the print layer. */
+    private function sample(string $svg): string
+    {
+        $this->assertSame(1, preg_match('/<svg[^>]*data-motif-sample[^>]*>.*?<\/svg>/s', $svg, $sample));
+
+        return $sample[0];
     }
 
     /**

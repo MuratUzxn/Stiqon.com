@@ -210,6 +210,19 @@ final class Tote implements Kind
         return Template::render('mockup/tote', ['mockup' => $this, 'class' => $class]);
     }
 
+    /**
+     * How the sample motif is printed: straight onto the cotton, without a
+     * ground of its own – in dark ink on natural and white cotton, in light
+     * ink on black, which would swallow dark ink (see $ink in the motif
+     * templates).
+     *
+     * @return array{bare: true, ink: 'dark'|'light'}
+     */
+    public function motifVars(): array
+    {
+        return ['bare' => true, 'ink' => $this->color === 'black' ? 'light' : 'dark'];
+    }
+
     public function describe(): string
     {
         if ($this->label !== null) {

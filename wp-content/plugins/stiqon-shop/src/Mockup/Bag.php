@@ -236,10 +236,17 @@ final class Bag implements Kind
         return Template::render('mockup/bag', ['mockup' => $this, 'class' => $class]);
     }
 
-    /** Whether the sample motif is drawn without its own background: on kraft the brown shows through. */
-    public function bareMotif(): bool
+    /**
+     * How the sample logo is printed: straight onto the paper, without a
+     * ground of its own, so the brown or the white shows through. In dark ink
+     * on both (see $ink in the motif templates): white lettering would vanish
+     * on white paper and fade into kraft, and so would a small gold label.
+     *
+     * @return array{bare: true, ink: 'dark'|'light'}
+     */
+    public function motifVars(): array
     {
-        return $this->color === 'kraft';
+        return ['bare' => true, 'ink' => 'dark'];
     }
 
     public function describe(): string

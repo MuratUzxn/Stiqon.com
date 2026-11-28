@@ -175,10 +175,17 @@ final class Box implements Kind
         return Template::render('mockup/box', ['mockup' => $this, 'class' => $class]);
     }
 
-    /** Whether the sample motif is drawn without its own background: on kraft the brown shows through. */
-    public function bareMotif(): bool
+    /**
+     * How the sample logo is printed: straight onto the board, without a
+     * ground of its own, so the brown or the white shows through. In dark ink
+     * on both (see $ink in the motif templates): white lettering would vanish
+     * on white board and fade into kraft, and so would a small gold label.
+     *
+     * @return array{bare: true, ink: 'dark'|'light'}
+     */
+    public function motifVars(): array
     {
-        return $this->color === 'kraft';
+        return ['bare' => true, 'ink' => 'dark'];
     }
 
     /** A face as an SVG transform (see $faces). */

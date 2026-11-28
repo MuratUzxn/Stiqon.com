@@ -145,12 +145,15 @@ final class Envelope implements Kind
     }
 
     /**
-     * Whether the sample logo is drawn without its own background. The star's
-     * lettering is white and needs its red ground: on white paper it would vanish.
+     * How the sample logo is printed: without a ground of its own, so it looks
+     * printed on the paper, and in dark ink (see $ink in the motif templates)
+     * – white lettering, as the star's, would vanish on white paper.
+     *
+     * @return array{bare: true, ink: 'dark'|'light'}
      */
-    public function bareMotif(): bool
+    public function motifVars(): array
     {
-        return $this->motif !== 'stern';
+        return ['bare' => true, 'ink' => 'dark'];
     }
 
     /**

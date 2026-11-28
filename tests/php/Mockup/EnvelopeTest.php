@@ -49,10 +49,16 @@ final class EnvelopeTest extends TestCase
         $this->assertStringContainsString('preserveAspectRatio="xMidYMid meet"', $svg);
         $this->assertStringNotContainsString('preserveAspectRatio="xMidYMid slice"', $svg);
         $this->assertStringNotContainsString('<rect width="100" height="100" fill="#1f3d2e"', $svg, 'The monogram comes without its green ground.');
-        $this->assertTrue((new Envelope(motif: 'siegel'))->bareMotif());
-        // The star's white lettering keeps its ground; on white paper it would vanish.
-        $this->assertFalse((new Envelope(motif: 'stern'))->bareMotif());
-        $this->assertStringContainsString('fill="#c8553d"', stiqon_mockup('envelope', ['motif' => 'stern']));
+
+        // Every logo in dark ink, the star as well: its white lettering would vanish on white paper.
+        foreach (Envelope::motifs() as $motif) {
+            $this->assertSame(['bare' => true, 'ink' => 'dark'], (new Envelope(motif: $motif))->motifVars(), $motif);
+        }
+
+        $star = stiqon_mockup('envelope', ['motif' => 'stern']);
+        $this->assertStringNotContainsString('fill="#c8553d"', $star, 'The star comes without its red ground.');
+        $this->assertStringContainsString('fill="#1d1d1b">Top!', $star);
+        $this->assertStringNotContainsString('fill="#ffffff"', $star);
     }
 
     public function test_the_window_changes_the_drawing_and_keeps_the_address_inside(): void

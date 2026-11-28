@@ -116,7 +116,7 @@ $outline = 'M'.$point('left-bottom').'L'.$point('left-top').'L'.$point('far-top'
         'motif' => 'motif/'.$mockup->motif,
         'viewBox' => '0 0 100 100',
         'fit' => 'meet',
-        'vars' => ['bare' => $mockup->bareMotif()],
+        'vars' => $mockup->motifVars(),
         'backing' => null,
         'attributes' => 'transform="'.esc_attr($mockup->matrix('front')).'"',
     ]);
