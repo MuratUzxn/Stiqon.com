@@ -159,9 +159,9 @@ return [
             ['area' => 'flyer', 'slug' => 'flyer-quadrat', 'name' => 'Flyer Quadrat', 'summary' => 'Fällt auf, weil er anders ist.', 'description' => $flyer,
                 'drawing' => ['type' => 'flyer', 'format' => 'quadrat', 'motif' => 'kursplan'], 'offers' => $flyerOffers, 'price' => $flyerPrice(1.3)],
             ['area' => 'flyer', 'slug' => 'faltblatt-wickelfalz', 'name' => 'Faltblatt mit Wickelfalz', 'summary' => 'DIN lang mit sechs Seiten – für Preisliste, Programm und Speisekarte.', 'description' => 'Zweimal nach innen gefalzt, auf 135 g oder auf festem 250 g Bilderdruck.',
-                'drawing' => ['type' => 'leaflet', 'fold' => 'wickel'], 'offers' => $flyerOffers, 'price' => ['base' => ['100' => 34.0, '250' => 49.0, '500' => 64.0, '1000' => 89.0], 'by' => ['papier' => ['135-g' => 1.0, '250-g' => 1.3]]]],
+                'drawing' => ['type' => 'leaflet', 'fold' => 'wickel', 'motif' => 'karte'], 'offers' => $flyerOffers, 'price' => ['base' => ['100' => 34.0, '250' => 49.0, '500' => 64.0, '1000' => 89.0], 'by' => ['papier' => ['135-g' => 1.0, '250-g' => 1.3]]]],
             ['area' => 'flyer', 'slug' => 'faltblatt-zickzackfalz', 'name' => 'Faltblatt mit Zickzackfalz', 'summary' => 'Sechs Seiten, die sich öffnen wie eine Ziehharmonika.', 'description' => 'DIN lang, im Zickzack gefalzt, auf 135 g oder auf festem 250 g Bilderdruck.',
-                'drawing' => ['type' => 'leaflet', 'fold' => 'zickzack'], 'offers' => $flyerOffers, 'price' => ['base' => ['100' => 34.0, '250' => 49.0, '500' => 64.0, '1000' => 89.0], 'factor' => 1.05, 'by' => ['papier' => ['135-g' => 1.0, '250-g' => 1.3]]]],
+                'drawing' => ['type' => 'leaflet', 'fold' => 'zickzack', 'motif' => 'kursplan'], 'offers' => $flyerOffers, 'price' => ['base' => ['100' => 34.0, '250' => 49.0, '500' => 64.0, '1000' => 89.0], 'factor' => 1.05, 'by' => ['papier' => ['135-g' => 1.0, '250-g' => 1.3]]]],
 
             // --- Visitenkarten ----------------------------------------------------------
             ['area' => 'visitenkarten', 'slug' => 'visitenkarten', 'name' => 'Visitenkarten', 'summary' => '85 × 55 mm auf 300 g Bilderdruck – matt oder glänzend.', 'description' => 'Das Standardformat, ein- oder beidseitig farbig bedruckt.',
@@ -210,29 +210,29 @@ return [
 
             // --- Broschüren -------------------------------------------------------------
             ['area' => 'broschueren', 'slug' => 'broschueren-rueckstichheftung', 'name' => 'Broschüren mit Rückstichheftung', 'summary' => 'Mit zwei Klammern geheftet, von 8 bis 24 Seiten.', 'description' => 'Umschlag und Inhalt auf 135 g Bilderdruck, durchgehend farbig.',
-                'drawing' => ['type' => 'brochure', 'binding' => 'staple'], 'offers' => ['format' => ['din-a5', 'din-a4', 'din-lang'], 'umfang' => ['8-seiten', '12-seiten', '16-seiten', '24-seiten'], 'auflage' => ['50', '100', '250', '500']],
+                'drawing' => ['type' => 'brochure', 'binding' => 'staple', 'motif' => 'kursplan'], 'offers' => ['format' => ['din-a5', 'din-a4', 'din-lang'], 'umfang' => ['8-seiten', '12-seiten', '16-seiten', '24-seiten'], 'auflage' => ['50', '100', '250', '500']],
                 'price' => ['base' => ['50' => 89.0, '100' => 129.0, '250' => 219.0, '500' => 349.0], 'by' => ['format' => ['din-a5' => 1.0, 'din-a4' => 1.6, 'din-lang' => 0.9], 'umfang' => ['8-seiten' => 1.0, '12-seiten' => 1.3, '16-seiten' => 1.6, '24-seiten' => 2.2]]]],
             ['area' => 'broschueren', 'slug' => 'broschueren-klebebindung', 'name' => 'Broschüren mit Klebebindung', 'summary' => 'Mit geradem Rücken, von 48 bis 96 Seiten – wie ein Buch.', 'description' => 'Umschlag 300 g Bilderdruck, Inhalt 115 g Bilderdruck, durchgehend farbig.',
-                'drawing' => ['type' => 'brochure', 'binding' => 'perfect'], 'offers' => ['format' => ['din-a5', 'din-a4'], 'umfang' => ['48-seiten', '64-seiten', '96-seiten'], 'auflage' => ['25', '50', '100', '250']],
+                'drawing' => ['type' => 'brochure', 'binding' => 'perfect', 'motif' => 'fest'], 'offers' => ['format' => ['din-a5', 'din-a4'], 'umfang' => ['48-seiten', '64-seiten', '96-seiten'], 'auflage' => ['25', '50', '100', '250']],
                 'price' => ['base' => ['25' => 149.0, '50' => 219.0, '100' => 349.0, '250' => 649.0], 'by' => ['format' => ['din-a5' => 1.0, 'din-a4' => 1.6], 'umfang' => ['48-seiten' => 1.0, '64-seiten' => 1.25, '96-seiten' => 1.7]]]],
 
             // --- Plakate ----------------------------------------------------------------
             ['area' => 'plakate', 'slug' => 'plakate', 'name' => 'Plakate', 'summary' => 'Von DIN A3 bis DIN A0, matt oder glänzend – ab einem Stück.', 'description' => 'Einseitig farbig bedruckt auf 135 g Bilderdruck.',
-                'drawing' => ['type' => 'poster'], 'offers' => ['format' => ['din-a3', 'din-a2', 'din-a1', 'din-a0'], 'papier' => ['135-g-matt', '135-g-glaenzend'], 'auflage' => ['1', '5', '10', '25', '50']],
+                'drawing' => ['type' => 'poster', 'motif' => 'eroeffnung'], 'offers' => ['format' => ['din-a3', 'din-a2', 'din-a1', 'din-a0'], 'papier' => ['135-g-matt', '135-g-glaenzend'], 'auflage' => ['1', '5', '10', '25', '50']],
                 'price' => ['base' => ['1' => 9.0, '5' => 24.0, '10' => 34.0, '25' => 59.0, '50' => 89.0], 'by' => ['format' => ['din-a3' => 1.0, 'din-a2' => 1.6, 'din-a1' => 2.4, 'din-a0' => 3.8]]]],
             ['area' => 'plakate', 'slug' => 'poster-auf-fotopapier', 'name' => 'Poster auf Fotopapier', 'summary' => 'Seidenglänzendes Fotopapier für Bilder mit Tiefe.', 'description' => '200 g Fotopapier, im Digitaldruck – schon ab einem Stück.',
-                'drawing' => ['type' => 'poster', 'gloss' => true], 'offers' => ['format' => ['din-a3', 'din-a2', 'din-a1'], 'auflage' => ['1', '5', '10']],
+                'drawing' => ['type' => 'poster', 'gloss' => true, 'motif' => 'fest'], 'offers' => ['format' => ['din-a3', 'din-a2', 'din-a1'], 'auflage' => ['1', '5', '10']],
                 'price' => ['base' => ['1' => 19.0, '5' => 69.0, '10' => 119.0], 'by' => ['format' => ['din-a3' => 1.0, 'din-a2' => 1.7, 'din-a1' => 2.6]]]],
 
             // --- Kalender ---------------------------------------------------------------
             ['area' => 'kalender', 'slug' => 'wandkalender', 'name' => 'Wandkalender', 'summary' => 'Zwölf Monatsblätter und ein Deckblatt, mit Wire-O-Bindung und Aufhänger.', 'description' => '170 g Bilderdruck, jeder Monat mit Ihrem Bild.',
-                'drawing' => ['type' => 'calendar', 'variant' => 'wall'], 'offers' => ['format' => ['din-a4', 'din-a3'], 'auflage' => ['10', '25', '50', '100']],
+                'drawing' => ['type' => 'calendar', 'variant' => 'wall', 'motif' => 'wellen'], 'offers' => ['format' => ['din-a4', 'din-a3'], 'auflage' => ['10', '25', '50', '100']],
                 'price' => ['base' => ['10' => 149.0, '25' => 249.0, '50' => 399.0, '100' => 649.0], 'by' => ['format' => ['din-a4' => 1.0, 'din-a3' => 1.4]]]],
             ['area' => 'kalender', 'slug' => 'tischkalender', 'name' => 'Tischkalender', 'summary' => 'Steht auf jedem Schreibtisch – zwölf Monate im Querformat.', 'description' => 'Mit Aufsteller aus Graupappe und Wire-O-Bindung.',
-                'drawing' => ['type' => 'calendar', 'variant' => 'desk'], 'offers' => ['auflage' => ['10', '25', '50', '100']],
+                'drawing' => ['type' => 'calendar', 'variant' => 'desk', 'motif' => 'sonne'], 'offers' => ['auflage' => ['10', '25', '50', '100']],
                 'price' => ['base' => ['10' => 119.0, '25' => 199.0, '50' => 329.0, '100' => 529.0]]],
             ['area' => 'kalender', 'slug' => 'jahresplaner', 'name' => 'Jahresplaner', 'summary' => 'Das ganze Jahr auf einem Blatt – für Büro und Werkstatt.', 'description' => 'Einseitig bedruckt auf 170 g Bilderdruck, im Querformat.',
-                'drawing' => ['type' => 'calendar', 'variant' => 'planner'], 'offers' => ['format' => ['din-a2', 'din-a1'], 'auflage' => ['10', '25', '50']],
+                'drawing' => ['type' => 'calendar', 'variant' => 'planner', 'motif' => 'monogramm'], 'offers' => ['format' => ['din-a2', 'din-a1'], 'auflage' => ['10', '25', '50']],
                 'price' => ['base' => ['10' => 89.0, '25' => 149.0, '50' => 229.0], 'by' => ['format' => ['din-a2' => 1.0, 'din-a1' => 1.5]]]],
 
             // --- Werbetechnik -----------------------------------------------------------
