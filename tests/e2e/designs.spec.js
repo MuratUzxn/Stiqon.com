@@ -39,6 +39,11 @@ function designId(name) {
     return cli('post', 'list', '--post_type=stiqon_design', `--name=${name}`, '--post_status=any', '--field=ID');
 }
 
+/** Releases a design as the box in the administration does: for the picture it has now. */
+function release(id) {
+    cli('post', 'meta', 'update', id, '_stiqon_design_released', cli('post', 'meta', 'get', id, '_thumbnail_id'));
+}
+
 const noScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 
 test.describe('the registers in the header', () => {
@@ -322,7 +327,7 @@ test.describe('the list without designs to show', () => {
             await expect(page.getByRole('heading', { level: 1, name: 'Werbemittel, die haften bleiben.' })).toBeVisible();
         } finally {
             for (const id of released) {
-                cli('post', 'meta', 'update', id, '_stiqon_design_released', '1');
+                release(id);
             }
         }
     });
@@ -340,7 +345,7 @@ test.describe('the list without designs to show', () => {
             await page.getByRole('main').getByRole('link', { name: 'Alle Designs' }).click();
             await expect(titles(page)).toHaveCount(5);
         } finally {
-            cli('post', 'meta', 'update', gartenfest, '_stiqon_design_released', '1');
+            release(gartenfest);
         }
     });
 });
@@ -487,7 +492,31 @@ test.describe('designs the shop does not show', () => {
             await page.goto('/design/');
             await expect(titles(page)).toHaveCount(5);
         } finally {
-            cli('post', 'meta', 'update', id, '_stiqon_design_released', '1');
+            release(id);
         }
+    });
+
+    test('a new picture needs a release of its own', async ({ page }) => {
+        const konfetti = designId('beispiel-konfetti');
+        const kaffeepause = designId('beispiel-kaffeepause');
+        const checked = cli('post', 'meta', 'get', konfetti, '_thumbnail_id');
+        const other = cli('post', 'meta', 'get', designId('beispiel-herbstmarkt'), '_thumbnail_id');
+
+        // Exchanged after the release: the new picture was not checked.
+        cli('post', 'meta', 'update', konfetti, '_thumbnail_id', other);
+        // Released while it had none: its first picture was not checked either.
+        cli('post', 'meta', 'update', kaffeepause, '_thumbnail_id', other);
+
+        try {
+            expect((await page.goto('/design/beispiel-konfetti/')).status()).toBe(404);
+            expect((await page.goto('/design/beispiel-kaffeepause/')).status()).toBe(404);
+            await page.goto('/design/');
+            await expect(titles(page)).toHaveText(shown.filter((title) => title !== 'Konfetti'));
+        } finally {
+            cli('post', 'meta', 'update', konfetti, '_thumbnail_id', checked);
+            cli('post', 'meta', 'delete', kaffeepause, '_thumbnail_id');
+        }
+
+        expect((await page.goto('/design/beispiel-konfetti/')).status()).toBe(200);
     });
 });

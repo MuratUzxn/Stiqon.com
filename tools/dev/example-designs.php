@@ -286,12 +286,6 @@ foreach ($designs as $order => [$slug, $title, $medium, $occasion, $text, $key, 
     update_post_meta($id, Designs::MODELS, '');
     update_post_meta($id, Designs::REVIEW, 'Beispiel für lokale Seiten und Tests, mit PHP aus Formen gezeichnet – kein echtes Design.');
 
-    if ($released) {
-        update_post_meta($id, Designs::RELEASED, '1');
-    } else {
-        delete_post_meta($id, Designs::RELEASED);
-    }
-
     // The picture: kept while its drawing is unchanged, made anew otherwise.
     $current = (int) get_post_thumbnail_id($id);
     $wanted = $key !== null ? $key.'-'.STIQON_EXAMPLE_DRAWINGS : null;
@@ -315,6 +309,14 @@ foreach ($designs as $order => [$slug, $title, $medium, $occasion, $text, $key, 
         update_post_meta($attachment, '_wp_attachment_image_alt', '');
         set_post_thumbnail($id, $attachment);
         $made['pictures']++;
+    }
+
+    // Released is the picture that was checked – here the one just drawn, or none for the
+    // design that waits for its picture.
+    if ($released) {
+        update_post_meta($id, Designs::RELEASED, (string) (int) get_post_thumbnail_id($id));
+    } else {
+        delete_post_meta($id, Designs::RELEASED);
     }
 
     $made['designs']++;

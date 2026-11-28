@@ -81,7 +81,7 @@ $unreleased = $kept('beispiel-herbstmarkt');
 $imageless = $kept('beispiel-kaffeepause');
 
 $expect($unreleased !== null && $unreleased->post_status === 'publish' && has_post_thumbnail($unreleased) && ! Designs::isShown($unreleased->ID), 'There is no published design with its picture that waits for its release.');
-$expect($imageless !== null && $imageless->post_status === 'publish' && get_post_meta($imageless->ID, Designs::RELEASED, true) === '1' && ! has_post_thumbnail($imageless) && ! Designs::isShown($imageless->ID), 'There is no released design that waits for its picture.');
+$expect($imageless !== null && $imageless->post_status === 'publish' && get_post_meta($imageless->ID, Designs::RELEASED, true) !== '' && ! has_post_thumbnail($imageless) && ! Designs::isShown($imageless->ID), 'There is no released design that waits for its picture.');
 
 // The header names both registers.
 $expect(array_column(stiqon_registers(), 'slug') === ['design', 'produkte'], 'The header does not name the registers Design and Produkte.');

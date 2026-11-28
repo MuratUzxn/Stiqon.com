@@ -21,10 +21,10 @@ use WP_Term;
  * of its own at /design/<name>/.
  *
  * Designs are made with an image generator after models found elsewhere. That
- * is why one is shown only once it is published, has its preview image and has
- * been released by a person who checked it is not too close to its models or
- * to anybody's brand (see shown()). Until then it is not listed, not counted in
- * the filters, and its address does not exist.
+ * is why one is shown only once it is published, has its preview image and
+ * that very image has been released by a person who checked it is not too close
+ * to its models or to anybody's brand (see shown()). Until then it is not
+ * listed, not counted in the filters, and its address does not exist.
  */
 final class Designs
 {
@@ -37,7 +37,11 @@ final class Designs
 
     public const OCCASION = 'stiqon_design_occasion';
 
-    /** "1" once the checks for similarity and brands are done. */
+    /**
+     * The preview image a person checked for similarity and brands and then
+     * released: its attachment id. A picture put in afterwards is not the one
+     * that was checked, so it needs a release of its own.
+     */
     public const RELEASED = '_stiqon_design_released';
 
     /** Number of the job at Higgsfield the image came from. */
@@ -196,24 +200,30 @@ final class Designs
     }
 
     /**
-     * Whether a design is shown: published, with its preview image, and
-     * released after the checks for similarity and brands. Everything else
-     * about the designs follows this one rule.
+     * Whether a design is shown: published, with its preview image, and that
+     * image released after the checks for similarity and brands. Everything
+     * else about the designs follows this one rule.
+     *
+     * @param  int  $image  attachment id of the preview image, 0 for none
+     * @param  mixed  $released  what RELEASED holds: the id of the image that was released
      */
-    public static function shown(string $status, bool $hasImage, mixed $released): bool
+    public static function shown(string $status, int $image, mixed $released): bool
     {
-        return self::reason($status, $hasImage, $released) === null;
+        return self::reason($status, $image, $released) === null;
     }
 
     /**
      * Why a design is not shown – for the administration – or null when it is.
      */
-    public static function reason(string $status, bool $hasImage, mixed $released): ?string
+    public static function reason(string $status, int $image, mixed $released): ?string
     {
+        $released = is_int($released) || is_string($released) ? (string) $released : '';
+
         return match (true) {
             $status !== 'publish' => 'nicht veröffentlicht',
-            ! $hasImage => 'das Vorschaubild fehlt',
-            ! is_scalar($released) || (string) $released !== '1' => 'nicht freigegeben',
+            $image <= 0 => 'das Vorschaubild fehlt',
+            $released === '' => 'nicht freigegeben',
+            $released !== (string) $image => 'neues Vorschaubild, nicht freigegeben',
             default => null,
         };
     }
@@ -232,39 +242,48 @@ final class Designs
     public static function isShown(int $id): bool
     {
         return get_post_type($id) === self::TYPE
-            && self::shown((string) get_post_status($id), has_post_thumbnail($id), get_post_meta($id, self::RELEASED, true));
+            && self::shown((string) get_post_status($id), self::image($id), get_post_meta($id, self::RELEASED, true));
     }
 
-    /**
-     * The conditions of shown() as a query: what is published is asked for separately.
-     *
-     * @return array<int|string, mixed>
-     */
-    private static function shownQuery(): array
+    /** The preview image of a design, 0 for none – read from its fields, without loading the post. */
+    private static function image(int $id): int
     {
-        return [
-            'relation' => 'AND',
-            ['key' => '_thumbnail_id', 'value' => '0', 'compare' => '!='],
-            ['key' => self::RELEASED, 'value' => '1'],
-        ];
+        $image = get_post_meta($id, '_thumbnail_id', true);
+
+        return is_numeric($image) ? (int) $image : 0;
     }
 
     /**
-     * Ids of all shown designs. Remembered for the request: the list, its
-     * filters and the explore block all ask.
+     * Ids of all shown designs, newest first. Remembered for the request: the
+     * list, its filters and the explore block all ask. A query can only name
+     * the candidates – whether the released image is the current one compares
+     * two fields – so shown() decides, with the fields of all of them read at once.
      *
      * @return list<int>
      */
     public static function shownIds(): array
     {
         if (self::$shownIds === null) {
-            self::$shownIds = array_map('intval', get_posts([
+            $candidates = array_map('intval', get_posts([
                 'post_type' => self::TYPE,
                 'post_status' => 'publish',
                 'numberposts' => -1,
                 'fields' => 'ids',
-                'meta_query' => self::shownQuery(),
+                'meta_query' => [
+                    'relation' => 'AND',
+                    ['key' => '_thumbnail_id', 'compare' => 'EXISTS'],
+                    ['key' => self::RELEASED, 'compare' => 'EXISTS'],
+                ],
             ]));
+
+            if ($candidates !== []) {
+                update_meta_cache('post', $candidates);
+            }
+
+            self::$shownIds = array_values(array_filter(
+                $candidates,
+                static fn (int $id): bool => self::shown('publish', self::image($id), get_post_meta($id, self::RELEASED, true)),
+            ));
         }
 
         return self::$shownIds;
@@ -697,7 +716,7 @@ final class Designs
         }
 
         echo '<p class="description" style="margin: 12px 0 0">'
-            .'Ein Design erscheint im Shop erst, wenn es veröffentlicht ist, ein Vorschaubild hat und unter „Herkunft und Freigabe“ freigegeben ist. '
+            .'Ein Design erscheint im Shop erst, wenn es veröffentlicht ist, ein Vorschaubild hat und dieses Bild unter „Herkunft und Freigabe“ freigegeben ist. Ein neues Vorschaubild braucht eine neue Freigabe. '
             .'Vorschaubild: rechts unter „Vorschaubild“, als PNG, JPEG oder WebP. Werbemittel: „sticker“ oder „flyer“ – wie die Bereichsseiten. Anlass: frei, etwa „Eröffnung“.'
             .'</p>';
     }
@@ -714,7 +733,11 @@ final class Designs
         $job = (string) get_post_meta($post->ID, self::JOB, true);
         $models = (string) get_post_meta($post->ID, self::MODELS, true);
         $review = (string) get_post_meta($post->ID, self::REVIEW, true);
-        $released = get_post_meta($post->ID, self::RELEASED, true) === '1';
+        $image = self::image($post->ID);
+        $release = get_post_meta($post->ID, self::RELEASED, true);
+        $release = is_int($release) || is_string($release) ? (string) $release : '';
+        // Ticked only for the picture that was released; another one waits for its own check.
+        $released = $release !== '' && $release === (string) $image;
 
         echo '<p><label for="stiqon-design-job"><strong>Higgsfield-Auftragsnummer</strong></label><br>'
             .'<input type="text" class="regular-text" id="stiqon-design-job" name="stiqon_design[job]" value="'.esc_attr($job).'"></p>';
@@ -727,7 +750,13 @@ final class Designs
             .'<textarea class="large-text" rows="3" id="stiqon-design-review" name="stiqon_design[review]">'.esc_textarea($review).'</textarea></p>';
 
         echo '<p><label><input type="checkbox" name="stiqon_design[released]" value="1"'.checked($released, true, false).'> '
-            .'<strong>Freigegeben: Ähnlichkeits- und Markenprüfung erledigt</strong></label></p>';
+            .'<strong>Freigegeben: Ähnlichkeits- und Markenprüfung erledigt</strong></label>'
+            // Which picture the tick was given for when the form was drawn: one exchanged before saving was not checked.
+            .'<input type="hidden" name="stiqon_design[checked]" value="'.esc_attr($released ? (string) $image : '').'"></p>';
+
+        if ($release !== '' && ! $released && $image > 0) {
+            echo '<p class="description">Das Vorschaubild ist nicht mehr das freigegebene. Bitte das neue prüfen und dann erneut freigeben.</p>';
+        }
     }
 
     public static function saveProvenance(int $id, WP_Post $post): void
@@ -749,10 +778,16 @@ final class Designs
         update_post_meta($id, self::MODELS, sanitize_textarea_field($text('models')));
         update_post_meta($id, self::REVIEW, sanitize_textarea_field($text('review')));
 
-        if ($text('released') === '1') {
-            update_post_meta($id, self::RELEASED, '1');
-        } else {
+        // The release is given for the picture the design has now, which the person
+        // saw beside the box. Only where the box was ticked already when the form was
+        // drawn and the picture has been exchanged since does it stay with the old one:
+        // the tick was not given for the new picture.
+        $image = self::image($id);
+
+        if ($text('released') !== '1') {
             delete_post_meta($id, self::RELEASED);
+        } elseif ($text('checked') === '' || $text('checked') === (string) $image) {
+            update_post_meta($id, self::RELEASED, (string) $image);
         }
 
         self::forgetShown();
@@ -800,7 +835,7 @@ final class Designs
             return;
         }
 
-        $reason = self::reason((string) get_post_status($id), has_post_thumbnail($id), get_post_meta($id, self::RELEASED, true));
+        $reason = self::reason((string) get_post_status($id), self::image($id), get_post_meta($id, self::RELEASED, true));
 
         echo esc_html($reason === null ? 'Ja – im Shop' : 'Nein – '.$reason);
     }

@@ -188,9 +188,13 @@ für das es gemacht ist, und ein Anlass. In der Verwaltung stehen sie unter **De
   Bereichsseiten, `sticker` und `flyer`; daran hängen „Zu den Stickern“ bzw. „Zu den Flyern“ und
   das Ziel von „Als Motiv ausprobieren“ – und **Anlass** (`stiqon_design_occasion`), frei, etwa
   „Eröffnung“. Begriffe haben keine eigenen Seiten; gefiltert wird die Liste.
-- **Wann ein Design erscheint:** Es ist veröffentlicht, hat ein Vorschaubild und ist freigegeben.
-  Fehlt eines davon, steht es in keiner Liste, zählt in keinem Filter, und seine Adresse
-  antwortet mit „nicht gefunden“ – auch über WordPress' Schnittstelle (`/wp-json/wp/v2/stiqon_design`).
+- **Wann ein Design erscheint:** Es ist veröffentlicht, hat ein Vorschaubild, und genau dieses Bild
+  ist freigegeben. Die Freigabe gilt dem geprüften Bild (gespeichert wird dessen Nummer): Ein neues
+  oder ausgetauschtes Vorschaubild nimmt das Design aus dem Shop, bis jemand es geprüft und erneut
+  freigegeben hat. Fehlt eines davon, steht es in keiner Liste, zählt in keinem Filter, und seine
+  Adresse antwortet mit „nicht gefunden“ – auch als Einbettung, über `?p=<Nummer>`, in Feeds und
+  über WordPress' Schnittstelle: die Designs selbst (`/wp-json/wp/v2/stiqon_design`), deren Suche,
+  die Mediathek mit seinem Bild und Werbemittel und Anlässe, die kein gezeigtes Design trägt.
   Die Regel steht an einer Stelle (`Designs::shown()`, Unit-Tests in `tests/php/Content`); die
   Spalte „Freigabe“ der Verwaltung sagt je Design, ob es erscheint, und wenn nicht, warum. In der
   Sitemap von WordPress stehen Designs vorerst nicht.
@@ -214,6 +218,9 @@ So wird ein Design, das mit Higgsfield entstanden ist, zum Eintrag:
 5. Veröffentlichen. Das Design erscheint noch nicht.
 6. Prüfen, ob es einem Vorbild oder einer Marke zu nahe kommt, das Ergebnis als Prüfnotiz
    festhalten und erst dann **Freigegeben** anhaken und speichern.
+7. Wird später das Vorschaubild ausgetauscht, verschwindet das Design wieder („neues
+   Vorschaubild, nicht freigegeben“ in der Spalte „Freigabe“): das neue Bild prüfen und erneut
+   freigeben.
 
 ## Kaufen
 
