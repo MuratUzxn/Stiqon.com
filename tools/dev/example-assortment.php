@@ -240,10 +240,10 @@ return [
                 'drawing' => ['type' => 'rollup', 'motif' => 'prozent'], 'offers' => ['format' => ['85x200', '100x200', '120x200'], 'modell' => ['basic', 'premium'], 'auflage' => ['1', '2', '5']],
                 'price' => ['base' => ['1' => 79.0, '2' => 149.0, '5' => 349.0], 'by' => ['format' => ['85x200' => 1.0, '100x200' => 1.2, '120x200' => 1.45], 'modell' => ['basic' => 1.0, 'premium' => 1.6]]]],
             ['area' => 'werbetechnik', 'slug' => 'pvc-banner', 'name' => 'PVC-Banner', 'summary' => 'Wetterfeste Plane mit Ösen ringsum – für Zaun, Fassade und Bühne.', 'description' => '500 g Frontlit-Plane, gesäumt, mit Ösen alle 50 cm.',
-                'drawing' => ['type' => 'banner'], 'offers' => ['format' => ['200x100', '300x100', '400x100'], 'auflage' => ['1', '2', '5']],
+                'drawing' => ['type' => 'banner', 'motif' => 'messe'], 'offers' => ['format' => ['200x100', '300x100', '400x100'], 'auflage' => ['1', '2', '5']],
                 'price' => ['base' => ['1' => 49.0, '2' => 89.0, '5' => 199.0], 'by' => ['format' => ['200x100' => 1.0, '300x100' => 1.4, '400x100' => 1.8]]]],
             ['area' => 'werbetechnik', 'slug' => 'kundenstopper', 'name' => 'Kundenstopper', 'summary' => 'Der Aufsteller für den Gehweg – mit Klapprahmen und Plakat.', 'description' => 'Aluminium-Klapprahmen, beidseitig mit wetterfestem Plakat bestückt.',
-                'drawing' => ['type' => 'standee'], 'offers' => ['format' => ['din-a1', 'din-a0'], 'auflage' => ['1', '2', '5']],
+                'drawing' => ['type' => 'standee', 'motif' => 'karte'], 'offers' => ['format' => ['din-a1', 'din-a0'], 'auflage' => ['1', '2', '5']],
                 'price' => ['base' => ['1' => 99.0, '2' => 189.0, '5' => 449.0], 'by' => ['format' => ['din-a1' => 1.0, 'din-a0' => 1.5]]]],
 
             // --- Verpackungen -----------------------------------------------------------

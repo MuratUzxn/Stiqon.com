@@ -1,3 +1,4 @@
+import { gzipSync } from 'node:zlib';
 import { test, expect, accessibilityViolations, logInAsAdministrator } from './fixtures.js';
 
 /**
@@ -20,20 +21,22 @@ async function open(page, path = '/') {
 }
 
 test.describe('search over the page', () => {
-    test('the control in the header opens it, with areas and products as a way in', async ({ page }) => {
+    test('the control in the header opens it, with the areas as a way in', async ({ page }) => {
         await open(page);
 
         await expect(panel(page)).toBeVisible();
         await expect(field(page)).toBeFocused();
         await expect(field(page)).toHaveAttribute('aria-expanded', 'true');
         await expect(panel(page)).toContainText('Vorschläge');
+        // The first areas of the shop, in the order of the header.
         await expect(rows(page)).toHaveCount(5);
         await expect(rows(page).nth(0)).toContainText('Sticker');
         await expect(rows(page).nth(0)).toContainText('5 Produkte');
         await expect(rows(page).nth(0)).toHaveAttribute('href', /\/sticker\/$/);
         await expect(rows(page).nth(1)).toHaveAttribute('href', /\/flyer\/$/);
-        await expect(rows(page).nth(2)).toContainText('Runde Sticker');
-        await expect(rows(page).nth(2)).toContainText('ab 24,90 €');
+        await expect(rows(page).nth(2)).toContainText('Visitenkarten');
+        await expect(rows(page).nth(2)).toHaveAttribute('href', /\/visitenkarten\/$/);
+        await expect(rows(page).nth(4)).toHaveAttribute('href', /\/briefpapier\/$/);
 
         // The page below has not moved on.
         await expect(page).toHaveURL(/127\.0\.0\.1:\d+\/$/);
@@ -66,16 +69,16 @@ test.describe('search over the page', () => {
         await expect(rows(page).first()).toContainText('Flyer DIN A5');
         await expect(rows(page).first()).toContainText('250 g Bilderdruck');
 
-        // More fit than are listed.
+        // More fit than are listed: stickers on film, and business cards laminated or hot-foil stamped.
         await field(page).fill('folie');
         await expect(rows(page)).toHaveCount(8);
-        await expect(panel(page).getByRole('status')).toHaveText('10 Treffer, die ersten 8 sind aufgelistet');
+        await expect(panel(page).getByRole('status')).toHaveText('15 Treffer, die ersten 8 sind aufgelistet');
         await expect(panel(page).getByRole('button', { name: 'Alle Treffer anzeigen' })).toBeVisible();
     });
 
     test('a query that finds nothing says so and offers no results page', async ({ page }) => {
         await open(page);
-        await field(page).fill('tasse');
+        await field(page).fill('regenschirm');
 
         await expect(rows(page)).toHaveCount(0);
         await expect(panel(page)).toContainText('Dazu haben wir nichts gefunden.');
@@ -102,7 +105,8 @@ test.describe('search over the page', () => {
         await panel(page).getByRole('button', { name: 'Alle Treffer anzeigen' }).click();
 
         await expect(page).toHaveURL(/\/\?s=bilderdruck$/);
-        await expect(cards(page)).toHaveCount(10);
+        // Flyers, folded leaflets, business cards, posters and calendars on art paper.
+        await expect(cards(page)).toHaveCount(27);
     });
 
     test('the close button and a tap beside the sheet close it; what was typed is kept', async ({ page }) => {
@@ -270,11 +274,17 @@ test.describe('search, what it costs', () => {
 
         const { entries } = await response.json();
 
-        // Two areas, ten products, and a variant per material (5 × 4) and per paper (5 × 2).
-        expect(entries).toHaveLength(42);
+        // Twelve areas, the 43 products of the example assortment, and a variant for each value of
+        // the option a product's drawing shows (a sticker's material, a flyer's paper, a shirt's colour): 96.
+        expect(entries).toHaveLength(12 + 43 + 96);
         expect([...new Set(entries.flatMap((entry) => Object.keys(entry)))].sort()).toEqual(['g', 'k', 'm', 'n', 'p', 's', 't', 'u', 'w']);
         expect(entries[0]).toEqual({ n: 'Sticker', s: '5 Produkte', u: expect.stringMatching(/\/sticker\/$/), g: 'sticker', t: 'sticker', k: expect.stringContaining('aufkleber'), w: 3 });
-        expect((await response.body()).length).toBeLessThan(20 * 1024);
+        // It grows with the assortment, but compresses well: names, keywords and addresses repeat.
+        // About 48 kB as sent by the test server, about 6 kB as a server that compresses sends it.
+        const body = await response.body();
+
+        expect(gzipSync(body).length).toBeLessThan(8 * 1024);
+        expect(body.length).toBeLessThan(64 * 1024);
 
         // A browser that has the list asks whether it changed, and is told "no" without getting it again.
         const tag = response.headers().etag;
@@ -357,7 +367,8 @@ test.describe('search without script', () => {
         await page.getByRole('main').getByRole('button', { name: 'Suchen' }).click();
 
         await expect(page).toHaveURL(/\/\?s=DIN\+A5$/);
-        await expect(cards(page)).toHaveCount(1);
+        // The flyer by its name first, then what comes in A5: a notepad and two brochures.
+        await expect(cards(page)).toHaveCount(4);
         await expect(cards(page).first()).toContainText('Flyer DIN A5');
     });
 });
@@ -400,12 +411,16 @@ test.describe('results page', () => {
     });
 
     test('nothing found: the page says so and shows the way to the areas', async ({ page }) => {
-        await page.goto('/?s=tasse');
+        await page.goto('/?s=regenschirm');
 
-        await expect(page.getByRole('main')).toContainText('Zu „tasse“ haben wir nichts gefunden.');
+        await expect(page.getByRole('main')).toContainText('Zu „regenschirm“ haben wir nichts gefunden.');
         await expect(cards(page)).toHaveCount(0);
-        await expect(page.getByRole('main').getByRole('link', { name: 'Alle Sticker' })).toHaveAttribute('href', /\/sticker\/$/);
-        await expect(page.getByRole('main').getByRole('link', { name: 'Alle Flyer' })).toHaveAttribute('href', /\/flyer\/$/);
+        await expect(page.getByRole('main')).toContainText('Oder sehen Sie sich in einem Bereich um:');
+        // Every area, each named as it is in the header.
+        await expect(page.getByRole('main').getByRole('link', { name: 'Sticker', exact: true })).toHaveAttribute('href', /\/sticker\/$/);
+        await expect(page.getByRole('main').getByRole('link', { name: 'Flyer', exact: true })).toHaveAttribute('href', /\/flyer\/$/);
+        await expect(page.getByRole('main').getByRole('link', { name: 'Werbetechnik', exact: true })).toHaveAttribute('href', /\/werbetechnik\/$/);
+        await expect(page.getByRole('main').getByRole('link', { name: 'Werbeartikel', exact: true })).toHaveAttribute('href', /\/werbeartikel\/$/);
     });
 
     test('what was typed is shown as text, whatever it is, and cut to a length', async ({ page }) => {
