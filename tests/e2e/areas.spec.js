@@ -55,7 +55,10 @@ test.describe('products of the new kinds', () => {
         await page.goto('/produkt/t-shirts/?attribute_pa_farbe=schwarz&attribute_pa_textilgroesse=l');
 
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('T-Shirts');
-        await expect(page.locator('main svg[data-mockup="shirt"]').first()).toBeVisible();
+        // The stage holds a view per colour; the one shown is the black shirt.
+        await expect(shownView(page)).toHaveAttribute('data-view', 'schwarz');
+        await expect(shownView(page).getByRole('img', { name: 'T-Shirts, Schwarz' })).toBeVisible();
+        await expect(shownView(page).locator('svg[data-mockup="shirt"]')).toHaveCount(1);
 
         await page.getByRole('button', { name: 'In den Warenkorb' }).click();
         await expect(page.getByText('wurde Ihrem Warenkorb hinzugefügt')).toBeVisible();

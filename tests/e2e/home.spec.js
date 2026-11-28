@@ -83,7 +83,7 @@ test.describe('home page', () => {
         await page.goto('/');
 
         // Scroll snapping once pulled the first card out to the window's edge.
-        const row = page.getByRole('region', { name: 'Beispiele: Motive auf Stickern und Flyern' });
+        const row = page.getByRole('region', { name: 'Beispiele: Motive auf unseren Produkten' });
         const heading = await page.getByRole('heading', { level: 2, name: 'Erst ansehen, dann bestellen.' }).boundingBox();
         const first = await row.locator('> *').first().boundingBox();
 
@@ -96,7 +96,7 @@ test.describe('home page', () => {
 
         await page.goto('/');
 
-        const row = page.getByRole('region', { name: 'Beispiele: Motive auf Stickern und Flyern' });
+        const row = page.getByRole('region', { name: 'Beispiele: Motive auf unseren Produkten' });
         const previous = page.getByRole('button', { name: 'Vorherige Beispiele' });
         const next = page.getByRole('button', { name: 'Weitere Beispiele' });
         const position = () => row.evaluate((element) => element.scrollLeft);
@@ -150,7 +150,7 @@ test.describe('home page', () => {
         await expect(next).toBeVisible();
 
         await next.click();
-        await expect.poll(() => page.getByRole('region', { name: 'Beispiele: Motive auf Stickern und Flyern' }).evaluate((element) => element.scrollLeft)).toBeGreaterThan(100);
+        await expect.poll(() => page.getByRole('region', { name: 'Beispiele: Motive auf unseren Produkten' }).evaluate((element) => element.scrollLeft)).toBeGreaterThan(100);
     });
 
     test('the row of examples can be reached and moved with the keyboard', async ({ page, isMobile }) => {
@@ -158,7 +158,7 @@ test.describe('home page', () => {
 
         await page.goto('/');
 
-        const row = page.getByRole('region', { name: 'Beispiele: Motive auf Stickern und Flyern' });
+        const row = page.getByRole('region', { name: 'Beispiele: Motive auf unseren Produkten' });
 
         await row.focus();
         await expect(row).toBeFocused();

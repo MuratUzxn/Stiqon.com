@@ -13,7 +13,7 @@ $type = [
     ['name' => 'Abschluss', 'note' => 'bis 60 px', 'class' => 'text-cta', 'sample' => 'Zeigen Sie uns Ihr Motiv.'],
     ['name' => 'Abschnitt', 'note' => 'bis 44 px', 'class' => 'text-title', 'sample' => 'Formen, Materialien und Formate'],
     ['name' => 'Überschrift', 'note' => 'bis 21 px', 'class' => 'text-heading', 'sample' => 'Runde Sticker'],
-    ['name' => 'Einleitung', 'note' => 'bis 20 px, gedämpft', 'class' => 'text-lead text-muted', 'sample' => 'Wählen Sie Ihr Motiv und sehen Sie es sofort auf Stickern und Flyern.'],
+    ['name' => 'Einleitung', 'note' => 'bis 20 px, gedämpft', 'class' => 'text-lead text-muted', 'sample' => 'Wählen Sie Ihr Motiv und sehen Sie es sofort auf Ihren Werbemitteln.'],
     ['name' => 'Fließtext', 'note' => '16 px', 'class' => '', 'sample' => 'Zahlen wie 1.250 Stück oder 105 × 148 mm bleiben gut lesbar.'],
     ['name' => 'Beschriftung', 'note' => '14 px, Stärke 500', 'class' => 'text-label text-muted', 'sample' => 'Ihr Bild bleibt in Ihrem Browser – es wird nichts hochgeladen.'],
 ];
