@@ -97,10 +97,10 @@ $link = 'text-action inline-flex h-10 items-center rounded-full px-2.5 text-[0.9
         </div>
     </div>
 
-    <?php // The areas on wide screens: one row under the logo that scrolls sideways when the window is too narrow for all of them. ?>
+    <?php // The areas on wide screens: one row under the logo that scrolls sideways when the window is too narrow for all of them, and fades out where it goes on. ?>
     <nav aria-label="Hauptnavigation" class="hidden md:block">
         <?php // The first word lines up with the logo; the padding above keeps the focus ring inside the scrolling row. ?>
-        <ul class="bleed-row -mt-3.5 gap-1 pt-1.5 pb-3 pl-[calc(var(--bleed-gutter)-0.625rem)] lg:-mt-5.5">
+        <ul class="bleed-row fade-edges -mt-3.5 gap-1 pt-1.5 pb-3 pl-[calc(var(--bleed-gutter)-0.625rem)] lg:-mt-5.5">
             <?php foreach ($areas as $area) : ?>
                 <li class="shrink-0">
                     <a
