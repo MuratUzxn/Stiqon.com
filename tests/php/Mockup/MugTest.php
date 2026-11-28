@@ -24,7 +24,7 @@ final class MugTest extends TestCase
 
     public function test_every_motif_renders_in_either_style_and_colour(): void
     {
-        $this->assertGreaterThanOrEqual(12, count(Mug::motifs()));
+        $this->assertGreaterThanOrEqual(10, count(Mug::motifs()));
 
         foreach (Mug::motifs() as $motif) {
             foreach (array_keys(Mug::form()['values']) as $style) {
@@ -37,6 +37,18 @@ final class MugTest extends TestCase
                     $this->assertStringContainsString('data-motif-sample', $svg);
                 }
             }
+        }
+    }
+
+    public function test_motifs_that_are_only_an_outline_on_a_sticker_are_not_offered(): void
+    {
+        // Printed bare, "stern" would be its lettering alone and "sprechblase"
+        // would lose its bubble: the mug would look unprinted.
+        $this->assertSame(array_values(array_diff(Sticker::motifs(), ['sprechblase', 'stern'])), Mug::motifs());
+
+        // Nor does the name of a product pick one.
+        foreach (range(1, 60) as $number) {
+            $this->assertNotContains(Guess::motif('mug', "Tasse {$number}"), Sticker::CONTOUR_MOTIFS, "Tasse {$number}");
         }
     }
 
@@ -266,6 +278,8 @@ final class MugTest extends TestCase
             'motif' => [static fn () => new Mug(motif: 'gibt-es-nicht'), 'Unknown mug motif [gibt-es-nicht].'],
             'motif outside the directory' => [static fn () => new Mug(motif: '../mockup/flyer'), 'Unknown mug motif'],
             'flyer motif' => [static fn () => Mug::fromArray(['motif' => 'prozent']), 'Unknown mug motif [prozent].'],
+            'outline motif' => [static fn () => new Mug(motif: 'stern'), 'Unknown mug motif [stern].'],
+            'outline motif from a spec' => [static fn () => Mug::fromArray(['style' => 'enamel', 'motif' => 'sprechblase']), 'Unknown mug motif [sprechblase].'],
             'color' => [static fn () => new Mug(color: 'rot'), 'Unknown mug color [rot].'],
             'color in German' => [static fn () => Mug::fromArray(['color' => 'weiß']), 'Unknown mug color [weiß].'],
             'color of a shirt' => [static fn () => Mug::fromArray(['color' => 'navy']), 'Unknown mug color [navy].'],
@@ -328,7 +342,7 @@ final class MugTest extends TestCase
         $this->assertSame(['classic' => 'Kaffeetasse', 'enamel' => 'Emaillebecher'], $form['values']);
         $this->assertSame(array_keys($form['values']), $keys[$form['key']]);
         $this->assertSame(Mug::motifs(), $keys['motif']);
-        $this->assertSame(Sticker::motifs(), Mug::motifs());
+        $this->assertSame(array_values(array_diff(Sticker::motifs(), Sticker::CONTOUR_MOTIFS)), Mug::motifs());
         $this->assertSame(['white', 'black'], $keys['color']);
 
         $names = Mug::names();

@@ -86,6 +86,36 @@ $tone = [
             <stop offset="0" stop-color="#000" stop-opacity="0" />
             <stop offset="1" stop-color="#000" stop-opacity="<?php echo esc_attr($dark ? '0.25' : '0.12'); ?>" />
         </linearGradient>
+
+        <?php if ($hoodie) : ?>
+            <?php
+            // Where the two strands of the hood's front edge meet, on the left,
+            // the first ends under the second. The second is cut off square
+            // there, so no rounded end lies across the first – by a mask rather
+            // than a clip, so its layers are cut as one and no line colour shows
+            // along the cut. Each shadow stops at the end of its own strand, so
+            // the two do not darken each other where they meet: the masks sit
+            // on the shadows themselves and so move with them, and "-end" takes
+            // away the rounded end of the first strand's shadow, nothing else.
+            [$joinX, $joinY] = $parts['join'];
+            ?>
+            <mask id="<?php echo esc_attr($uid); ?>-join" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="120">
+                <rect x="0" y="<?php echo esc_attr($joinY); ?>" width="120" height="<?php echo esc_attr(round(120 - $joinY, 2)); ?>" fill="#fff" />
+            </mask>
+            <mask id="<?php echo esc_attr($uid); ?>-end" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="120">
+                <rect width="120" height="120" fill="#fff" />
+                <rect x="<?php echo esc_attr(round($joinX - 3, 2)); ?>" y="<?php echo esc_attr($joinY); ?>" width="6" height="3" fill="#000" />
+            </mask>
+
+            <?php // The outline's top runs across the back of the neck, inside the hood: hidden in its opening and under its front edge ?>
+            <mask id="<?php echo esc_attr($uid); ?>-front">
+                <rect width="120" height="120" fill="#fff" />
+                <path d="<?php echo esc_attr($parts['opening']); ?>" fill="#000" />
+                <?php foreach ($parts['edges'] as $edge) : ?>
+                    <path d="<?php echo esc_attr($edge); ?>" fill="none" stroke="#000" stroke-width="<?php echo esc_attr($mockup->cm(2.9)); ?>" stroke-linecap="round" />
+                <?php endforeach; ?>
+            </mask>
+        <?php endif; ?>
     </defs>
 
     <g transform="rotate(<?php echo esc_attr(Shirt::TILT); ?> 60 60)">
@@ -103,13 +133,15 @@ $tone = [
             <path d="<?php echo esc_attr($parts['opening']); ?>" fill="<?php echo esc_attr($tone['inside']); ?>" />
             <path d="<?php echo esc_attr($parts['opening']); ?>" fill="url(#<?php echo esc_attr($uid); ?>-deep)" />
 
-            <?php // The hood's doubled front edges, stitched along their length, the left one on top ?>
+            <?php // The hood's doubled front edge, stitched along its length: the second strand lies over the first where they cross, and meets its end on the left (see the masks) ?>
             <g fill="none" stroke-linecap="round">
-                <?php foreach ($parts['edges'] as $edge) : ?>
-                    <path d="<?php echo esc_attr($edge); ?>" stroke="#000" stroke-opacity="0.12" stroke-width="<?php echo esc_attr($mockup->cm(2.9)); ?>" transform="translate(0.3 0.45)" />
-                    <path d="<?php echo esc_attr($edge); ?>" stroke="<?php echo esc_attr($tone['line']); ?>" stroke-width="<?php echo esc_attr($mockup->cm(2.7)); ?>" />
-                    <path d="<?php echo esc_attr($edge); ?>" stroke="<?php echo esc_attr($tone['cloth']); ?>" stroke-width="<?php echo esc_attr($mockup->cm(2.35)); ?>" />
-                    <path d="<?php echo esc_attr($edge); ?>" stroke="<?php echo esc_attr($tone['thread']); ?>" stroke-width="0.25" stroke-dasharray="0.8 0.5" />
+                <?php foreach ($parts['edges'] as $index => $edge) : ?>
+                    <path d="<?php echo esc_attr($edge); ?>" stroke="#000" stroke-opacity="0.12" stroke-width="<?php echo esc_attr($mockup->cm(2.9)); ?>" transform="translate(0.3 0.45)" mask="url(#<?php echo esc_attr($uid.($index > 0 ? '-join' : '-end')); ?>)" />
+                    <g<?php if ($index > 0) : ?> mask="url(#<?php echo esc_attr($uid); ?>-join)"<?php endif; ?>>
+                        <path d="<?php echo esc_attr($edge); ?>" stroke="<?php echo esc_attr($tone['line']); ?>" stroke-width="<?php echo esc_attr($mockup->cm(2.7)); ?>" />
+                        <path d="<?php echo esc_attr($edge); ?>" stroke="<?php echo esc_attr($tone['cloth']); ?>" stroke-width="<?php echo esc_attr($mockup->cm(2.35)); ?>" />
+                        <path d="<?php echo esc_attr($edge); ?>" stroke="<?php echo esc_attr($tone['thread']); ?>" stroke-width="0.25" stroke-dasharray="0.8 0.5" />
+                    </g>
                 <?php endforeach; ?>
             </g>
             <path d="<?php echo esc_attr($parts['eyelets']); ?>" fill="<?php echo esc_attr($tone['inside']); ?>" stroke="<?php echo esc_attr($tone['metal']); ?>" stroke-width="0.5" />
@@ -196,7 +228,10 @@ $tone = [
             </g>
         <?php endif; ?>
 
-        <path d="<?php echo esc_attr($mockup->outline); ?>" fill="none" stroke="<?php echo esc_attr($tone['edge']); ?>" stroke-width="0.4" />
-        <path d="<?php echo esc_attr($mockup->outline); ?>" fill="none" stroke="#0a0a0a" stroke-opacity="0.1" stroke-width="0.3" />
+        <?php // The outline, over everything; on the hoodie not across the hood's opening (see the mask) ?>
+        <g<?php if ($hoodie) : ?> mask="url(#<?php echo esc_attr($uid); ?>-front)"<?php endif; ?>>
+            <path d="<?php echo esc_attr($mockup->outline); ?>" fill="none" stroke="<?php echo esc_attr($tone['edge']); ?>" stroke-width="0.4" />
+            <path d="<?php echo esc_attr($mockup->outline); ?>" fill="none" stroke="#0a0a0a" stroke-opacity="0.1" stroke-width="0.3" />
+        </g>
     </g>
 </svg>

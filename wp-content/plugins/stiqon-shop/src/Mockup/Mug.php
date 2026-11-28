@@ -220,13 +220,16 @@ final class Mug implements Kind
     }
 
     /**
-     * Names of the sample motifs printed on mugs: the sticker motifs, as a logo.
+     * Names of the sample motifs printed on mugs, as a logo: the sticker
+     * motifs that keep their shape printed bare. A contour motif's shape is
+     * the sticker's outline – on the glaze "stern" would be its lettering
+     * alone, and the mug would look unprinted.
      *
      * @return list<string>
      */
     public static function motifs(): array
     {
-        return Template::names('motif');
+        return array_values(array_diff(Template::names('motif'), Sticker::CONTOUR_MOTIFS));
     }
 
     /**

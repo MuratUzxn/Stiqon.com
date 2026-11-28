@@ -58,7 +58,9 @@ final class Shirt implements Kind
      * back, seen from inside through the neck), "backCollar", "collar",
      * "collarRib", "collarSeam", "armholes" and "hems" (their stitching). A
      * hoodie has "hood", "opening" (the inside of the hood, down to where its
-     * front edges cross), "edges" (the two front edges, the left one last),
+     * front edge crosses itself), "edges" (that edge as two strands: the
+     * first runs over the crown, the second crosses over it in front of the
+     * neck and meets the first's end at "join", the point where both end),
      * "eyelets", "strings" and "tips" (one each per drawstring), "pocket",
      * "pocketSeams", "pocketShade" (along the hand openings), "cuffs",
      * "band", "ribSeams" and "armholes". The ribbed bands – "collarRib",
@@ -174,13 +176,16 @@ final class Shirt implements Kind
     }
 
     /**
-     * Names of the sample motifs printed on shirts: the sticker motifs, as a chest print.
+     * Names of the sample motifs printed on shirts, as a chest print: the
+     * sticker motifs that keep their shape printed bare. A contour motif's
+     * shape is the sticker's outline – on cloth "stern" would be its lettering
+     * alone, and the shirt would look unprinted.
      *
      * @return list<string>
      */
     public static function motifs(): array
     {
-        return Template::names('motif');
+        return array_values(array_diff(Template::names('motif'), Sticker::CONTOUR_MOTIFS));
     }
 
     /**
@@ -387,8 +392,13 @@ final class Shirt implements Kind
         $outline = 'M'.$this->chain($sides[0][0]['chain']).$this->chain(self::mirrored($sides[1][0]['chain']), false).'z';
 
         // The hood lies flat behind the neck; its opening faces the viewer,
-        // framed by the doubled front edge with the drawstring inside. The two
-        // front edges meet and cross in front of the neck.
+        // framed by the doubled front edge with the drawstring inside. The edge
+        // runs round the opening in one piece, its two ends crossing in front
+        // of the neck. It is drawn as two strands: the first from the front of
+        // the neck round over the crown and down the left side, the second
+        // across it in front of the neck and up the left side to the first's
+        // end. Neither ends on the crown, where a join would catch the eye.
+        $join = [-13.4, -3.6];
         $hood = 'M'.$this->at(-17.0, 3.0)
             .'C'.$this->at(-19.4, -6.5).' '.$this->at(-11.2, -13.2).' '.$this->at(0.0, -13.2)
             .'C'.$this->at(11.2, -13.2).' '.$this->at(19.4, -6.5).' '.$this->at(17.0, 3.0).'z';
@@ -398,8 +408,8 @@ final class Shirt implements Kind
             .'C'.$this->at(6.4, -9.6).' '.$this->at(12.0, -7.8).' '.$this->at(12.0, -3.4)
             .'C'.$this->at(12.0, 1.4).' '.$this->at(4.6, 5.2).' '.$this->at(0.0, 8.4).'z';
         $edges = [
-            [[-1.4, 9.4], [[4.6, 6.0], [13.4, 2.0], [13.4, -3.6]], [[13.4, -8.9], [7.0, -10.9], [0.0, -10.9]]],
-            [[1.4, 9.4], [[-4.6, 6.0], [-13.4, 2.0], [-13.4, -3.6]], [[-13.4, -8.9], [-7.0, -10.9], [0.0, -10.9]]],
+            [[-1.4, 9.4], [[4.6, 6.0], [13.4, 2.0], [13.4, -3.6]], [[13.4, -8.9], [7.0, -10.9], [0.0, -10.9]], [[-7.0, -10.9], [-13.4, -8.9], $join]],
+            [[1.4, 9.4], [[-4.6, 6.0], [-13.4, 2.0], $join]],
         ];
 
         // The drawstrings come out of two eyelets and fall a little outwards,
@@ -465,6 +475,7 @@ final class Shirt implements Kind
                 'hood' => $hood,
                 'opening' => $opening,
                 'edges' => array_map(fn (array $edge): string => 'M'.$this->chain($edge), $edges),
+                'join' => $this->point(...$join),
                 'eyelets' => $eyelets,
                 'strings' => array_map(fn (array $string): string => 'M'.$this->chain($string), $strings),
                 'tips' => array_map(fn (array $tip): string => 'M'.$this->at(...$tip[0]).'L'.$this->at(...$tip[1]), $tips),

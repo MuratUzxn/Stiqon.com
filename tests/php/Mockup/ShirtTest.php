@@ -24,7 +24,7 @@ final class ShirtTest extends TestCase
 
     public function test_every_motif_renders_in_either_cut_and_every_colour(): void
     {
-        $this->assertGreaterThanOrEqual(12, count(Shirt::motifs()));
+        $this->assertGreaterThanOrEqual(10, count(Shirt::motifs()));
 
         foreach (Shirt::motifs() as $motif) {
             foreach (array_keys(Shirt::form()['values']) as $cut) {
@@ -37,6 +37,18 @@ final class ShirtTest extends TestCase
                     $this->assertStringContainsString('data-motif-sample', $svg);
                 }
             }
+        }
+    }
+
+    public function test_motifs_that_are_only_an_outline_on_a_sticker_are_not_offered(): void
+    {
+        // Printed bare, "stern" would be its lettering alone and "sprechblase"
+        // would lose its bubble: the shirt would look unprinted.
+        $this->assertSame(array_values(array_diff(Sticker::motifs(), ['sprechblase', 'stern'])), Shirt::motifs());
+
+        // Nor does the name of a product pick one.
+        foreach (range(1, 60) as $number) {
+            $this->assertNotContains(Guess::motif('shirt', "T-Shirt {$number}"), Sticker::CONTOUR_MOTIFS, "T-Shirt {$number}");
         }
     }
 
@@ -143,6 +155,79 @@ final class ShirtTest extends TestCase
         $this->assertNotSame($tshirt->outline, $hoodie->outline);
     }
 
+    public function test_the_hoodies_outline_does_not_cross_the_hood(): void
+    {
+        $hoodie = new Shirt(cut: 'hoodie');
+        $svg = $hoodie->render();
+        $uid = $hoodie->uid;
+
+        // The outline starts at the back of the neck, which lies inside the hood's opening …
+        $neck = $this->points($hoodie->outline)[0];
+        $opening = $this->points($hoodie->parts['opening']);
+        $this->assertGreaterThan(min(array_column($opening, 0)), $neck[0]);
+        $this->assertLessThan(max(array_column($opening, 0)), $neck[0]);
+        $this->assertGreaterThan(min(array_column($opening, 1)), $neck[1]);
+        $this->assertLessThan(max(array_column($opening, 1)), $neck[1]);
+
+        // … so the outline, drawn over everything, is hidden in the opening and under the hood's front edge.
+        $this->assertSame(1, preg_match('/<mask id="'.$uid.'-front">(.*?)<\/mask>/s', $svg, $mask));
+        $this->assertStringContainsString('<rect width="120" height="120" fill="#fff" />', $mask[1]);
+        $this->assertStringContainsString('<path d="'.$hoodie->parts['opening'].'" fill="#000" />', $mask[1]);
+
+        foreach ($hoodie->parts['edges'] as $edge) {
+            $this->assertStringContainsString('<path d="'.$edge.'" fill="none" stroke="#000" stroke-width="'.$hoodie->cm(2.9).'" stroke-linecap="round" />', $mask[1]);
+        }
+
+        $outline = preg_quote($hoodie->outline, '/');
+        $this->assertSame(2, substr_count($svg, 'd="'.$hoodie->outline.'" fill="none"'));
+        $this->assertMatchesRegularExpression('/<g mask="url\(#'.$uid.'-front\)">\s*<path d="'.$outline.'" fill="none"[^>]*\/>\s*<path d="'.$outline.'" fill="none"[^>]*\/>\s*<\/g>/', $svg);
+        $this->assertGreaterThan(strrpos($svg, 'd="'.$hoodie->parts['edges'][1].'"'), strpos($svg, 'mask="url(#'.$uid.'-front)"'), 'The outline comes after the front edge.');
+
+        // A T-shirt's neck is its collar, inside the outline: nothing there to hide.
+        $this->assertStringNotContainsString('-front', stiqon_mockup('shirt'));
+    }
+
+    public function test_the_hoods_front_edge_runs_over_the_crown_in_one_piece(): void
+    {
+        $hoodie = new Shirt(cut: 'hoodie');
+        $svg = $hoodie->render();
+        $uid = $hoodie->uid;
+        [$first, $second] = array_map(fn (string $edge): array => $this->points($edge), $hoodie->parts['edges']);
+        $join = $hoodie->parts['join'];
+
+        // The first strand passes over the crown, the edge's highest point, and runs on down the left side …
+        $through = array_values(array_filter($first, static fn (int $index): bool => $index % 3 === 0, ARRAY_FILTER_USE_KEY));
+        $crown = array_reduce($through, static fn (?array $top, array $point): array => $top === null || $point[1] < $top[1] ? $point : $top);
+        $this->assertEqualsWithDelta(60.0, $crown[0], 0.01, 'The crown is in the middle.');
+        $this->assertNotEquals($crown, end($through), 'The first strand does not end at the crown.');
+
+        // … to where the second strand, crossing over it in front of the neck, meets it end to end: on the left, well below the crown.
+        $this->assertEqualsWithDelta($join, end($first), 0.001);
+        $this->assertEqualsWithDelta($join, end($second), 0.001);
+        $this->assertLessThan(50.0, $join[0]);
+        $this->assertGreaterThan($crown[1] + 5.0, $join[1]);
+        $this->assertGreaterThan(60.0, $second[0][0], 'The second strand comes from the right.');
+
+        // Both arrive there straight down and straight up, so one runs on into the other.
+        $this->assertEqualsWithDelta($join[0], $first[count($first) - 2][0], 0.01);
+        $this->assertEqualsWithDelta($join[0], $second[count($second) - 2][0], 0.01);
+        $this->assertLessThan($join[1], $first[count($first) - 2][1]);
+        $this->assertGreaterThan($join[1], $second[count($second) - 2][1]);
+
+        // The second strand, drawn over the first, is cut off square at the join; each shadow stops at its own strand's end.
+        $this->assertMatchesRegularExpression('/<mask id="'.$uid.'-join"[^>]*>\s*<rect x="0" y="'.preg_quote((string) $join[1], '/').'" /', $svg);
+        $shadow = 'stroke="#000" stroke-opacity="0.12" stroke-width="'.$hoodie->cm(2.9).'" transform="translate(0.3 0.45)"';
+        $firstShadow = strpos($svg, 'd="'.$hoodie->parts['edges'][0].'" '.$shadow.' mask="url(#'.$uid.'-end)"');
+        $secondShadow = strpos($svg, 'd="'.$hoodie->parts['edges'][1].'" '.$shadow.' mask="url(#'.$uid.'-join)"');
+        $this->assertNotFalse($firstShadow);
+        $this->assertNotFalse($secondShadow);
+        $this->assertMatchesRegularExpression('/<g mask="url\(#'.$uid.'-join\)">\s*<path d="'.preg_quote($hoodie->parts['edges'][1], '/').'"/', $svg);
+
+        // The first strand is drawn whole before the second, which so lies on top where they cross.
+        $this->assertLessThan($secondShadow, strrpos($svg, 'd="'.$hoodie->parts['edges'][0].'"'));
+        $this->assertLessThan($secondShadow, $firstShadow);
+    }
+
     public function test_each_colour_shows_its_cloth_and_takes_the_print_in_an_ink_that_shows(): void
     {
         // The sample "siegel" brings a cream background of its own. On cloth it is
@@ -247,6 +332,8 @@ final class ShirtTest extends TestCase
             'motif' => [static fn () => new Shirt(motif: 'gibt-es-nicht'), 'Unknown shirt motif [gibt-es-nicht].'],
             'motif outside the directory' => [static fn () => new Shirt(motif: '../mockup/flyer'), 'Unknown shirt motif'],
             'flyer motif' => [static fn () => Shirt::fromArray(['motif' => 'prozent']), 'Unknown shirt motif [prozent].'],
+            'outline motif' => [static fn () => new Shirt(motif: 'stern'), 'Unknown shirt motif [stern].'],
+            'outline motif from a spec' => [static fn () => Shirt::fromArray(['cut' => 'hoodie', 'motif' => 'sprechblase']), 'Unknown shirt motif [sprechblase].'],
             'color' => [static fn () => new Shirt(color: 'rot'), 'Unknown shirt color [rot].'],
             'color in German' => [static fn () => Shirt::fromArray(['color' => 'schwarz']), 'Unknown shirt color [schwarz].'],
             'color of a tote' => [static fn () => Shirt::fromArray(['color' => 'natural']), 'Unknown shirt color [natural].'],
@@ -309,7 +396,7 @@ final class ShirtTest extends TestCase
         $this->assertSame(['tshirt' => 'T-Shirt', 'hoodie' => 'Hoodie'], $form['values']);
         $this->assertSame(array_keys($form['values']), $keys[$form['key']]);
         $this->assertSame(Shirt::motifs(), $keys['motif']);
-        $this->assertSame(Sticker::motifs(), Shirt::motifs());
+        $this->assertSame(array_values(array_diff(Sticker::motifs(), Sticker::CONTOUR_MOTIFS)), Shirt::motifs());
         $this->assertSame(['white', 'black', 'navy', 'grey'], $keys['color']);
 
         $names = Shirt::names();
