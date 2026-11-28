@@ -187,13 +187,23 @@ function stiqon_designs(): array
 {
     global $wp_query;
 
-    $posts = $wp_query instanceof WP_Query && $wp_query->is_post_type_archive(Designs::TYPE) ? $wp_query->posts : [];
+    // The list and the header both ask; the request's list is built once.
+    static $designs = null;
 
-    return [
+    if ($designs !== null) {
+        return $designs;
+    }
+
+    $posts = $wp_query instanceof WP_Query && $wp_query->is_post_type_archive(Designs::TYPE) ? $wp_query->posts : [];
+    $posts = array_filter($posts, static fn (mixed $post): bool => $post instanceof WP_Post);
+
+    Designs::primeImages($posts);
+
+    return $designs = [
         'media' => Designs::terms(Designs::MEDIUM),
         'occasions' => Designs::terms(Designs::OCCASION),
         'selection' => Designs::selection(),
-        'designs' => array_map([Designs::class, 'card'], array_filter($posts, static fn (mixed $post): bool => $post instanceof WP_Post)),
+        'designs' => array_map([Designs::class, 'card'], array_values($posts)),
         'any' => Designs::shownIds() !== [],
         'examples' => Designs::examples(),
     ];

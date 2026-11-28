@@ -475,11 +475,37 @@ final class Designs
             'tax_query' => [['taxonomy' => self::MEDIUM, 'terms' => $terms]],
         ]);
 
+        self::primeImages($posts);
+
         return array_map([self::class, 'card'], $posts);
     }
 
     /**
-     * Whether a shown design is one of the examples of a local site.
+     * Reads the preview images of designs about to be shown at once – their
+     * posts and sizes –, instead of two queries for every card.
+     *
+     * @param  array<int, mixed>  $posts
+     */
+    public static function primeImages(array $posts): void
+    {
+        $images = [];
+
+        foreach ($posts as $post) {
+            if ($post instanceof WP_Post) {
+                $images[] = self::image($post->ID);
+            }
+        }
+
+        $images = array_values(array_unique(array_filter($images)));
+
+        if ($images !== []) {
+            _prime_post_caches($images, false, true);
+        }
+    }
+
+    /**
+     * Whether a shown design is one of the examples of a local site. Their
+     * fields were read along with shownIds(), so this asks the database nothing.
      */
     public static function examples(): bool
     {
