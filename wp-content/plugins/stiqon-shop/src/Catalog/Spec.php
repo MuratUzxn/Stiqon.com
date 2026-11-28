@@ -35,6 +35,7 @@ final class Spec
 
         $spec = array_merge(
             Guess::product($type, $product['name']),
+            Guess::switches($type, $product['name']),
             self::known($type, $stored),
         );
 

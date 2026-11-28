@@ -60,6 +60,30 @@ final class Guess
     }
 
     /**
+     * What a product's name says through the kind's switches: a "Klappkarte"
+     * is folded, a "Poster auf Fotopapier" glossy, "Briefumschläge mit
+     * Fenster" have a window. Products imported from a supplier say such
+     * things in their names rather than in an option.
+     *
+     * @return array<string, bool>
+     */
+    public static function switches(string $type, string $name): array
+    {
+        $name = self::fold($name);
+        $says = [];
+
+        foreach (Kinds::of($type)::names()['switches'] as $key => [$on, $off]) {
+            if (self::has($name, $on)) {
+                $says[$key] = true;
+            } elseif (self::has($name, $off)) {
+                $says[$key] = false;
+            }
+        }
+
+        return $says;
+    }
+
+    /**
      * What the name of a chosen option says: a material, a finish, a paper, a colour.
      *
      * @return array<string, string|bool>

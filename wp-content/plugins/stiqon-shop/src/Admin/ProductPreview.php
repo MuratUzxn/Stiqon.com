@@ -263,7 +263,7 @@ final class ProductPreview
 
     private static function motifLabel(string $motif): string
     {
-        return ['eroeffnung' => 'Eröffnung', 'sprechblase' => 'Sprechblase (Kontur)', 'stern' => 'Stern (Kontur)'][$motif] ?? ucfirst($motif);
+        return ['eroeffnung' => 'Eröffnung', 'sprechblase' => 'Sprechblase (Kontur)', 'stern' => 'Stern (Kontur)', 'cafe' => 'Café'][$motif] ?? ucfirst($motif);
     }
 
     /**
