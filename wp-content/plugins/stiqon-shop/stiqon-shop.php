@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Stiqon Shop-Funktionen
- * Description: Sticker- und Flyer-Ansichten, Motiv-Vorschau und weitere Funktionen des Stiqon-Shops.
+ * Description: Gezeichnete Produktansichten, Motiv-Vorschau und weitere Funktionen des Stiqon-Shops.
  * Version: 0.1.0
  * Requires at least: 7.0
  * Requires PHP: 8.1

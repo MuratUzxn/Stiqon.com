@@ -1,13 +1,13 @@
 # Stiqon.com
 
-Onlineshop für Werbemittel (Sticker und Flyer) auf WordPress und WooCommerce – im Aufbau.
+Onlineshop für Werbemittel – von Sticker und Visitenkarte über Plakat und Kalender bis Roll-up, T-Shirt und Tasse – auf WordPress und WooCommerce, im Aufbau.
 
 Dieses Repository enthält, was den Shop von einer Standard-Installation unterscheidet:
 
 | Verzeichnis | Inhalt |
 |---|---|
 | `wp-content/themes/stiqon` | das Theme: Aussehen aller Seiten, Vorlagen für die Shop-Seiten |
-| `wp-content/plugins/stiqon-shop` | das Plugin „Stiqon Shop-Funktionen“: Sticker- und Flyer-Ansichten, Motiv-Vorschau und weitere Funktionen |
+| `wp-content/plugins/stiqon-shop` | das Plugin „Stiqon Shop-Funktionen“: gezeichnete Produktansichten, Motiv-Vorschau und weitere Funktionen |
 | `tools/dev` | Skripte, die eine lokale WordPress-Umgebung aufbauen |
 | `tools/brand` | Logo-Original und das Skript, das daraus die Logo-Dateien des Themes erzeugt |
 | `tests` | Browser-Tests (`e2e`), Unit-Tests des Plugins (`php`), Prüfungen in der Installation (`integration`) |
@@ -119,7 +119,7 @@ Adresse an.
 | Adresse | Vorlage | Hinweis |
 |---|---|---|
 | `/` | `front-page.php` | Startseite |
-| `/sticker/`, `/flyer/` | `page-sticker.php`, `page-flyer.php` | Bereiche mit Galerie: je Produkt und Material bzw. Papier eine Karte. Die Filter sind Links und funktionieren ohne Skript; am Desktop öffnet eine Karte groß über der Galerie |
+| `/sticker/`, `/flyer/`, `/visitenkarten/`, `/karten/`, `/briefpapier/`, `/broschueren/`, `/plakate/`, `/kalender/`, `/werbetechnik/`, `/verpackungen/`, `/textilien/`, `/werbeartikel/` | `page-bereich.php` | Bereiche mit Galerie: je Produkt und je Wert der Option, die man in der Zeichnung sieht (Material, Papier, Farbe …), eine Karte. Die Filter sind Links und funktionieren ohne Skript; am Desktop öffnet eine Karte groß über der Galerie. Welche Bereiche es gibt, steht an einer Stelle: `stiqon_area_definitions()` in `inc/site.php` |
 | `/produkt/…` | `woocommerce/…` | Produktseite auf den Vorlagen von WooCommerce, damit sich Germanized und weitere Plugins einhängen können |
 | `/?s=…` | `search.php` | Ergebnisseite der Suche |
 | `/warenkorb/`, `/kasse/`, `/mein-konto/` | `page.php` | Die Seiten, die WooCommerce zeichnet – siehe „Kaufen“ |
@@ -127,14 +127,25 @@ Adresse an.
 | `/referenzen/` | `archive-stiqon_referenz.php` | Referenzen: gelieferte Arbeiten mit Foto, Name und ein, zwei Sätzen (Inhaltstyp des Plugins, in der Verwaltung unter „Referenzen“). Die Seite und alle Links darauf gibt es erst, wenn eine Referenz veröffentlicht ist und ein Foto hat |
 | `/musterbogen/` | `page-musterbogen.php` | Logo, Schrift, Farben und Mockups auf einer Seite. Nur wer das Erscheinungsbild der Website verwalten darf, sieht sie; alle anderen bekommen „nicht gefunden“ – auch wenn die Seite versehentlich veröffentlicht wurde |
 
-Fehlt eine der beiden Bereichsseiten oder fehlen dem Theme seine gebauten Dateien, weist die
+Fehlt eine der Bereichsseiten oder fehlen dem Theme seine gebauten Dateien, weist die
 Verwaltung darauf hin (`inc/checks.php`).
 
-Die Sticker- und Flyer-Ansichten zeichnet das Plugin (`src/Mockup`, Vorlagen unter `templates`).
-Ob ein Produkt ein Sticker oder ein Flyer ist, welche Form oder welches Format es hat und wie seine
-Materialien aussehen, liest das Plugin aus Namen und Kategorie (`src/Catalog`). In der Verwaltung
-zeigt der Reiter „Vorschau“ am Produkt, was dabei herauskommt, und lässt Art, Form bzw. Format und
-Beispielmotiv festlegen (`src/Admin/ProductPreview.php`).
+Alle Produktansichten zeichnet das Plugin (`src/Mockup`, Vorlagen unter `templates`) – Fotos gibt es
+nur auf der Startseite. Jede Art von Produkt ist eine Klasse, die `Mockup\Kind` erfüllt: Sticker,
+Flyer, Faltblatt, Karte (Visiten-, Post-, Klappkarte), Briefbogen, Briefumschlag, Notizblock,
+Präsentationsmappe, Broschüre, Plakat, Kalender, Roll-up, Banner, Kundenstopper, Versandkarton,
+Papiertragetasche, Baumwolltasche, Textil (T-Shirt, Hoodie), Tasse, Trinkflasche und Bierdeckel.
+`Mockup\Kinds` listet sie mit den Wörtern, an denen man sie erkennt; die Reihenfolge zählt, weil
+das Deutsche Wörter aus Wörtern baut („Plakatständer“ ist ein Kundenstopper, kein Plakat). Was ein
+Produkt ist, welche Form oder welches Format es hat und wie seine Optionen aussehen, liest das
+Plugin aus Namen und Kategorie (`src/Catalog`): zuerst aus dem Namen des Produkts, dann aus seinen
+Kategorien. In der Verwaltung zeigt der Reiter „Vorschau“ am Produkt, was dabei herauskommt, und lässt
+Art, Form bzw. Format und Beispielmotiv festlegen (`src/Admin/ProductPreview.php`).
+Jede Zeichnung druckt über `templates/mockup/parts/motif.php`; so erscheint das Motiv der Kundschaft
+auf allen Arten gleich. `php tools/dev/mockup-sheet.php > blatt.html` zeigt alle Zeichnungen auf
+einer Seite, ohne WordPress (`--own` mit einem Kundenmotiv, Arten als Argumente: `card mug`).
+Eine neue Art braucht eine Klasse und eine Vorlage, einen Eintrag in `Mockup\Kinds` und einen
+Unit-Test wie die vorhandenen (`tests/php/Mockup`).
 Ist es abgeschaltet, erscheinen die Seiten ohne Ansichten, und die Verwaltung weist darauf hin.
 Theme und Plugin lassen sich in beliebiger Reihenfolge aktivieren. Kennt das Plugin eine verlangte
 Form, ein Motiv oder eine Kartenfarbe nicht, bleibt in der Entwicklung die Seite stehen, damit der
@@ -159,6 +170,22 @@ Beim ersten Aktivieren setzt das Plugin Datenschutz-Voreinstellungen (`src/Setup
 keine Profilbilder von Gravatar, neue Inhalte ohne Kommentare, keine Herkunftsmessung von
 Bestellungen per Cookie, keine Nutzungsdaten an WooCommerce. Jede davon wird genau einmal gesetzt;
 was die Inhaberin oder der Inhaber später ändert, bleibt auch nach erneutem Aktivieren bestehen.
+
+## Sortiment
+
+Der Shop hat zwölf Bereiche, nach dem Vorbild der Online-Druckerei printworld.com (November 2026):
+Sticker, Flyer (mit Faltblättern), Visitenkarten, Karten, Briefpapier (mit Umschlägen, Notizblöcken
+und Präsentationsmappen), Broschüren, Plakate, Kalender, Werbetechnik (Roll-ups, Banner,
+Kundenstopper), Verpackungen, Textilien und Werbeartikel. Kopf, Fuß, Startseite und Einrichtung lesen
+sie aus `stiqon_area_definitions()`; ein Bereich braucht dort einen Eintrag, eine Seite mit derselben
+Adresse und eine Produktkategorie mit demselben Slug. Die Startseite zeigt jeden Bereich mit dem Foto,
+das Stiqon geliefert hat, oder – wo keins da ist – mit einer Zeichnung.
+
+Das Beispielsortiment (`tools/dev/example-assortment.php`, angelegt von
+`tools/dev/example-catalogue.php`) hat 43 Produkte mit 641 Varianten: Optionen wie bei printworld
+(Format, Papier, Veredelung, Umfang, Farbe, Größe, Auflage), aber weniger davon, damit jede
+Kombination eine Variante sein kann. Die Preise sind erfunden und als Beispiele beschriftet; die echten
+kommen vom Lieferanten oder vom Inhaber. Kein Lieferant wird im Shop genannt.
 
 ## Kaufen
 

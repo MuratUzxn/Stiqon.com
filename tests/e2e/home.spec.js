@@ -1,7 +1,11 @@
 import { test, expect, accessibilityViolations } from './fixtures.js';
 
+// The areas of the shop in the order of the navigation (stiqon_area_definitions() in the theme).
+const areas = ['Sticker', 'Flyer', 'Visitenkarten', 'Karten', 'Briefpapier', 'Broschüren', 'Plakate', 'Kalender', 'Werbetechnik', 'Verpackungen', 'Textilien', 'Werbeartikel'];
+const slugs = ['sticker', 'flyer', 'visitenkarten', 'karten', 'briefpapier', 'broschueren', 'plakate', 'kalender', 'werbetechnik', 'verpackungen', 'textilien', 'werbeartikel'];
+
 test.describe('home page', () => {
-    test('leads with one action and offers both areas', async ({ page }) => {
+    test('leads with one action and offers the assortment', async ({ page }) => {
         await page.goto('/');
 
         // The headline carries two product views between its words. They are decoration:
@@ -16,10 +20,9 @@ test.describe('home page', () => {
         const main = page.getByRole('main');
 
         await expect(main.getByRole('button', { name: 'Motiv wählen' }).first()).toBeVisible();
-        await expect(main.getByRole('link', { name: 'Sticker ansehen' }).first()).toHaveAttribute('href', /\/sticker\/$/);
-        await expect(main.getByRole('link', { name: 'Flyer ansehen' }).first()).toHaveAttribute('href', /\/flyer\/$/);
+        await expect(main.getByRole('link', { name: 'Sortiment ansehen' }).first()).toHaveAttribute('href', /\/#werbemittel$/);
 
-        for (const title of ['Erst ansehen, dann bestellen.', 'Formen, Materialien und Formate', 'In drei Schritten zum fertigen Werbemittel', 'Gut zu wissen']) {
+        for (const title of ['Erst ansehen, dann bestellen.', 'Eine Auswahl aus dem Sortiment', 'Unser Sortiment', 'In drei Schritten zum fertigen Werbemittel', 'Gut zu wissen']) {
             await expect(page.getByRole('heading', { level: 2, name: title })).toBeVisible();
         }
     });
@@ -193,7 +196,7 @@ test.describe('without JavaScript', () => {
         await expect(page.getByText('Ihr Bild bleibt in Ihrem Browser')).toBeHidden();
 
         // … the way into the shop does not.
-        await page.getByRole('main').getByRole('link', { name: 'Sticker ansehen' }).first().click();
+        await page.locator('section[aria-labelledby="werbemittel"]').getByRole('link', { name: 'Sticker', exact: true }).click();
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Sticker');
         await expect(page.locator('[data-mockup]')).toHaveCount(20);
 
@@ -246,23 +249,41 @@ test.describe('mobile navigation', () => {
 
         await page.goto('/');
 
-        const link = page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Flyer' });
+        const navigation = page.getByRole('navigation', { name: 'Hauptnavigation' });
+        const link = navigation.getByRole('link', { name: 'Flyer' });
 
         await expect(page.locator('header summary')).toBeHidden();
         await expect(link).toBeVisible();
+        // Every area in one row under the logo – at this width without scrolling. (The
+        // references join the row once one is published; another test may publish one.)
+        const areaLinks = navigation.getByRole('link').filter({ hasNotText: 'Referenzen' });
+
+        await expect(areaLinks).toHaveText(areas);
+
+        for (const area of await areaLinks.all()) {
+            await expect(area).toBeInViewport({ ratio: 1 });
+        }
+
         // Links are set in the text colour. (A type style once shared its name with a colour and greyed them.)
         await expect(link).toHaveCSS('color', await page.evaluate(() => getComputedStyle(document.body).color));
     });
 });
 
 test.describe('the assortment', () => {
-    test('every range has its picture; what the shop sells leads there, the rest to an enquiry', async ({ page }) => {
+    test('every area has a tile that leads there – with a picture where Stiqon sent one; anything else is an enquiry', async ({ page }) => {
         await page.goto('/');
 
         const section = page.locator('section[aria-labelledby="werbemittel"]');
 
         await expect(section.getByRole('heading', { name: 'Unser Sortiment' })).toBeVisible();
-        await expect(section.getByRole('listitem')).toHaveCount(10);
+        await expect(section.getByRole('listitem')).toHaveCount(areas.length);
+        await expect(section.locator('img')).toHaveCount(10);
+        await expect(section.getByText('Auf Anfrage')).toHaveCount(0);
+
+        for (const [index, link] of (await section.getByRole('listitem').getByRole('link').all()).entries()) {
+            await expect(link).toHaveText(areas[index]);
+            await expect(link).toHaveAttribute('href', new RegExp(`/${slugs[index]}/$`));
+        }
 
         for (const image of await section.locator('img').all()) {
             await image.scrollIntoViewIfNeeded();
@@ -274,7 +295,6 @@ test.describe('the assortment', () => {
             })).toBe(400);
         }
 
-        await expect(section.getByRole('link', { name: 'Aufkleber' })).toHaveAttribute('href', /\/sticker\/$/);
         await expect(section.getByRole('link', { name: 'Anfrage per E-Mail' })).toHaveAttribute('href', /^mailto:/);
         expect(await accessibilityViolations(page)).toEqual([]);
     });
