@@ -28,9 +28,13 @@ final class KindsTest extends TestCase
 
             $this->assertTrue(is_subclass_of($kind, Kind::class), $type);
             $this->assertArrayHasKey($form['key'], $kind::keys(), "{$type}: its form is not one of its keys.");
-            $this->assertSame(array_keys($form['values']), array_map('strval', $kind::keys()[$form['key']]), "{$type}: its form lists other values than its keys.");
+            // PHP makes the keys "500" and "750" of an array integers; keys() lists them as strings,
+            // which stored values are compared with.
+            $this->assertSame(array_map('strval', array_keys($form['values'])), $kind::keys()[$form['key']], "{$type}: its form lists other values than its keys.");
             $this->assertSame($kind::motifs(), $kind::keys()['motif'] ?? null, "{$type}: its motifs are not its keys' motifs.");
-            $this->assertNotSame('Form', $form['label'], "{$type}: the label \"Form\" belongs to stickers in the administration.");
+            if ($type !== 'sticker') {
+                $this->assertNotSame('Form', $form['label'], "{$type}: the label \"Form\" belongs to stickers in the administration.");
+            }
             $this->assertStringContainsString('data-mockup="'.$type.'"', Kinds::draw($type, []), "{$type} does not draw itself by default.");
         }
     }
