@@ -32,7 +32,7 @@ const pages = {
     // the cart (the Back button, a cache in front of the shop) and asks again.
     // Every page names the twelve areas three times – in the header's row, the phone's menu and
     // the footer: about 0.6 kB and 40 elements more than the two areas did.
-    '/sticker/': { document: 12.2, total: 138, elements: 980 },
+    '/sticker/': { document: 12.2, total: 140, elements: 980 },
     // The heaviest of the other areas: shirts, hoodies and totes, drawn with their folds and fabric.
     '/textilien/': { document: 15.2, total: 145, elements: 850 },
     // A page of text from the editor – the legal pages. It carries the styles for

@@ -119,6 +119,13 @@ export const test = base.extend({
                 return;
             }
 
+            // WordPress's classic editor (TinyMCE) in the administration still listens for
+            // "unload", which Chromium is phasing out; where it is switched off already, every
+            // editor on the product page says so. That is WordPress's, not the shop's.
+            if (message.text().startsWith('Permissions policy violation: unload is not allowed') && message.location().url.includes('/wp-includes/js/tinymce/')) {
+                return;
+            }
+
             problems.push(`console error: ${message.text()}`);
         });
 
