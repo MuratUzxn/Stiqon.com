@@ -142,7 +142,8 @@ Plugin aus Namen und Kategorie (`src/Catalog`): zuerst aus dem Namen des Produkt
 Kategorien. In der Verwaltung zeigt der Reiter „Vorschau“ am Produkt, was dabei herauskommt, und lässt
 Art, Form bzw. Format und Beispielmotiv festlegen (`src/Admin/ProductPreview.php`).
 Jede Zeichnung druckt über `templates/mockup/parts/motif.php`; so erscheint das Motiv der Kundschaft
-auf allen Arten gleich. `php tools/dev/mockup-sheet.php > blatt.html` zeigt alle Zeichnungen auf
+auf allen Arten gleich. Beispielmotive füllen die Druckfläche; ein eigenes Motiv bleibt auf Bannern und
+Roll-ups ganz sichtbar, statt zu einem Streifen beschnitten zu werden (`ownFit`). `php tools/dev/mockup-sheet.php > blatt.html` zeigt alle Zeichnungen auf
 einer Seite, ohne WordPress (`--own` mit einem Kundenmotiv, Arten als Argumente: `card mug`).
 Eine neue Art braucht eine Klasse und eine Vorlage, einen Eintrag in `Mockup\Kinds` und einen
 Unit-Test wie die vorhandenen (`tests/php/Mockup`).

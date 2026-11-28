@@ -71,15 +71,17 @@ get_header();
                 <p class="mt-1 text-muted">Bis dahin finden Sie hier noch keine Produkte.</p>
             <?php elseif ($query === '') : ?>
                 <p class="font-semibold">Wonach suchen Sie?</p>
-                <p class="mt-1 text-muted">Zum Beispiel nach einer Form, einem Format oder einem Material: „rund“, „DIN A5“, „Kraftpapier“.</p>
+                <p class="mt-1 text-muted">Zum Beispiel nach einem Produkt, einem Format oder einem Material: „Visitenkarten“, „DIN A5“, „Kraftpapier“.</p>
             <?php else : ?>
                 <p class="font-semibold"><?php echo esc_html(sprintf('Zu „%s“ haben wir nichts gefunden.', $query)); ?></p>
-                <p class="mt-1 text-muted">Versuchen Sie es mit einem anderen Wort – etwa einer Form, einem Format oder einem Material.</p>
+                <p class="mt-1 text-muted">Versuchen Sie es mit einem anderen Wort – etwa einem Produkt, einem Format oder einem Material.</p>
             <?php endif; ?>
             <?php if (! stiqon_shop_is_concealed()) : ?>
-                <div class="mt-5 flex flex-wrap items-center justify-center gap-2">
+                <?php // Named by the area alone: "Alle Briefpapier" or "Alle Werbetechnik" is no German. ?>
+                <p class="mt-5 text-label text-muted">Oder sehen Sie sich in einem Bereich um:</p>
+                <div class="mt-3 flex flex-wrap items-center justify-center gap-2">
                     <?php foreach (stiqon_areas() as $area) : ?>
-                        <?php echo stiqon_button(esc_html('Alle '.$area['label']), ['variant' => 'secondary', 'href' => $area['url']]); ?>
+                        <?php echo stiqon_button(esc_html($area['label']), ['variant' => 'secondary', 'href' => $area['url']]); ?>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
