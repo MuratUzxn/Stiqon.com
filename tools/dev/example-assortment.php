@@ -248,32 +248,32 @@ return [
 
             // --- Verpackungen -----------------------------------------------------------
             ['area' => 'verpackungen', 'slug' => 'versandkartons', 'name' => 'Versandkartons', 'summary' => 'Wellpappe mit Ihrem Logo – in drei Größen.', 'description' => 'Einwellige Wellpappe, außen einfarbig oder farbig bedruckt, flach geliefert.',
-                'drawing' => ['type' => 'box'], 'offers' => ['farbe' => ['braun', 'weiss'], 'format' => ['s', 'm', 'l'], 'auflage' => ['50', '100', '250', '500']],
+                'drawing' => ['type' => 'box', 'motif' => 'siegel'], 'offers' => ['farbe' => ['braun', 'weiss'], 'format' => ['s', 'm', 'l'], 'auflage' => ['50', '100', '250', '500']],
                 'price' => ['base' => ['50' => 89.0, '100' => 139.0, '250' => 289.0, '500' => 489.0], 'by' => ['farbe' => ['braun' => 1.0, 'weiss' => 1.15], 'format' => ['s' => 1.0, 'm' => 1.35, 'l' => 1.8]]]],
             ['area' => 'verpackungen', 'slug' => 'papiertragetaschen', 'name' => 'Papiertragetaschen', 'summary' => 'Mit gedrehten Papierkordeln – für Laden, Messe und Geschenk.', 'description' => 'Kraftpapier in Braun oder Weiß, mit Ihrem Logo auf der Vorderseite.',
-                'drawing' => ['type' => 'bag'], 'offers' => ['farbe' => ['braun', 'weiss'], 'format' => ['klein', 'gross'], 'auflage' => ['50', '100', '250', '500']],
+                'drawing' => ['type' => 'bag', 'motif' => 'wellen'], 'offers' => ['farbe' => ['braun', 'weiss'], 'format' => ['klein', 'gross'], 'auflage' => ['50', '100', '250', '500']],
                 'price' => ['base' => ['50' => 69.0, '100' => 109.0, '250' => 219.0, '500' => 379.0], 'by' => ['farbe' => ['braun' => 1.0, 'weiss' => 1.1], 'format' => ['klein' => 1.0, 'gross' => 1.3]]]],
 
             // --- Textilien --------------------------------------------------------------
             ['area' => 'textilien', 'slug' => 't-shirts', 'name' => 'T-Shirts', 'summary' => 'Gekämmte Baumwolle, bedruckt auf der Brust.', 'description' => 'Rundhals, 180 g/m², im Direktdruck mit Ihrem Motiv.',
-                'drawing' => ['type' => 'shirt', 'cut' => 'tshirt'], 'offers' => ['farbe' => ['weiss', 'schwarz', 'navy'], 'textilgroesse' => ['s', 'm', 'l', 'xl', 'xxl'], 'auflage' => ['10', '25', '50']],
+                'drawing' => ['type' => 'shirt', 'cut' => 'tshirt', 'motif' => 'siegel'], 'offers' => ['farbe' => ['weiss', 'schwarz', 'navy'], 'textilgroesse' => ['s', 'm', 'l', 'xl', 'xxl'], 'auflage' => ['10', '25', '50']],
                 'price' => ['base' => ['10' => 129.0, '25' => 279.0, '50' => 499.0], 'by' => ['farbe' => ['weiss' => 1.0, 'schwarz' => 1.1, 'navy' => 1.1], 'textilgroesse' => ['s' => 1.0, 'm' => 1.0, 'l' => 1.0, 'xl' => 1.0, 'xxl' => 1.1]]]],
             ['area' => 'textilien', 'slug' => 'hoodies', 'name' => 'Hoodies', 'summary' => 'Mit Kapuze und Kängurutasche, bedruckt auf der Brust.', 'description' => 'Baumwolle mit Polyester, 280 g/m², innen angeraut.',
-                'drawing' => ['type' => 'shirt', 'cut' => 'hoodie'], 'offers' => ['farbe' => ['schwarz', 'grau-meliert'], 'textilgroesse' => ['s', 'm', 'l', 'xl', 'xxl'], 'auflage' => ['10', '25', '50']],
+                'drawing' => ['type' => 'shirt', 'cut' => 'hoodie', 'motif' => 'neu'], 'offers' => ['farbe' => ['schwarz', 'grau-meliert'], 'textilgroesse' => ['s', 'm', 'l', 'xl', 'xxl'], 'auflage' => ['10', '25', '50']],
                 'price' => ['base' => ['10' => 299.0, '25' => 679.0, '50' => 1249.0], 'by' => ['textilgroesse' => ['s' => 1.0, 'm' => 1.0, 'l' => 1.0, 'xl' => 1.0, 'xxl' => 1.08]]]],
             ['area' => 'textilien', 'slug' => 'baumwolltaschen', 'name' => 'Baumwolltaschen', 'summary' => 'Mit langen Henkeln, auf einer Seite bedruckt.', 'description' => '38 × 42 cm, 140 g/m² Baumwolle.',
-                'drawing' => ['type' => 'tote', 'handles' => 'long'], 'offers' => ['farbe' => ['natur', 'schwarz'], 'auflage' => ['25', '50', '100', '250']],
+                'drawing' => ['type' => 'tote', 'handles' => 'long', 'motif' => 'sonne'], 'offers' => ['farbe' => ['natur', 'schwarz'], 'auflage' => ['25', '50', '100', '250']],
                 'price' => ['base' => ['25' => 99.0, '50' => 169.0, '100' => 289.0, '250' => 599.0], 'by' => ['farbe' => ['natur' => 1.0, 'schwarz' => 1.15]]]],
 
             // --- Werbeartikel -----------------------------------------------------------
             ['area' => 'werbeartikel', 'slug' => 'tassen', 'name' => 'Tassen', 'summary' => 'Keramik, 330 ml, spülmaschinenfest bedruckt.', 'description' => 'Rundum bedruckbar, einzeln im Karton verpackt.',
-                'drawing' => ['type' => 'mug', 'style' => 'classic'], 'offers' => ['farbe' => ['weiss', 'schwarz'], 'auflage' => ['12', '36', '72', '144']],
+                'drawing' => ['type' => 'mug', 'style' => 'classic', 'motif' => 'monogramm'], 'offers' => ['farbe' => ['weiss', 'schwarz'], 'auflage' => ['12', '36', '72', '144']],
                 'price' => ['base' => ['12' => 79.0, '36' => 179.0, '72' => 319.0, '144' => 569.0], 'by' => ['farbe' => ['weiss' => 1.0, 'schwarz' => 1.15]]]],
             ['area' => 'werbeartikel', 'slug' => 'trinkflaschen', 'name' => 'Trinkflaschen', 'summary' => 'Edelstahl, doppelwandig – Ihr Logo bleibt mit unterwegs.', 'description' => 'Hält Getränke 12 Stunden warm und 24 Stunden kalt.',
-                'drawing' => ['type' => 'bottle'], 'offers' => ['farbe' => ['silber', 'schwarz', 'weiss'], 'format' => ['500-ml', '750-ml'], 'auflage' => ['25', '50', '100']],
+                'drawing' => ['type' => 'bottle', 'motif' => 'blatt'], 'offers' => ['farbe' => ['silber', 'schwarz', 'weiss'], 'format' => ['500-ml', '750-ml'], 'auflage' => ['25', '50', '100']],
                 'price' => ['base' => ['25' => 299.0, '50' => 529.0, '100' => 949.0], 'by' => ['farbe' => ['silber' => 1.0, 'schwarz' => 1.05, 'weiss' => 1.05], 'format' => ['500-ml' => 1.0, '750-ml' => 1.2]]]],
             ['area' => 'werbeartikel', 'slug' => 'bierdeckel', 'name' => 'Bierdeckel', 'summary' => 'Saugfähiger Karton, beidseitig bedruckt.', 'description' => '1,4 mm Holzschliffpappe, rund oder eckig.',
-                'drawing' => ['type' => 'coaster'], 'offers' => ['format' => ['rund-107', 'eckig-93'], 'auflage' => ['500', '1000', '2500', '5000']],
+                'drawing' => ['type' => 'coaster', 'motif' => 'sprechblase'], 'offers' => ['format' => ['rund-107', 'eckig-93'], 'auflage' => ['500', '1000', '2500', '5000']],
                 'price' => ['base' => ['500' => 79.0, '1000' => 119.0, '2500' => 229.0, '5000' => 389.0], 'by' => ['format' => $same(['rund-107', 'eckig-93'])]]],
         ];
     })(),
