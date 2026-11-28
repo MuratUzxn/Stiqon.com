@@ -85,7 +85,8 @@ function stiqon_area_definitions(): array
             'lead' => 'Roll-ups, Banner und Kundenstopper – für Messe, Ladenlokal und Straße.',
             'related' => 'plakate',
             'photo' => ['file' => 'werbetechnik', 'alt' => 'Roll-up und Kundenstopper mit Stiqon-Logo'],
-            'drawing' => ['type' => 'rollup', 'spec' => ['format' => '85x200']],
+            // The narrow roll-up crops lettering hard: a motif drawn around its centre suits it.
+            'drawing' => ['type' => 'rollup', 'spec' => ['format' => '85x200', 'motif' => 'prozent']],
         ],
         'verpackungen' => [
             'label' => 'Verpackungen',

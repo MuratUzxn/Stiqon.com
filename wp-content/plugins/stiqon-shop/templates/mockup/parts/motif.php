@@ -10,6 +10,8 @@
  * @var string                                                   $motif       template of the sample motif: "motif/sonne", "motif/flyer/fest"
  * @var string                                                   $viewBox     the motif's own box: "0 0 100 100" for sticker motifs, "0 0 100 141.4" for flyer motifs
  * @var string                                                   $fit         "slice" fills the box and crops, "meet" shows all of it (a logo)
+ * @var string|null                                              $ownFit      how the visitor's motif fits, when it should differ from the sample's: on a
+ *                                                                            very wide or tall surface the sample fills it ("slice"), a visitor's logo stays whole ("meet")
  * @var array<string, mixed>                                     $vars        further variables for the motif template, e.g. ['bare' => true]
  * @var string|null                                              $backing     colour under the visitor's motif, e.g. "#fff" on white paper; null for none
  * @var string                                                   $attributes  further attributes of the layer's group (clip-path, transform, style), escaped by the caller
@@ -20,10 +22,12 @@ use Stiqon\Shop\Template;
 defined('ABSPATH') || exit;
 
 $fit ??= 'slice';
+$ownFit ??= $fit;
 $vars ??= [];
 $backing ??= null;
 $attributes ??= '';
 $aspect = 'xMidYMid '.($fit === 'meet' ? 'meet' : 'slice');
+$ownAspect = 'xMidYMid '.($ownFit === 'meet' ? 'meet' : 'slice');
 $x = esc_attr((string) $box['x']);
 $y = esc_attr((string) $box['y']);
 $w = esc_attr((string) $box['width']);
@@ -38,6 +42,6 @@ $h = esc_attr((string) $box['height']);
         <?php if ($backing !== null) : ?>
             <rect x="<?php echo $x; ?>" y="<?php echo $y; ?>" width="<?php echo $w; ?>" height="<?php echo $h; ?>" fill="<?php echo esc_attr($backing); ?>" />
         <?php endif; ?>
-        <image x="<?php echo $x; ?>" y="<?php echo $y; ?>" width="<?php echo $w; ?>" height="<?php echo $h; ?>" preserveAspectRatio="<?php echo esc_attr($aspect); ?>" x-bind:href="url" data-motif-image />
+        <image x="<?php echo $x; ?>" y="<?php echo $y; ?>" width="<?php echo $w; ?>" height="<?php echo $h; ?>" preserveAspectRatio="<?php echo esc_attr($ownAspect); ?>" x-bind:href="url" data-motif-image />
     </g>
 </g>

@@ -94,6 +94,8 @@ $mirrors = ['', 'matrix(-1 0 0 1 '.(2 * $cx).' 0)', 'matrix(1 0 0 -1 0 '.(2 * $c
             'motif' => 'motif/banner/'.$mockup->motif,
             'viewBox' => '0 0 300 100',
             'fit' => 'slice',
+            // A visitor's logo stays whole on a banner three or four times as wide as high.
+            'ownFit' => 'meet',
             'backing' => '#fff',
             'attributes' => 'clip-path="url(#'.esc_attr($uid).'-print)"',
         ]);

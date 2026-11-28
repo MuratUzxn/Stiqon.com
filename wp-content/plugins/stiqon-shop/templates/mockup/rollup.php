@@ -85,6 +85,8 @@ $pole = round($x + $w / 2, 2);
         'motif' => 'motif/flyer/'.$mockup->motif,
         'viewBox' => '0 0 100 141.4',
         'fit' => 'slice',
+        // A visitor's logo stays whole on a banner more than twice as high as wide.
+        'ownFit' => 'meet',
         'backing' => '#fff',
     ]);
     ?>

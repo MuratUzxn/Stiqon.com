@@ -47,7 +47,8 @@ final class RollupTest extends TestCase
 
         $this->assertStringContainsString('<svg '.$box.' viewBox="0 0 100 141.4" preserveAspectRatio="xMidYMid slice"', $svg);
         $this->assertStringContainsString('<rect '.$box.' fill="#fff" />', $svg, 'White film under the visitor\'s motif.');
-        $this->assertStringContainsString('<image '.$box.' preserveAspectRatio="xMidYMid slice"', $svg);
+        // The sample fills the print; a visitor's logo is shown whole, on white, not cut to a strip.
+        $this->assertStringContainsString('<image '.$box.' preserveAspectRatio="xMidYMid meet"', $svg);
         $this->assertStringContainsString('>Sommerfest</text>', $svg);
     }
 

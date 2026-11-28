@@ -237,7 +237,7 @@ return [
 
             // --- Werbetechnik -----------------------------------------------------------
             ['area' => 'werbetechnik', 'slug' => 'roll-ups', 'name' => 'Roll-ups', 'summary' => 'Mit Kassette und Tasche – in einer Minute aufgebaut.', 'description' => 'Bedruckte Polyesterfolie mit Aluminiumkassette, Stange und Tragetasche.',
-                'drawing' => ['type' => 'rollup'], 'offers' => ['format' => ['85x200', '100x200', '120x200'], 'modell' => ['basic', 'premium'], 'auflage' => ['1', '2', '5']],
+                'drawing' => ['type' => 'rollup', 'motif' => 'prozent'], 'offers' => ['format' => ['85x200', '100x200', '120x200'], 'modell' => ['basic', 'premium'], 'auflage' => ['1', '2', '5']],
                 'price' => ['base' => ['1' => 79.0, '2' => 149.0, '5' => 349.0], 'by' => ['format' => ['85x200' => 1.0, '100x200' => 1.2, '120x200' => 1.45], 'modell' => ['basic' => 1.0, 'premium' => 1.6]]]],
             ['area' => 'werbetechnik', 'slug' => 'pvc-banner', 'name' => 'PVC-Banner', 'summary' => 'Wetterfeste Plane mit Ösen ringsum – für Zaun, Fassade und Bühne.', 'description' => '500 g Frontlit-Plane, gesäumt, mit Ösen alle 50 cm.',
                 'drawing' => ['type' => 'banner'], 'offers' => ['format' => ['200x100', '300x100', '400x100'], 'auflage' => ['1', '2', '5']],

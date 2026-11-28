@@ -57,7 +57,7 @@ $tiles = [
     ['label' => 'Visitenkarten', 'url' => stiqon_page_url('visitenkarten'), 'type' => 'card', 'spec' => ['format' => 'visitenkarte', 'finish' => 'gold'], 'width' => 'w-[88%]'],
     ['label' => 'Flyer DIN lang', 'url' => $flyer, 'type' => 'flyer', 'spec' => ['format' => 'lang', 'motif' => 'prozent', 'gloss' => true], 'width' => 'w-[74%]'],
     ['label' => 'Plakate', 'url' => stiqon_page_url('plakate'), 'type' => 'poster', 'spec' => ['format' => 'a2', 'motif' => 'kursplan'], 'width' => 'w-[86%]'],
-    ['label' => 'Roll-ups', 'url' => stiqon_page_url('werbetechnik'), 'type' => 'rollup', 'spec' => ['format' => '85x200', 'motif' => 'eroeffnung'], 'width' => 'w-[86%]'],
+    ['label' => 'Roll-ups', 'url' => stiqon_page_url('werbetechnik'), 'type' => 'rollup', 'spec' => ['format' => '85x200', 'motif' => 'prozent'], 'width' => 'w-[86%]'],
     ['label' => 'Baumwolltaschen', 'url' => stiqon_page_url('textilien'), 'type' => 'tote', 'spec' => ['handles' => 'long', 'motif' => 'raster'], 'width' => 'w-[88%]'],
 ];
 

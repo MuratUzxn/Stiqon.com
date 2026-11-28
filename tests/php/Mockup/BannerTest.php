@@ -50,7 +50,8 @@ final class BannerTest extends TestCase
         $this->assertStringContainsString('<path d="'.$banner->outline().'" />', $svg);
         $this->assertStringContainsString('<svg '.$box.' viewBox="0 0 300 100" preserveAspectRatio="xMidYMid slice"', $svg);
         $this->assertStringContainsString('<rect '.$box.' fill="#fff" />', $svg, 'White PVC under the visitor\'s motif.');
-        $this->assertStringContainsString('<image '.$box.' preserveAspectRatio="xMidYMid slice"', $svg);
+        // The sample fills the print; a visitor's logo is shown whole, on white, not cut to a strip.
+        $this->assertStringContainsString('<image '.$box.' preserveAspectRatio="xMidYMid meet"', $svg);
         $this->assertStringContainsString('>12.–14. März</text>', $svg);
     }
 
