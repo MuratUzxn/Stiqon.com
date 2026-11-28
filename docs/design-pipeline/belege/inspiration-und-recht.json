@@ -1,0 +1,152 @@
+{
+ "claims": [
+  {
+   "claim": "UrhG § 44b Abs. 3: TDM-Nutzungen sind nur zulässig, wenn der Rechtsinhaber sie nicht vorbehalten hat; bei online zugänglichen Werken wirkt ein Vorbehalt nur in maschinenlesbarer Form.",
+   "evidence": "F",
+   "source": "https://www.gesetze-im-internet.de/urhg/__44b.html",
+   "quote": "ist nur dann wirksam, wenn er in maschinenlesbarer Form erfolgt"
+  },
+  {
+   "claim": "UrhG § 23 Abs. 1 S. 2: Wahrt das neue Werk hinreichenden Abstand zum benutzten Werk, liegt keine zustimmungspflichtige Bearbeitung/Umgestaltung vor.",
+   "evidence": "F",
+   "source": "https://www.gesetze-im-internet.de/urhg/__23.html",
+   "quote": "Wahrt das neu geschaffene Werk einen hinreichenden Abstand zum benutzten Werk, so liegt keine Bearbeitung oder Umgestaltung im Sinne des Satzes 1 vor."
+  },
+  {
+   "claim": "LG München I, Urt. v. 11.11.2025, 42 O 14139/24 (GEMA ./. OpenAI): Memorisierung von Liedtexten im Modell und ihre Wiedergabe im Output greifen in Verwertungsrechte ein; nicht von § 44b UrhG gedeckt. Nicht rechtskräftig: Berufung von OpenAI am 8.12.2025 zum OLG München (Az. 6 U 3662/25 e, Sekundärquellen); Termin unbekannt. [korrigiert nach Gegenprüfung]",
+   "evidence": "F",
+   "source": "https://www.lto.de/recht/nachrichten/n/42o1413924-lg-muenchen-i-gema-openai-chatgpt-songtexte-ki",
+   "quote": "Sowohl durch die Memorisierung in den Sprachmodellen als auch durch die Wiedergabe der Liedtexte in den Outputs des Chatbot lägen Eingriffe in die urheberrechtlichen Verwertungsrechte vor"
+  },
+  {
+   "claim": "LG München I (GEMA ./. OpenAI): Kein TDM, wenn nicht nur Informationen extrahiert, sondern Werke im Modell vervielfältigt werden; Verantwortung für den Output liegt beim Anbieter, nicht beim Nutzer.",
+   "evidence": "F",
+   "source": "https://www.lto.de/recht/nachrichten/n/42o1413924-lg-muenchen-i-gema-openai-chatgpt-songtexte-ki",
+   "quote": "die Verantwortung hierfür sieht die Kammer nicht bei den Nutzern, sondern bei OpenAI"
+  },
+  {
+   "claim": "BGH verhandelte am 3.9.2026 Kneschke ./. LAION (I ZR 281/25, Revision gegen OLG Hamburg 10.12.2025, 5 U 104/24); offen sind Wirksamkeit des Vorbehalts und Wissenschaftsschranke; EuGH-Vorlage laut Presse möglich, nicht entschieden; Verkündungstermin 17.12.2026, 8:45 Uhr (BGH-Terminhinweis, per Websuche). [korrigiert nach Gegenprüfung]",
+   "evidence": "F",
+   "source": "https://www.lto.de/recht/presseschau/p/presseschau-2026-09-04-mindestlohn-werkstatt-behinderung-metall-auf-metall-pastiche-bgh-ki-training-foto",
+   "quote": "Der BGH wird einzelne Rechtsfragen voraussichtlich dem Europäischen Gerichtshof vorlegen."
+  },
+  {
+   "claim": "OLG Hamburg (5 U 104/24) hatte die Berufung zurückgewiesen und die Vervielfältigung für den Datensatz auf § 60d und § 44b UrhG gestützt; der textliche, auslegungsbedürftige Vorbehalt war nicht maschinenlesbar; ob natürliche Sprache maschinenlesbar sein kann, blieb offen (letzteres W). [korrigiert nach Gegenprüfung]",
+   "evidence": "F",
+   "source": "https://www.lto.de/recht/presseschau/p/presseschau-2026-09-04-mindestlohn-werkstatt-behinderung-metall-auf-metall-pastiche-bgh-ki-training-foto",
+   "quote": "ob der Verein sich auf die Urheberrechtsschranke für wissenschaftliche Forschung berufen kann. Das OLG Hamburg hatte dies bejaht."
+  },
+  {
+   "claim": "EuGH (Große Kammer), Urt. v. 14.04.2026, C-590/23 (Pelham II): Pastiche erfasst Schöpfungen, die an ein bestehendes Werk erinnern, wahrnehmbare Unterschiede aufweisen und erkennbar einen künstlerischen oder kreativen Dialog führen, u. a. offene Stilnachahmung oder Hommage; keine Fair-Use-artige Auffangregel.",
+   "evidence": "F",
+   "source": "https://www.lto.de/recht/hintergruende/h/eugh-c59023-metall-auf-metall-kraftwerk-pelham-pastiche-dialog",
+   "quote": "Dieser könne verschiedene Formen annehmen, u. a. die einer offenen Nachahmung des Stils, eine Hommage oder eine humoristische oder kritische Auseinandersetzung, so der EuGH."
+  },
+  {
+   "claim": "BGH, Urt. v. 3.9.2026, I ZR 74/22 (Metall auf Metall VI): Revision der Kläger zurückgewiesen; Pelhams Sample ist seit 7.6.2021 als Pastiche (§ 51a UrhG) zulässig. [korrigiert nach Gegenprüfung]",
+   "evidence": "F",
+   "source": "https://www.lto.de/recht/hintergruende/h/bgh-1zr7422-metall-auf-metall-uebernahme-als-pastiche-erlaubt",
+   "quote": "Für die Zeit seit dem 7. Juni 2021 ist Pelhams Sampling zulässig, weil es sich bei seinem Werk um ein Pastiche nach § 51a Urheberrechtsgesetz (UrhG) handelt (I ZR 74/22)."
+  },
+  {
+   "claim": "Digital Omnibus on AI = Verordnung (EU) 2026/1744, ABl. 24.7.2026, in Kraft 27.7.2026; Art. 50 KI-VO gilt ab 2.8.2026, nur die Markierungspflicht nach Art. 50 Abs. 2 für bereits vor dem 2.8.2026 in Verkehr gebrachte Systeme erst ab 2.12.2026 (Sekundärquellen, EUR-Lex nicht abrufbar).",
+   "evidence": "W",
+   "source": "https://www.twobirds.com/en/insights/2026/digital-omnibus-on-ai-provisional-agreement-reached-at-the-may-trilogue"
+  },
+  {
+   "claim": "EU-Kommission veröffentlichte am 10.6.2026 den finalen Code of Practice zur Markierung und Kennzeichnung KI-generierter Inhalte (Abschnitt 1 Anbieter Art. 50 Abs. 2; Abschnitt 2 Betreiber Art. 50 Abs. 4); freiwillig, mehrschichtige Markierung (Metadaten + Wasserzeichen), EU-Icons.",
+   "evidence": "W",
+   "source": "https://digital-strategy.ec.europa.eu/en/news/commission-publishes-code-practice-marking-and-labelling-ai-generated-content"
+  },
+  {
+   "claim": "Higgsfield Terms of Use (Last updated 23.10.2026), Ziff. 4.4: Higgsfield beansprucht kein Eigentum an Inputs/Outputs und beschränkt die kommerzielle Nutzung der Outputs nicht; Rechte an exportierten Outputs überdauern Kündigung und sind an Kunden übertragbar/unterlizenzierbar.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "Company does not claim ownership of any of your Inputs or Outputs, nor does it restrict your commercial use of Outputs."
+  },
+  {
+   "claim": "Higgsfield Ziff. 4.4: Inputs (inkl. Referenzbilder) und Outputs dürfen zum Training eigener KI-Modelle genutzt werden; nur unter einem Enterprise Agreement nicht.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "You acknowledge and agree that Your Content, Inputs, and Outputs may be used by Company to train, develop, enhance, evolve, and improve its (and its affiliates"
+  },
+  {
+   "claim": "Higgsfield Ziff. 4.2: Wer Inhalte (auch Referenzbilder) hochlädt, sichert zu, alle nötigen Rechte daran zu haben; bei erkennbaren Personen auch deren Einwilligungen.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "you have all necessary rights to Your Content to grant the licenses set forth in Sections 4.3 and 4.4 below"
+  },
+  {
+   "claim": "Higgsfield Ziff. 13.2: keine Gewähr für Originalität/Rechtmäßigkeit der Outputs; Higgsfield führt keine Rechte- oder Clearance-Prüfung von Inputs oder Outputs durch.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "Company does not control, verify, or perform clearance searches or rights verification on your Inputs or the resulting Outputs."
+  },
+  {
+   "claim": "Higgsfield Ziff. 5.5 und 11.7: Nutzer muss KI-Herkunft offenlegen, wo gesetzlich verlangt, darf Provenienz-Markierungen nicht entfernen und Outputs nicht als menschengemacht ausgeben.",
+   "evidence": "F",
+   "source": "https://higgsfield.ai/terms-of-use-agreement",
+   "quote": "you will not remove, alter, or obscure any provenance signals or markings Company applies under Section 6.4."
+  },
+  {
+   "claim": "UWG § 4 Nr. 3: Nachahmung von Waren/Dienstleistungen eines Mitbewerbers ist unlauter bei vermeidbarer Herkunftstäuschung, unangemessener Ausnutzung/Beeinträchtigung der Wertschätzung oder unredlich erlangten Kenntnissen.",
+   "evidence": "F",
+   "source": "https://www.gesetze-im-internet.de/uwg_2004/__4.html",
+   "quote": "Waren oder Dienstleistungen anbietet, die eine Nachahmung der Waren oder Dienstleistungen eines Mitbewerbers sind, wenn er"
+  },
+  {
+   "claim": "UrhG § 51a: Vervielfältigung, Verbreitung und öffentliche Wiedergabe eines veröffentlichten Werkes zum Zweck von Karikatur, Parodie und Pastiche sind zulässig.",
+   "evidence": "F",
+   "source": "https://www.gesetze-im-internet.de/urhg/__51a.html",
+   "quote": "Werkes zum Zweck der Karikatur, der Parodie und des Pastiches"
+  },
+  {
+   "claim": "UrhG § 2 Abs. 2: Werke sind nur persönliche geistige Schöpfungen; rein KI-generierte Outputs ohne prägenden menschlichen Beitrag sind daher nach h. M. nicht urheberrechtlich geschützt.",
+   "evidence": "F",
+   "source": "https://www.gesetze-im-internet.de/urhg/__2.html",
+   "quote": "(2) Werke im Sinne dieses Gesetzes sind nur"
+  },
+  {
+   "claim": "Printful Intellectual Property Policy: Nutzer dürfen keine Produkte, auch nicht mit KI-generierten Inhalten, erstellen, die fremde IP-Rechte verletzen; Uploader sichert Rechte am Inhalt zu.",
+   "evidence": "F",
+   "source": "https://www.printful.com/policies/download/intellectual-property-policy",
+   "quote": "including in AI-generated Content, that infringe the intellectual property rights of others or that"
+  },
+  {
+   "claim": "AG München, Urt. v. 13.02.2026, 142 C 9786/25: KI-generierte Logos trotz detaillierter Prompts nicht urheberrechtlich geschützt; Schutz nur, wenn kreative Prompt-Elemente das Ergebnis dominieren; nicht rechtskräftig (Sekundärquellen). [korrigiert nach Gegenprüfung]",
+   "evidence": "W",
+   "source": "https://www.beyer.law/2026/03/20/urheberrecht-bei-ki-logos-amtsgericht-muenchen-verneint-schutz-trotz-detaillierter-prompts/"
+  },
+  {
+   "claim": "OLG Düsseldorf, Beschl. v. 02.04.2026, I-20 W 2/26 (Eilverfahren): sofortige Beschwerde der Fotografin gegen LG Düsseldorf 12 O 282/25 zurückgewiesen, weil das KI-Bild nur das ungeschützte Motiv, nicht die schutzbegründenden Gestaltungsmerkmale des Fotos übernahm; kein strengerer Maßstab für KI-Nachahmungen (Sekundärquellen). [korrigiert nach Gegenprüfung]",
+   "evidence": "W",
+   "source": "https://www.beyer.law/2026/04/20/olg-duesseldorf-keine-urheberrechtsverletzung-durch-ki-generiertes-bild/"
+  },
+  {
+   "claim": "EU-Designreform: Änderungsverordnung (EU) 2024/2822 gilt überwiegend seit 1.5.2025, einzelne Bestimmungen seit 1.7.2026; Richtlinie (EU) 2024/2823 bis 9.12.2027 umzusetzen; deutscher Regierungsentwurf BT-Drs. 21/6215 vom 3.6.2026, Beschlussempfehlung BT-Drs. 21/8158 vom 23.9.2026, Bundestagsbeschluss laut Kanzleibericht 24.9.2026. [korrigiert nach Gegenprüfung]",
+   "evidence": "W",
+   "source": "https://www.bundestag.de/1217064"
+  },
+  {
+   "claim": "BGH, Urt. v. 13.11.2013, I ZR 143/12 (Geburtstagszug): für Werke der angewandten Kunst gelten keine höheren Schutzanforderungen als für zweckfreie Kunst; Gebrauchszweck-bedingte Merkmale begründen keinen Schutz.",
+   "evidence": "K",
+   "source": "https://dejure.org/dienste/vernetzung/rechtsprechung?Gericht=BGH&Datum=13.11.2013&Aktenzeichen=I+ZR+143/12"
+  },
+  {
+   "claim": "Adobe Stock Product Specific Terms (Stand 16.1.2026, laut Suchtreffer) Ziff. 7.1(H): lizenzierte Assets dürfen nicht zum Erstellen, Trainieren, Testen oder Verbessern von ML-/KI-Systemen genutzt werden; PDF nicht gelesen (Host gesperrt). [korrigiert nach Gegenprüfung]",
+   "evidence": "W",
+   "source": "https://www.adobe.com/cc-shared/assets/pdf/legal/servicetou/stock-product-specific-terms-en-us-20260116.pdf"
+  },
+  {
+   "claim": "UrhG § 60d berechtigt nur Forschungsorganisationen und einzelne Forscher ohne kommerzielle Zwecke; ein kommerzieller Shop kann sich nicht darauf stützen. [korrigiert nach Gegenprüfung]",
+   "evidence": "F",
+   "source": "https://www.gesetze-im-internet.de/urhg/__60d.html",
+   "quote": "nicht kommerzielle Zwecke verfolgen,"
+  },
+  {
+   "claim": "Unsplash: Nutzung der Bilder für ML/KI ist laut Unsplash-Hilfe auch unter der Standardlizenz eingeschränkt, nicht nur bei Unsplash+. [korrigiert nach Gegenprüfung]",
+   "evidence": "W",
+   "source": "https://help.unsplash.com/en/articles/2612332-what-do-you-mean-by-compiling-photos-to-replicate-a-similar-or-competing-service"
+  }
+ ]
+}

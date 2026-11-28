@@ -76,6 +76,21 @@ add_action('template_redirect', function (): void {
     {
         return null;
     }
+
+    function stiqon_designs(): array
+    {
+        return ['media' => [], 'occasions' => [], 'selection' => ['werbemittel' => null, 'anlass' => null], 'designs' => [], 'any' => false, 'examples' => false];
+    }
+
+    function stiqon_designs_url(array $filters = []): string
+    {
+        return home_url('/design/');
+    }
+
+    function stiqon_design(WP_Post $post, int $beside = 3): array
+    {
+        return ['design' => ['id' => $post->ID, 'title' => get_the_title($post), 'url' => (string) get_permalink($post), 'image' => 0, 'text' => '', 'medium' => null, 'occasion' => null, 'example' => false], 'beside' => []];
+    }
 }, 0);
 
 add_action('admin_notices', function (): void {

@@ -37,6 +37,9 @@ if ($state === 'shop-plugin') {
     } catch (Throwable $error) {
         $problems[] = 'Without the shop plugin a row of the cart ends the request: '.$error->getMessage();
     }
+
+    // Without the plugin there are no designs: the header must not lead to an address that does not exist.
+    $expect(array_column(stiqon_registers(), 'slug') === ['produkte'], 'Without the shop plugin the header still offers the designs.');
 } elseif ($state === 'woocommerce') {
     if (function_exists('WC') || ! function_exists('stiqon_product_view')) {
         WP_CLI::error('Run this with --skip-plugins=woocommerce,woocommerce-germanized: WooCommerce off, the shop plugin on.');

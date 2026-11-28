@@ -70,21 +70,32 @@ document.addEventListener('alpine:init', () => {
             document.documentElement.removeAttribute('data-motif');
         },
 
-        async choose(file) {
+        /** Whether a file of this type can become the motif. */
+        accepts(type) {
+            return MOTIF_TYPES.includes(type);
+        },
+
+        /**
+         * Shows a chosen image on the mockups and keeps it for the next page.
+         * Resolves to whether it is kept: false when it was refused, or is
+         * shown on this page only. "unkept" is what to tell the visitor in that
+         * last case, where the page has no mockups to show it on.
+         */
+        async choose(file, { unkept } = {}) {
             if (!file) {
-                return;
+                return false;
             }
 
-            if (!MOTIF_TYPES.includes(file.type)) {
+            if (!this.accepts(file.type)) {
                 this.fail('Bitte ein Bild im Format PNG, JPEG oder WebP wählen.');
 
-                return;
+                return false;
             }
 
             if (file.size > MOTIF_MAX_BYTES) {
                 this.fail('Das Bild ist größer als 25 MB.');
 
-                return;
+                return false;
             }
 
             let blob;
@@ -94,7 +105,7 @@ document.addEventListener('alpine:init', () => {
             } catch {
                 this.fail('Dieses Bild lässt sich nicht lesen. Bitte eine andere Datei wählen.');
 
-                return;
+                return false;
             }
 
             await this.show(blob, file.name);
@@ -108,13 +119,17 @@ document.addEventListener('alpine:init', () => {
 
                 await write({ name: file.name, savedAt, blob });
                 hint(savedAt);
+
+                return true;
             } catch {
                 // Whatever was kept before is not what the visitor sees now. It must
                 // not come back on the next page or in another tab.
                 await remove().catch(() => {});
                 hint(null);
-                this.notice = 'Ihr Motiv ist auf dieser Seite zu sehen. Dieses Fenster erlaubt nicht, es für die nächste Seite zu behalten.';
+                this.notice = unkept ?? 'Ihr Motiv ist auf dieser Seite zu sehen. Dieses Fenster erlaubt nicht, es für die nächste Seite zu behalten.';
                 this.announcement = `${this.announcement} ${this.notice}`;
+
+                return false;
             }
         },
 
@@ -448,6 +463,7 @@ if (cartLink && window.jQuery && document.body.classList.contains('woocommerce-c
 const features = {
     galleryFilter: () => import('./gallery.js'),
     productOptions: () => import('./product.js'),
+    designMotif: () => import('./design.js'),
 };
 
 await Promise.all(

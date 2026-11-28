@@ -68,6 +68,9 @@ Gut zu wissen:
   zu einem Preis, Vorkasse, Kundenkonto auf Wunsch, die klassischen Seiten für Warenkorb und
   Kasse, Rechtsseiten. Beträge, Bankverbindung, Adresse und Rechtstexte darin sind Beispiele und
   als solche beschriftet. Auf dem echten Shop sind das Einstellungen des Inhabers.
+- `tools/dev/example-designs.php` legt Beispieldesigns an (siehe „Designs“): sechs gezeigte, dazu
+  eines ohne Freigabe und eines ohne Vorschaubild. Die Bilder zeichnet das Skript mit PHPs GD aus
+  Formen; jeder Lauf macht dieselben Dateien.
 - `tools/dev/wp.sh` führt WP-CLI in der lokalen Installation aus, zum Beispiel
   `tools/dev/wp.sh plugin list`.
 - Nach Änderungen an Styles oder Skripten: `npm run build` (oder `npm run watch`).
@@ -119,13 +122,29 @@ Adresse an.
 | Adresse | Vorlage | Hinweis |
 |---|---|---|
 | `/` | `front-page.php` | Startseite |
-| `/sticker/`, `/flyer/` | `page-sticker.php`, `page-flyer.php` | Bereiche mit Galerie: je Produkt und Material bzw. Papier eine Karte. Die Filter sind Links und funktionieren ohne Skript; am Desktop öffnet eine Karte groß über der Galerie |
+| `/sticker/`, `/flyer/` | `page-sticker.php`, `page-flyer.php` | Bereiche mit Galerie: je Produkt und Material bzw. Papier eine Karte. Oben wechselt ein Umschalter „Sticker \| Flyer“ zwischen den Bereichen. Die Filter sind Links und funktionieren ohne Skript; am Desktop öffnet eine Karte groß über der Galerie |
 | `/produkt/…` | `woocommerce/…` | Produktseite auf den Vorlagen von WooCommerce, damit sich Germanized und weitere Plugins einhängen können |
 | `/?s=…` | `search.php` | Ergebnisseite der Suche |
 | `/warenkorb/`, `/kasse/`, `/mein-konto/` | `page.php` | Die Seiten, die WooCommerce zeichnet – siehe „Kaufen“ |
 | `/agb/`, `/impressum/` … | `page.php` | Geschriebene Seiten aus dem Editor. Welche davon AGB, Widerruf, Versand, Datenschutz und Impressum sind, steht in den Einstellungen von WooCommerce und Germanized; der Fuß verlinkt sie von dort |
+| `/design/` | `archive-stiqon_design.php` | Die Designs (Inhaltstyp des Plugins, in der Verwaltung unter „Designs“): Übersicht nach Werbemittel und Anlass (nur auf der ersten, ungefilterten Seite), Umschalter und Reiter als Filter, 24 Karten je Seite. Gefiltert wird über `?werbemittel=…` und `?anlass=…` – Links, die ohne Skript funktionieren. Ohne gezeigtes Design steht dort „Die ersten Designs entstehen gerade.“ |
+| `/design/<name>/` | `single-stiqon_design.php` | Ein Design groß, Werbemittel und Anlass als Links zur gefilterten Liste, „Als Motiv ausprobieren“ und der Weg zum Bereich, darunter weitere Designs für dasselbe Werbemittel |
 | `/referenzen/` | `archive-stiqon_referenz.php` | Referenzen: gelieferte Arbeiten mit Foto, Name und ein, zwei Sätzen (Inhaltstyp des Plugins, in der Verwaltung unter „Referenzen“). Die Seite und alle Links darauf gibt es erst, wenn eine Referenz veröffentlicht ist und ein Foto hat |
 | `/musterbogen/` | `page-musterbogen.php` | Logo, Schrift, Farben und Mockups auf einer Seite. Nur wer das Erscheinungsbild der Website verwalten darf, sieht sie; alle anderen bekommen „nicht gefunden“ – auch wenn die Seite versehentlich veröffentlicht wurde |
+
+Der Kopf jeder Seite nennt die zwei Register der Website, wie mobbin.com „Apps“ und „Sites“:
+**Design** (`/design/`) und **Produkte** (`/`, die Startseite ist der Anfang des Sortiments).
+Das Register der Seite steht in Schwarz, das andere in Grau, ohne Unterstrich
+(`stiqon_registers()` in `inc/site.php`). Zu „Design“ gehören die Liste und die Seiten der
+Designs; zu „Produkte“ Startseite, Bereiche, Produkte, Suche, Warenkorb, Kasse und Kundenkonto.
+Rechtstexte, Referenzen, „nicht gefunden“ und die Ankündigung gehören zu keinem. Die Startseite
+eines Registers trägt `aria-current="page"`, jede andere Seite darin `aria-current="true"`.
+Bereiche und Referenzen stehen nicht mehr im Kopf, sondern im Fuß (unter „Übersicht“, nach
+„Designs“), im Menü für kleine Bildschirme (die Bereiche eingerückt unter „Produkte“) und – die
+Bereiche – im Umschalter oben auf jeder Bereichsseite. Unter 768 px passen die Register nicht mit
+44 px hohen Flächen neben Suche, Warenkorb und Menü; dort bekommen sie eine eigene Zeile unter der
+Leiste und stehen zusätzlich oben im Menü. Ohne das Plugin gibt es keine Designs, und der Kopf
+nennt nur „Produkte“.
 
 Fehlt eine der beiden Bereichsseiten oder fehlen dem Theme seine gebauten Dateien, weist die
 Verwaltung darauf hin (`inc/checks.php`).
@@ -159,6 +178,51 @@ Beim ersten Aktivieren setzt das Plugin Datenschutz-Voreinstellungen (`src/Setup
 keine Profilbilder von Gravatar, neue Inhalte ohne Kommentare, keine Herkunftsmessung von
 Bestellungen per Cookie, keine Nutzungsdaten an WooCommerce. Jede davon wird genau einmal gesetzt;
 was die Inhaberin oder der Inhaber später ändert, bleibt auch nach erneutem Aktivieren bestehen.
+
+## Designs
+
+Designs sind Vorlagen, die Besucher auf den Produkten ausprobieren: ein Bild, ein Werbemittel,
+für das es gemacht ist, und ein Anlass. In der Verwaltung stehen sie unter **Designs**
+(`src/Content/Designs.php` im Plugin).
+
+- **Daten:** Inhaltstyp `stiqon_design` mit Titel, Beschreibung, Vorschaubild und Textauszug.
+  Zwei Listen von Begriffen: **Werbemittel** (`stiqon_design_medium`) – die Kürzel sind die der
+  Bereichsseiten, `sticker` und `flyer`; daran hängen „Zu den Stickern“ bzw. „Zu den Flyern“ und
+  das Ziel von „Als Motiv ausprobieren“ – und **Anlass** (`stiqon_design_occasion`), frei, etwa
+  „Eröffnung“. Begriffe haben keine eigenen Seiten; gefiltert wird die Liste.
+- **Wann ein Design erscheint:** Es ist veröffentlicht, hat ein Vorschaubild, und genau dieses Bild
+  ist freigegeben. Die Freigabe gilt dem geprüften Bild (gespeichert wird dessen Nummer): Ein neues
+  oder ausgetauschtes Vorschaubild nimmt das Design aus dem Shop, bis jemand es geprüft und erneut
+  freigegeben hat. Fehlt eines davon, steht es in keiner Liste, zählt in keinem Filter, und seine
+  Adresse antwortet mit „nicht gefunden“ – auch als Einbettung, über `?p=<Nummer>`, in Feeds und
+  über WordPress' Schnittstelle: die Designs selbst (`/wp-json/wp/v2/stiqon_design`), deren Suche,
+  die Mediathek mit seinem Bild und Werbemittel und Anlässe, die kein gezeigtes Design trägt.
+  Die Regel steht an einer Stelle (`Designs::shown()`, Unit-Tests in `tests/php/Content`); die
+  Spalte „Freigabe“ der Verwaltung sagt je Design, ob es erscheint, und wenn nicht, warum. In der
+  Sitemap von WordPress stehen Designs vorerst nicht.
+- **Herkunft und Freigabe** (Kasten unter dem Text, nur in der Verwaltung): Higgsfield-
+  Auftragsnummer; Vorbilder – je Zeile eine Adresse und ihre Klasse, A für eine Anregung in Stil
+  oder Aufbau, B für ein enges Vorbild; Prüfnotiz; und das Häkchen „Freigegeben: Ähnlichkeits-
+  und Markenprüfung erledigt“.
+- **„Als Motiv ausprobieren“** holt das Vorschaubild von der Adresse des Shops und übergibt es dem
+  Motiv des Besuchers, genau wie eine Datei, die er mit „Eigenes Motiv“ wählt – nichts wird
+  hochgeladen (`assets/src/js/design.js`). Danach geht es zum Bereich des Werbemittels, wo alle
+  Ansichten das Design zeigen. Behält der Browser das Motiv nicht (privates Fenster), bleibt die
+  Seite stehen und sagt das.
+
+So wird ein Design, das mit Higgsfield entstanden ist, zum Eintrag:
+
+1. Unter **Designs → Hinzufügen** einen Titel und ein, zwei Sätze Beschreibung eingeben.
+2. Das Bild als **Vorschaubild** hochladen: PNG, JPEG oder WebP; für Sticker am besten mit
+   durchsichtigem Hintergrund, für Flyer im Format des Blatts.
+3. **Werbemittel** (`sticker` oder `flyer`) und **Anlass** setzen.
+4. Unter **Herkunft und Freigabe** die Auftragsnummer und die Vorbilder eintragen.
+5. Veröffentlichen. Das Design erscheint noch nicht.
+6. Prüfen, ob es einem Vorbild oder einer Marke zu nahe kommt, das Ergebnis als Prüfnotiz
+   festhalten und erst dann **Freigegeben** anhaken und speichern.
+7. Wird später das Vorschaubild ausgetauscht, verschwindet das Design wieder („neues
+   Vorschaubild, nicht freigegeben“ in der Spalte „Freigabe“): das neue Bild prüfen und erneut
+   freigeben.
 
 ## Kaufen
 
@@ -299,16 +363,19 @@ das für die Startseite fest).
   müssten sie durch Übersetzungsfunktionen ersetzt werden.
 - Verhalten im Browser liegt in `assets/src/js` als benannte Alpine-Komponenten; Vorlagen
   verweisen nur auf deren Eigenschaften und Methoden. `app.js` lädt jede Seite; was nur eine
-  Seitenart braucht (Galerie, Produktseite) oder erst auf Wunsch (Suche), liegt in eigenen Dateien
+  Seitenart braucht (Galerie, Produktseite, Seite eines Designs) oder erst auf Wunsch (Suche), liegt in eigenen Dateien
   und wird nur dort geholt. Das Menü für kleine Bildschirme kommt ohne Skript aus.
 - Die Hilfsklasse für den Seitenrand heißt `wrap`, nicht `page`: WordPress setzt die Klasse `page`
   auf den `body` jeder Seite.
-- Vorlagen, die ganz aus eigenem Markup bestehen (Startseite, Bereiche, 404, Musterbogen), rufen
+- Vorlagen, die ganz aus eigenem Markup bestehen (Startseite, Bereiche, Designs, 404, Musterbogen), rufen
   vor dem Kopf `stiqon_declare_lean_page()` auf. Nur solche Seiten lassen die Stylesheets für
   Editor-Inhalte und die Skripte von WooCommerce weg. Die Entscheidung hängt bewusst an der Vorlage
   und nicht an der Adresse: WooCommerce zeigt im Modus „Demnächst verfügbar“ unter denselben
   Adressen seine Ankündigung. Die Seiten, die WooCommerce zeichnet, erklären sich mit
   `stiqon_declare_shop_page()` (siehe „Kaufen“).
+- Umschalter (`stiqon_segments()`: graue Spur, die gewählte Fläche weiß) und Reiter
+  (`stiqon_tabs()`: die gewählte in Schwarz und unterstrichen) folgen dem Vorbild. Beide sind
+  Links mit `aria-current="page"`, ihr Aussehen hängt an diesem Attribut.
 - Links in Karten und Kacheln umschließen nur den Titel und sind über die ganze Fläche gespannt.
   Um die Zeichnung herumgelegt, würde die Beschriftung des Beispielmotivs zum Linktext.
 - Die Logo-Dateien unter `wp-content/themes/stiqon/assets/brand` entstehen aus

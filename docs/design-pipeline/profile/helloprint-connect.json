@@ -1,0 +1,465 @@
+{
+ "supplier": "helloprint-connect",
+ "name": "HelloPrint Connect (Helloprint B.V. Reseller-Plattform)",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "Empfohlen druckfertiges (Vektor-)PDF; akzeptiert auch JPEG, PNG, EPS (Fotos: hochaufgelöstes JPEG ohne Kompression). Vorlagen-Ebenen vor PDF-Export löschen.",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "wir akzeptieren auch andere Dateiformate, einschließlich JPEG, PNG oder EPS."
+  },
+  "pdf_standard": {
+   "value": "Kein fester Standard benannt; API: PDF/X-kompatibel bevorzugt (welche PDF/X-Version: unbekannt)",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/createorder.md",
+   "quote": "Publicly accessible URL to the artwork file. Preferably, the pdf file should be provided in PDF/X compatible standards."
+  },
+  "color_mode": {
+   "value": "CMYK (nicht RGB)",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Bitte verwenden Sie den Farbmodus CMYK (nicht RGB) beim Erstellen Ihres Designs."
+  },
+  "icc_profiles": {
+   "value": "FOGRA39 (ISO Coated v2) – gleiche Angabe auf allen gelesenen Produktseiten (Flyer, Sticker, Visitenkarten, Poster, Banner, Roll-up); keine Unterscheidung nach Papierklasse (ungestrichen/Offset: unbekannt)",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Verwenden Sie den Farbmodus FOGRA39 (ISO Coated v2)."
+  },
+  "rgb_handling": {
+   "value": "Wird bei Bedarf von Helloprint nach CMYK konvertiert; Farben können abweichen",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Wenn Sie sich über den Farbmodus Ihrer Datei nicht sicher sind, können wir sie für Sie konvertieren. Beachten Sie, dass dadurch die Farben von der Originaldatei abweichen können."
+  },
+  "min_dpi": {
+   "value": "300 dpi (Flyer, Sticker, Visitenkarten, Poster); 150 ppi bei Großformat (Roll-up, Banner, Vinylaufkleber)",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Stellen Sie sicher, dass Bilder und Grafiken in Ihrer Vorlage eine Bildauflösung von mindestens 300 dpi vorweisen"
+  },
+  "bleed_mm": {
+   "value": "3 mm (Flyer, Visitenkarten, Poster, Broschüren); 5 mm (Sticker, Vinyl, Roll-up, Banner)",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Fügen Sie einen 3 mm Beschnitt an allen Kanten Ihres Designs hinzu.",
+   "review": "Gegenprueft: 3 mm (Flyer 069, Visitenkarten 070, Poster 071) und 5 mm (standardsticker 066, stickerwunschformat 067, vinyl 068, roll-up 072, banner 073) stehen jeweils im produkteigenen Spezifikationsblock - produktspezifisch, keine Verwechslung"
+  },
+  "safe_mm": {
+   "value": "4 mm (Flyer, Visitenkarten, Poster); 3 mm (Sticker); 10 mm (Vinyl, Roll-up; Roll-up zusätzlich unten 150 mm); 50 mm (Banner nach Maß)",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Halten Sie wichtige Elemente 4 mm vom Rand oder von Falzlinien entfernt."
+  },
+  "max_ink_pct": {
+   "value": "max. 300 % Farbauftrag; Anweisung 'konvertieren ... mit einem Farbauftrag von 260%'; Schwarz 100 K oder C40 M40 Y0 K100. Steht auf Flyer-, Visitenkarten- und Posterseite (069/070/071.bin); auf Sticker-, Vinyl-, Roll-up- und Bannerseiten nicht genannt.",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Achten Sie bitte darauf, dass der Farbauftrag 300% nicht überschreitet.",
+   "review": "wrong-scope: als allgemein gefuehrt, steht aber nur auf standardflyer/standardvisitenkarten/poster (066-068, 072-073.bin ohne 300%)"
+  },
+  "fonts": {
+   "value": "Schriften einbetten oder in Pfade umwandeln; kleiner schwarzer Text 100 % K",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Schriften müssen eingebettet oder umgewandelt werden."
+  },
+  "min_font_pt": {
+   "value": "6 pt (Flyer, Visitenkarten, Poster, Sticker im Wunschformat); 20 pt Roll-up; 60 pt Banner nach Maß",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Für dieses Produkt beträgt die Mindestschriftgröße 6 pt."
+  },
+  "min_line_pt": {
+   "value": "0,25 pt positiv, 0,5 pt negativ",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Linien sollten mindestens 0,25 pt. betragen. Negative Linien sollten mindestens 0,5 pt. betragen."
+  },
+  "transparency": {
+   "value": "Nur Hinweis auf Überdrucken: keine Elemente auf Überdrucken stellen (außer gewollt). Regel zu Transparenzen/Reduzierung: unbekannt",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Stellen Sie sicher, dass keine Elemente in Ihrem Design Überdrucke sind (außer Sie möchten diesen Effekt in Ihrem Design absichtlich erzielen)."
+  },
+  "spot_colors": {
+   "value": "Einzige gelesene Sonderfarbe: Stanzkontur als 100 % Magenta-Spotfarbe \"cutcontour\". Allgemeine Regel zu Pantone/Sonderfarben im Druckbild: unbekannt (es gibt eigene PMS-Produkte, z. B. businesscardspms)",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/stickerwunschformat",
+   "quote": "Achten Sie darauf, dass die Breite des Strichs 1 pt beträgt, die Farbe ein 100%iger magentafarbener Fleck ist und \"cutcontour\" heißt."
+  },
+  "pages_and_sides": {
+   "value": "Ausrichtung von Datei und Format muss übereinstimmen, sonst automatische Drehung. Broschüren: ein PDF mit allen Einzelseiten inkl. Umschlag. Ob zweiseitige Flyer ein 2-seitiges PDF brauchen: unbekannt (API kennt nur ein fileUrl pro OrderItem)",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Ein Design im Querformat auf einer Vorlage im Hochformat wird automatisch gedreht."
+  },
+  "max_file_mb": {
+   "value": null,
+   "evidence": "unknown"
+  }
+ },
+ "products": [
+  {
+   "family": "sticker",
+   "product": "Standard Sticker (stickers)",
+   "sizes": "feste Formen rechteckig/quadratisch/rund, z. B. 50x50 mm; Liste im Konfigurator",
+   "materials": "Weiße Plastikfolie (PP), Transparent, Papier, Glänzend PVC",
+   "bleed_mm": 5,
+   "safe_mm": 3,
+   "dpi": 300,
+   "contour": "Standardformen: keine Kontur nötig (Form per Option). Lasergeschnitten, weißer Rand möglich",
+   "white": "Weiß wird auf Transparent standardmäßig nicht gedruckt; Vollfarbe mit Weiß bzw. nur Weiß erfordert Vektordatei",
+   "template": "Vorlagen (PDF/IDML) im Vorlagenteil der Produktseite, je Format",
+   "notes": "Einzelsticker; Beispiel-Variantenschlüssel stickers~ST-PP60TWG-50x50-40-[ROUND+INDIVIDUAL]",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardsticker",
+   "quotes": [
+    {
+     "quote": "Fügen Sie einen 5 mm Beschnitt an allen Kanten Ihres Designs hinzu."
+    },
+    {
+     "quote": "Halten Sie wichtige Elemente 3 mm vom Rand oder von Falzlinien entfernt."
+    },
+    {
+     "quote": "Bitte beachten Sie, dass dieses Produkt mit einem Laser geschnitten wird, wodurch das Folienmaterial leicht schrumpfen kann und Sie einen weißen Rand am Rand jedes Stickers erhalten."
+    },
+    {
+     "quote": "Standardmäßig wird Weiß nicht auf transparenten Materialien gedruckt."
+    },
+    {
+     "quote": "Wenn du dich für den Vollfarbdruck mit Weiß entscheidest, musst du dein Design als Vektordatei hochladen."
+    },
+    {
+     "quote": "Stellen Sie sicher, dass Bilder und Grafiken in Ihrer Vorlage eine Bildauflösung von mindestens 300 dpi vorweisen"
+    }
+   ]
+  },
+  {
+   "family": "sticker",
+   "product": "Sticker im Wunschformat (stickersownsize)",
+   "sizes": "freie Größe/Form (Grenzen unbekannt)",
+   "materials": "Weiße Plastikfolie, Papier, Transparent, Spezial",
+   "bleed_mm": 5,
+   "safe_mm": 3,
+   "dpi": 300,
+   "contour": "Vektorform oben auf dem Design, Strich 1 pt, 100 % Magenta-Spotfarbe namens \"cutcontour\", nur eine Konturlinie; Motiv mind. 5 mm über Kontur hinaus; alternativ Form auf separater Seite zur Anpassung",
+   "white": "wie Standard Sticker (Weiß nur mit Vektordatei)",
+   "template": "Vorlagen (PDF/IDML) im Vorlagenteil der Produktseite, je Format; Anleitung zum Konturzeichnen verlinkt",
+   "notes": "Per API laut Produktuebersicht (074.bin) 'custom-size ... not yet available/working' - stickersownsize steht in dieser Liste; Mindestschrift 6 pt, Linien 0,25 pt",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/stickerwunschformat",
+   "quotes": [
+    {
+     "quote": "Achten Sie darauf, dass die Breite des Strichs 1 pt beträgt, die Farbe ein 100%iger magentafarbener Fleck ist und \"cutcontour\" heißt."
+    },
+    {
+     "quote": "Bitte beachten Sie, dass für benutzerdefinierte Formen immer noch Beschnitt erforderlich ist, d. h. Ihr Design muss mindestens 5 mm über die Konturschnittlinie hinausgehen."
+    },
+    {
+     "quote": "Wenn Sie möchten, dass Ihr Produkt in eine benutzerdefinierte Form geschnitten wird, müssen Sie es als Vektorform oben auf Ihrem Entwurf hinzufügen."
+    },
+    {
+     "quote": "Fügen Sie einen 5 mm Beschnitt an allen Kanten Ihres Designs hinzu."
+    },
+    {
+     "quote": "Halten Sie wichtige Elemente 3 mm vom Rand oder von Falzlinien entfernt."
+    },
+    {
+     "quote": "Für dieses Produkt beträgt die Mindestschriftgröße 6 pt."
+    }
+   ],
+   "review": "Hinweis praezisiert: stickersownsize ist in der API-Produktuebersicht ausdruecklich als custom-size gelistet (074.bin)"
+  },
+  {
+   "family": "sticker",
+   "product": "Vinylaufkleber (vinylstickers)",
+   "sizes": "Größen nach m², z. B. 0,5 m²",
+   "materials": "Monomer/Polymer weiß und transparent, Orajet PVC-frei, Lintec clear",
+   "bleed_mm": 5,
+   "safe_mm": 10,
+   "dpi": 150,
+   "contour": "gleiche cutcontour-Regel wie Wunschformat (1 pt, 100 % Magenta-Spot \"cutcontour\")",
+   "white": "Weiß kann nicht auf transparente Aufkleber gedruckt werden (Produkthinweis)",
+   "template": "Vorlagen (PDF/IDML) im Vorlagenteil der Produktseite, je Format",
+   "notes": "150 ppi",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/vinylaufkleber",
+   "quotes": [
+    {
+     "quote": "Achten Sie darauf, dass die Breite des Strichs 1 pt beträgt, die Farbe ein 100%iger magentafarbener Fleck ist und \"cutcontour\" heißt."
+    },
+    {
+     "quote": "Fügen Sie einen 5 mm Beschnitt an allen Kanten Ihres Designs hinzu."
+    },
+    {
+     "quote": "Halten Sie wichtige Elemente 10 mm vom Rand oder von Falzlinien entfernt."
+    },
+    {
+     "quote": "Stellen Sie sicher, dass Bilder und Grafiken in Ihrer Vorlage eine Bildauflösung von mindestens 150 PPZ haben."
+    },
+    {
+     "quote": "Hinweis: Weiß kann nicht auf transparente Aufkleber gedruckt werden, diese bleiben transparent."
+    }
+   ]
+  },
+  {
+   "family": "flyer",
+   "product": "Klassische Flyer (standardflyers)",
+   "sizes": "A3, A4, A5, A6, A7, DL, Quadrat S/M/L, A-Long, X-Long (feste Liste)",
+   "materials": "90–400 g/m² Bilderdruck glänzend/matt, Offset, Recycling u. a.",
+   "bleed_mm": 3,
+   "safe_mm": 4,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "Vorlagen (PDF/IDML) im Vorlagenteil der Produktseite, je Format (PDF/IDML je Format)",
+   "notes": "Ausrichtung Datei = Format, sonst Auto-Drehung; Farbauftrag max. 300 %; ein- oder beidseitig; z. B. standardflyers~FL-135G-A5-44",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quotes": [
+    {
+     "quote": "Fügen Sie einen 3 mm Beschnitt an allen Kanten Ihres Designs hinzu."
+    },
+    {
+     "quote": "Halten Sie wichtige Elemente 4 mm vom Rand oder von Falzlinien entfernt."
+    },
+    {
+     "quote": "Stellen Sie sicher, dass Bilder und Grafiken in Ihrer Vorlage eine Bildauflösung von mindestens 300 dpi vorweisen"
+    },
+    {
+     "quote": "Ein Design im Querformat auf einer Vorlage im Hochformat wird automatisch gedreht."
+    },
+    {
+     "quote": "Achten Sie bitte darauf, dass der Farbauftrag 300% nicht überschreitet."
+    },
+    {
+     "quote": "Verwenden Sie den Farbmodus FOGRA39 (ISO Coated v2)."
+    }
+   ]
+  },
+  {
+   "family": "visitenkarte",
+   "product": "Standard Visitenkarten (businesscardsstandard)",
+   "sizes": "Standardformate (Liste im Konfigurator)",
+   "materials": "u. a. 400 g/m²",
+   "bleed_mm": 3,
+   "safe_mm": 4,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "Vorlagen (PDF/IDML) im Vorlagenteil der Produktseite, je Format",
+   "notes": "Keine Rahmen bei kleinen Formaten (Schnittabweichung); z. B. businesscardsstandard~VI-400S-BC-44-[ML11]",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardvisitenkarten",
+   "quotes": [
+    {
+     "quote": "Fügen Sie einen 3 mm Beschnitt an allen Kanten Ihres Designs hinzu."
+    },
+    {
+     "quote": "Halten Sie wichtige Elemente 4 mm vom Rand oder von Falzlinien entfernt."
+    },
+    {
+     "quote": "Stellen Sie sicher, dass Bilder und Grafiken in Ihrer Vorlage eine Bildauflösung von mindestens 300 dpi vorweisen"
+    }
+   ]
+  },
+  {
+   "family": "plakat",
+   "product": "Standard Plakate (posters)",
+   "sizes": "u. a. A2 (Liste im Konfigurator)",
+   "materials": "u. a. 135 g/m²",
+   "bleed_mm": 3,
+   "safe_mm": 4,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "Vorlagen (PDF/IDML) im Vorlagenteil der Produktseite, je Format",
+   "notes": "z. B. posters~PO-135G-A2-40",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/poster",
+   "quotes": [
+    {
+     "quote": "Fügen Sie einen 3 mm Beschnitt an allen Kanten Ihres Designs hinzu."
+    },
+    {
+     "quote": "Halten Sie wichtige Elemente 4 mm vom Rand oder von Falzlinien entfernt."
+    },
+    {
+     "quote": "Stellen Sie sicher, dass Bilder und Grafiken in Ihrer Vorlage eine Bildauflösung von mindestens 300 dpi vorweisen"
+    }
+   ]
+  },
+  {
+   "family": "rollup",
+   "product": "Roll-Up Banner Budget (rollupbannersv2)",
+   "sizes": "z. B. 850x2150 mm",
+   "materials": "Polyester u. a.",
+   "bleed_mm": 5,
+   "safe_mm": 10,
+   "dpi": 150,
+   "contour": "",
+   "white": "",
+   "template": "Vorlagen (PDF/IDML) im Vorlagenteil der Produktseite, je Format",
+   "notes": "Sicherheitsränder oben 10, links 4, rechts 4, unten 150 mm; Mindestschrift 20 pt",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/rollbannersbudget",
+   "quotes": [
+    {
+     "quote": "Fügen Sie einen 5 mm Beschnitt an allen Kanten Ihres Designs hinzu."
+    },
+    {
+     "quote": "Halten Sie wichtige Elemente 10 mm vom Rand oder von Falzlinien entfernt."
+    },
+    {
+     "quote": "Stellen Sie sicher, dass Bilder und Grafiken in Ihrer Vorlage eine Bildauflösung von mindestens 150 PPZ haben."
+    },
+    {
+     "quote": "Bei Rollup Banner werden folgende Sicherheitsränder benötigt: Oben 10mm; links 4mm; rechts 4mm; unten 150mm."
+    },
+    {
+     "quote": "Für dieses Produkt beträgt die Mindestschriftgröße 20 pt."
+    }
+   ]
+  },
+  {
+   "family": "banner",
+   "product": "Banner nach Maß (banners)",
+   "sizes": "frei nach m²",
+   "materials": "PVC 510 g u. a., Ösen/Tunnel-Optionen",
+   "bleed_mm": 5,
+   "safe_mm": 50,
+   "dpi": 150,
+   "contour": "",
+   "white": "",
+   "template": "Vorlagen (PDF/IDML) im Vorlagenteil der Produktseite, je Format",
+   "notes": "Mindestschrift 60 pt; Sicherheitsabstand 50 mm",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/bannernachmass",
+   "quotes": [
+    {
+     "quote": "Fügen Sie einen 5 mm Beschnitt an allen Kanten Ihres Designs hinzu."
+    },
+    {
+     "quote": "Halten Sie wichtige Elemente 50 mm vom Rand oder von Falzlinien entfernt."
+    },
+    {
+     "quote": "Stellen Sie sicher, dass Bilder und Grafiken in Ihrer Vorlage eine Bildauflösung von mindestens 150 PPZ haben."
+    },
+    {
+     "quote": "Für dieses Produkt beträgt die Mindestschriftgröße 60 pt."
+    }
+   ]
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Konsumenten-Shop helloprint.com: kostenloser Basis-Check (Auflösung, Größe, Farbe) plus digitaler Proof; ob das identisch für Connect/API gilt: unbekannt. API-Status ARTWORK_FILECHECK existiert.",
+   "evidence": "W",
+   "source": "https://www.helloprint.com/en-us/artwork-check"
+  },
+  "auto_corrections": {
+   "value": "RGB→CMYK-Konvertierung; Querformat-Design auf Hochformat-Vorlage wird automatisch gedreht. Weitere Auto-Korrekturen: unbekannt",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardflyer",
+   "quote": "Ein Design im Querformat auf einer Vorlage im Hochformat wird automatisch gedreht."
+  },
+  "rejection_reasons": {
+   "value": "AGB: bei fehlerhaften/ungeeigneten Daten Lieferverzug, Mehrkosten oder Rücktritt des Lieferanten; konkrete Ablehnungsgründe nicht veröffentlicht. API-Status ARTWORK_REJECTED",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/agb",
+   "quote": "(c) kann der Lieferant vom Vertrag zurücktreten."
+  },
+  "paid_options": {
+   "value": "\"Premium Artwork Check\" im Warenkorb wählbar (auf Connect-Stickerseite genannt); Preis in Connect unbekannt (Konsumenten-Shop UK: ab GBP 2,99, W)",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/standardsticker",
+   "quote": "überprüfe das Premium Artwork Check"
+  },
+  "result_channel": {
+   "value": "API: Bestellstatus ARTWORK_ACCEPTED / ARTWORK_APPROVAL_REQUIRED / ARTWORK_REJECTED / ARTWORK_REQUIRED; ob diese per Callback gepusht werden: unbekannt (dokumentiert sind nur ORDER_CREATED und SHIPPED)",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/order-states.md",
+   "quote": "ARTWORK\\_APPROVAL\\_REQUIRED"
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "partner-only",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/helloprint-api.md",
+   "quote": "This solution is only available for customers within Helloprint Connect."
+  },
+  "docs_url": {
+   "value": "https://developers.helloprint.com (llms.txt, .md-Seiten, OpenAPI 3.0 eingebettet); Basis-URL https://api.helloprint.com/rest/v1",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/createorder.md",
+   "quote": "\"url\": \"https://api.helloprint.com/rest/v1\","
+  },
+  "auth": {
+   "value": "API-Key im Header x-api-key",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/createorder.md",
+   "quote": "\"name\": \"x-api-key\","
+  },
+  "access": {
+   "value": "API-Key per Anfrage an Helloprint (api@-Adresse in Doku); nur für verifizierte Connect-Reseller",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/authentication.md",
+   "quote": "You can request an API Key by sending a request to"
+  },
+  "catalog": {
+   "value": "GET /products/{productKey}; Varianten per SKU; Variantenschlüssel productKey~sku steht auf jeder Produktseite; Quote-Endpoint für Preise/Lieferzeiten; CSV-Preislisten per POST /products/{productKey}/prices/download (async, Callback)",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/getproduct.md",
+   "quote": "\"/products/{productKey}\": {"
+  },
+  "order": {
+   "value": "POST /orders mit orderReferenceId, mode (prod|test), shipping, orderItems[] (itemReferenceId, variantKey, quantity, serviceLevel saver|standard|express, fileUrl), callbackUrls[]",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/createorder.md",
+   "quote": "\"description\": \"Your callback URLs, where we send callback events.\","
+  },
+  "artwork_handover": {
+   "value": "Pull-Modell: pro OrderItem ein Feld fileUrl = öffentlich erreichbare URL, Helloprint lädt die Datei; kein Multipart-Upload dokumentiert; eine URL pro Position (Vorder-/Rückseite in einer Datei)",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/createorder.md",
+   "quote": "Publicly accessible URL to the artwork file. Preferably, the pdf file should be provided in PDF/X compatible standards."
+  },
+  "proof_or_preview": {
+   "value": "Kein Proof-/Preview-Endpoint dokumentiert; Status ARTWORK_APPROVAL_REQUIRED existiert, wie man per API freigibt: unbekannt. AGB: Proofs nur wenn in Auftragsbestätigung",
+   "evidence": "F",
+   "source": "https://connect.helloprint.de/agb",
+   "quote": "7.2 Proofs oder Muster werden nur erstellt, wenn und soweit ausdrücklich in der Auftragsbestätigung aufgeführt."
+  },
+  "status_webhooks": {
+   "value": "callbackUrls im Order-Request; dokumentierte Callbacks: ORDER_CREATED (mit requestId) und SHIPPED (mit trackingUrls); 21 Order-States inkl. ARTWORK_*; Abruf per GET Order by id/requestId/orderReferenceId",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/callbacks.md",
+   "quote": "Once the order(item) has been shipped the callback will post the following message:"
+  },
+  "sandbox": {
+   "value": "Feld mode mit Werten prod/test, Default test (Verhalten im Testmodus nicht beschrieben); keine separate Sandbox-URL außer einer internen Dev-URL",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/createorder.md",
+   "quote": "\"prod\","
+  },
+  "white_label_shipping": {
+   "value": "White-Label-Versand laut Landingpage; Lieferland muss dem Land des Kunden entsprechen (DE-Konto → DE-Lieferung)",
+   "evidence": "F",
+   "source": "https://developers.helloprint.com/reference/createorder.md",
+   "quote": "Delivery can only take place in the same country as the customer."
+  }
+ },
+ "automation_risks": [
+  "API laut Produktübersicht: custom-size- und Bekleidungsprodukte \"not yet available/working\" – Sticker im Wunschformat (stickersownsize) evtl. nicht per API bestellbar.",
+  "Nur ein fileUrl pro Position: Konturschnitt, Weißebene und Rückseite müssen korrekt in einer Datei liegen; Seitenlogik nicht dokumentiert.",
+  "Datei muss öffentlich per URL erreichbar sein (signierte, lang genug gültige URLs nötig).",
+  "Artwork-Status (REJECTED/APPROVAL_REQUIRED) kommen nicht als dokumentierter Callback – Polling nötig; Freigabe per API nicht dokumentiert.",
+  "Regeln sind produktabhängig (Beschnitt 3 oder 5 mm, Sicherheitsabstand 3/4/10/50 mm, 300 vs. 150 ppi, Mindestschrift 6/20/60 pt) – Exporter braucht Tabelle pro productKey.",
+  "Weiß auf Transparentfolie wird standardmäßig nicht gedruckt; Weißdruck nur mit Vektordatei, Benennung/Aufbau der Weißebene nicht veröffentlicht.",
+  "Kein PDF/X-Version und keine maximale Dateigröße veröffentlicht; Konsequenz bei Verstoß nur allgemein (Mehrkosten, Verzug, Rücktritt).",
+  "Produktübersicht der API (Stand 2025-03) listet nicht alle Variantenschlüssel der Website (z. B. standardflyers, businesscardsstandard, rollupbannersv2) – vor Go-live per GET /products prüfen."
+ ]
+}

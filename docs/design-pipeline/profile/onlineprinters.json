@@ -1,0 +1,305 @@
+{
+ "supplier": "onlineprinters",
+ "name": "Onlineprinters (onlineprinters.de)",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "PDF (bevorzugt), TIFF (eine Datei pro Seite, keine Multipage-TIFFs, Ebenen reduziert), JPEG (hoechste Qualitaet, Baseline)",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/faq/welche-dateiformate-moeglich",
+   "quote": "Keine mehrseitigen TIFF-Dateien (Multipage-TIFFs), sondern eine TIFF-Datei pro Seite der Druckdaten"
+  },
+  "pdf_standard": {
+   "value": "PDF/X-4:2010; ohne Passwort/Sicherheitseinstellungen",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/faq/einstellungen-druck-pdf",
+   "quote": "PDF-Standard: PDF/X-4:2010"
+  },
+  "color_mode": {
+   "value": "CMYK",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/faq/einstellungen-druck-pdf",
+   "quote": "Farbmodus: CMYK"
+  },
+  "icc_profiles": {
+   "value": "Gestrichene Papiere: PSO Coated v3; ungestrichene Papiere (Offset, Natur, Recycling): PSO Uncoated v3 FOGRA52; andere Materialien (Fahnen, Banner, Displays): PSO Coated v3. Massgeblich ist der 'Datenhinweis' der jeweiligen Produktseite.",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/farbmodus-farbraum",
+   "quote": "PSO Uncoated v3 FOGRA52"
+  },
+  "rgb_handling": {
+   "value": "RGB-Daten werden automatisch in CMYK konvertiert; Farbverschiebungen moeglich (kein Abbruch)",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/farbmodus-farbraum",
+   "quote": "konvertieren wir automatisch in CMYK"
+  },
+  "min_dpi": {
+   "value": "mindestens 300 dpi (wenn nicht anders angegeben; Grossformat-Ausnahmen laut Produktseite, nicht geprueft)",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/faq/einstellungen-druck-pdf",
+   "quote": "Auflösung: mindestens 300 dpi (wenn nicht anders angegeben)"
+  },
+  "bleed_mm": {
+   "value": 2,
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/faq/einstellungen-druck-pdf",
+   "quote": "Beschnitt: 2 mm (wenn nicht anders angegeben)"
+  },
+  "safe_mm": {
+   "value": 4,
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/faq/einstellungen-druck-pdf",
+   "quote": "Sicherheitsabstand: 4 mm (wenn nicht anders angegeben)"
+  },
+  "max_ink_pct": {
+   "value": "Empfehlung (keine harte Grenze genannt): max. 300 % bei Standardproduktionszeit, max. 260 % bei Blitz-/Express; min. ca. 3-5 % je Farbkanal",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/farbauftrag",
+   "quote": "Standardproduktionszeit: 300 %",
+   "review": "Seite formuliert \"Unsere Empfehlungen\" (015.bin); Werte richtig, Charakter als Empfehlung ergaenzt."
+  },
+  "fonts": {
+   "value": "Vollstaendig oder als Untergruppe einbetten oder in Pfade umwandeln (auch Standardschriften); schwarzer Text unter 12 pt wird automatisch auf Ueberdrucken gesetzt; Fliesstext 0/0/0/100",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/schriften",
+   "quote": "Schwarzer Fließtext: Cyan 0 %, Magenta 0 %, Yellow 0 %, Key 100 %"
+  },
+  "min_font_pt": {
+   "value": 6,
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/schriften",
+   "quote": "Empfohlene Schriftgröße: mindestens 6 pt",
+   "review": "Empfehlung (\"Empfohlene Schriftgroesse: mindestens 6 pt\", 013.bin), keine Ablehnungsgrenze."
+  },
+  "min_line_pt": {
+   "value": "positiv 0,25 pt (0,09 mm), negativ 0,5 pt (0,18 mm)",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/linienstaerke",
+   "quote": "Positive Linien (dunkle Linie auf hellem Hintergrund): mindestens 0,25 pt (0,09 mm)"
+  },
+  "transparency": {
+   "value": "Live-Transparenzen werden verarbeitet; einheitlicher Transparenzreduzierungsfarbraum CMYK; Reduzieren nur bei CorelDRAW noetig",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/transparenzen",
+   "quote": "In unserem Produktionsprozess können wir Transparenzen verarbeiten."
+  },
+  "spot_colors": {
+   "value": "Sonderfarben-Anleitung existiert (/c/faq/sonderfarbe), nicht gelesen; Schnittkontur als Volltonfarbe 'CutContour'",
+   "evidence": "unknown"
+  },
+  "pages_and_sides": {
+   "value": "Seitengroesse und -ausrichtung im PDF identisch; mehrseitiges PDF moeglich (FAQ vorhanden, Details nicht gelesen); TIFF/JPEG je Seite eine Datei",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/faq/einstellungen-druck-pdf",
+   "quote": "Größe und Ausrichtung der Seiten: identisch"
+  },
+  "max_file_mb": {
+   "value": null,
+   "evidence": "unknown"
+  }
+ },
+ "products": [
+  {
+   "family": "sticker",
+   "product": "Aufkleber/Klebeetiketten mit Konturschnitt (optional bei einigen Produkten)",
+   "sizes": "unbekannt (Produktseite nicht gelesen)",
+   "materials": "unbekannt",
+   "bleed_mm": 2,
+   "safe_mm": 3,
+   "dpi": 300,
+   "contour": "Zusaetzliche Volltonfarbe namens 'CutContour' (z. B. 100 % Magenta), geschlossener Vektorpfad mit wenig Knoten, wird nicht gedruckt; Eckenradius >= 4 mm; Abstand Text/Grafik zur Kontur allgemein >= 3 mm (Toleranz ca. 1-2 mm), bei Klebeetiketten >= 2 mm (Toleranz ca. 1 mm); Dateiformat PDF. Strichstaerke, Ueberdrucken, Ebene: nicht angegeben. Ob Standardformen (rund/eckig) eine Kontur brauchen: unbekannt.",
+   "white": "unbekannt fuer transparente/metallische Folie (nur 'Weissdruck bei Werbeartikeln' existiert als Seite, nicht gelesen)",
+   "template": "Druckvorlagen je Produktseite (Reiter 'Druckvorlagen'); Sticker-Produktseite nicht gelesen",
+   "notes": "Sicherheitsabstand zur Schnittkontur: allgemein mind. 3 mm (Toleranz ca. 1-2 mm), bei Klebeetiketten mind. 2 mm (Toleranz ca. 1 mm). Beschnitt 2 mm und 300 dpi sind die Allgemeinwerte \"wenn nicht anders angegeben\"; fuer das Etikettenprodukt Adressaufkleber bestaetigt die Produktseite 2 mm Beschnitt und 4 mm Abstand zum Endformat. Filigrane Formen koennen nicht entgittert werden.",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/konturschnitt",
+   "quotes": [
+    {
+     "quote": "mit dem Namen \"CutContour\" angelegt werden"
+    },
+    {
+     "quote": "Sicherheitsabstand für Texte und Grafikelemente zur Schnittkontur: mindestens 2 mm"
+    },
+    {
+     "quote": "der Eckenradius darf 4 mm nicht unterschreiten"
+    }
+   ],
+   "review": "safe_mm 2 galt nur fuer Klebeetiketten; fuer Aufkleber mit Konturschnitt allgemein 3 mm (010.bin). Beschnitt fuer Kontur-Aufkleber weiter nur Allgemeinwert."
+  },
+  {
+   "family": "sticker",
+   "product": "Adressaufkleber 6,8 x 2,0 cm (Etikett, Standardform)",
+   "sizes": "Endformat 6,8 x 2,0 cm, Datenformat 7,2 x 2,4 cm",
+   "materials": "unbekannt",
+   "bleed_mm": 2,
+   "safe_mm": 4,
+   "dpi": 300,
+   "contour": "keine Kontur in den Druckdatenhinweisen verlangt",
+   "white": "",
+   "template": "Produktseite https://www.onlineprinters.de/p/adressetiketten (Druckdatenhinweise)",
+   "notes": "CMYK, FOGRA51 (PSO Coated v3) gestrichen / FOGRA52 ungestrichen; Schriften einbetten oder in Kurven.",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/p/adressetiketten",
+   "quotes": [
+    {
+     "quote": "Datenformat (inkl. 2 mm Beschnitt): 7,2 x 2,4 cm"
+    }
+   ],
+   "review": "Neu aus Gegenpruefung: einzige gelesene Etiketten-Produktseite; Werbeaufkleber-Produktseiten werden per JS geladen und konnten nicht gelesen werden."
+  },
+  {
+   "family": "flyer",
+   "product": "Flyer DIN A5 (beidseitig)",
+   "sizes": "Endformat 14,8 x 21 cm, Datenformat 15,2 x 21,4 cm (weitere Formate je Produktseite)",
+   "materials": "gestrichen / ungestrichen (Liste nicht gelesen)",
+   "bleed_mm": 2,
+   "safe_mm": 4,
+   "dpi": 300,
+   "contour": "",
+   "white": "",
+   "template": "PDF-Druckvorlage auf der Produktseite (Reiter 'Druckvorlagen', Link unter /$WS/diedruckerei/shopdata/media/pim/printTemplates/...pdf)",
+   "notes": "CMYK, FOGRA51 (PSO Coated v3) fuer gestrichene, FOGRA52 (PSO Uncoated v3 FOGRA52) fuer ungestrichene Papiere; Leserichtung beachten; Schriften einbetten oder in Kurven.",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/p/flyer-din-a5",
+   "quotes": [
+    {
+     "quote": "Datenformat (inkl. 2 mm Beschnitt): 15,2 x 21,4 cm"
+    },
+    {
+     "quote": "Endformat: 14,8 x 21 cm"
+    },
+    {
+     "quote": "FOGRA51 (PSO Coated v3)"
+    },
+    {
+     "quote": "Auflösung: 300 dpi"
+    }
+   ]
+  },
+  {
+   "family": "banner",
+   "product": "Planen/Banner, Fahnen, Displays (Allgemeinregel)",
+   "sizes": "unbekannt",
+   "materials": "andere Materialien (kein Papier)",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "Produktseite, nicht gelesen",
+   "notes": "Nur Farbprofil bestaetigt: PSO Coated v3. Beschnitt, Saum/Oesen, Aufloesung fuer Grossformat unbekannt - Produktseite pruefen.",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/farbmodus-farbraum",
+   "quotes": [
+    {
+     "quote": "(z. B. Fahnen, Banner, Displays)"
+    }
+   ]
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Beim Upload automatische Pruefung auf die wichtigsten Anforderungen wie Format und Aufloesung",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/datenuebermittlung",
+   "quote": "Ihre Datei wird beim Upload auf die wichtigsten Anforderungen wie Format und Auflösung geprüft."
+  },
+  "auto_corrections": {
+   "value": "Nur im kostenpflichtigen Datencheck: Anpassungen falls moeglich (z. B. fehlender Beschnitt wird ergaenzt), Kommentare verworfen, Formularfelder in druckbare Inhalte umgewandelt. Unabhaengig davon: RGB->CMYK automatisch, schwarzer Text <12 pt auf Ueberdrucken.",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/datencheck",
+   "quote": "(z. B. fehlender Beschnitt wird hinzugefügt)"
+  },
+  "rejection_reasons": {
+   "value": "Nicht verwendbare Daten: Kontakt per E-Mail, Produktion startet erst nach Korrektur durch den Kunden. Geprueft werden Aufloesung, Beschnitt, Format, Kommentare/Formularfelder, Schriften; keine Rechtschreibpruefung.",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/datencheck",
+   "quote": "Die Produktion startet nach Korrektur der Druckdaten durch Sie."
+  },
+  "paid_options": {
+   "value": "Datencheck ist kostenpflichtige Zusatzoption auf der Produktseite (Preis unbekannt, je Produkt im Konfigurator); kann Lieferzeit verlaengern",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/datencheck",
+   "quote": "Bei dieser kostenpflichtigen Leistung"
+  },
+  "result_channel": {
+   "value": "E-Mail bei nicht verwendbaren Daten",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/datencheck",
+   "quote": "Sind Ihre Druckdaten nicht verwendbar, kontaktieren wir Sie per E-Mail."
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "partner-only",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/lp/op-connect",
+   "quote": "API-Anbindung ist komplett kostenfrei"
+  },
+  "docs_url": {
+   "value": "nicht oeffentlich; laut Seite 'detaillierte API-Dokumentation' nach Freischaltung",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/lp/op-connect",
+   "quote": "Dabei steht Ihnen eine detaillierte API-Dokumentation zur Verfügung."
+  },
+  "auth": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "access": {
+   "value": "Auf Anfrage ('Jetzt anfragen'); Zielgruppe Wiederverkaeufer/Grosskunden mit hohem Druckvolumen; Nutzung kostenlos",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/lp/op-connect",
+   "quote": "Sie sind ein Wiederverkäufer oder Großkunde."
+  },
+  "catalog": {
+   "value": "Produkt-, Preis-, Bestell- und Rechnungsdaten werden ueber die API ausgetauscht (Endpunkte unbekannt)",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/lp/reseller",
+   "quote": "Über die kostenfreie API tauschen Sie Produkt-, Preis-, Bestell- und Rechnungsdaten automatisch mit uns aus."
+  },
+  "order": {
+   "value": "Auftragsdaten werden automatisiert uebermittelt (Endpunkte/Felder unbekannt)",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/lp/op-connect",
+   "quote": "werden alle Auftragsdaten automatisiert übermittelt"
+  },
+  "artwork_handover": {
+   "value": "unbekannt fuer API. Im Shop: Upload im Bestellprozess, nach Kauf, im Kundenkonto oder per Link aus Bestellbestaetigung; Reseller: Upload bis fuenf Wochen nach Bestellung. Wie die API Dateien annimmt (Upload vs. URL) nur mit Doku/Ansprechpartner klaerbar.",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/datenuebermittlung",
+   "quote": "über den Link in der Bestellbestätigungsmail",
+   "review": "Fuenf-Wochen-Upload steht auf der Reseller-Seite (001.bin: \"Upload der Druckdaten innerhalb von fuenf Wochen moeglich\"), nicht auf der Datenuebermittlungsseite."
+  },
+  "proof_or_preview": {
+   "value": "Shop: Vorschau beim Upload vor dem Kauf (nicht fuer alle Produkte); Freigabe-PDF/digitale Druckfreigabe existieren als FAQ (nicht gelesen). API: unbekannt",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/druckdaten/datenuebermittlung",
+   "quote": "Diese ist aktuell noch nicht für alle Druckprodukte freigeschaltet"
+  },
+  "status_webhooks": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "sandbox": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "white_label_shipping": {
+   "value": "Neutraler Absender im Liefergebiet ohne Zusatzkosten; individueller Lieferschein als PDF bei vielen Produkten; bis zu 10 Lieferadressen",
+   "evidence": "F",
+   "source": "https://www.onlineprinters.de/c/lp/reseller",
+   "quote": "der neutrale Absender ist innerhalb unseres Liefergebiets ohne Zusatzkosten m"
+  }
+ },
+ "automation_risks": [
+  "API op.connect ist nicht oeffentlich dokumentiert; Zugang nur auf Anfrage fuer Reseller/Grosskunden mit hohem Volumen - Auth, Endpunkte, Datei-Uebergabe unbekannt.",
+  "Wie Druckdaten per API uebergeben werden (Upload, URL-Pull, je Seite) ist nicht belegt; im Shop erfolgt der Upload separat, ggf. bis fuenf Wochen nach Bestellung.",
+  "Massgeblich sind produktspezifische 'Druckdatenhinweise'; Allgemeinwerte gelten nur 'wenn nicht anders angegeben' - Exporter braucht Werte je Produkt/Format.",
+  "Farbprofil haengt vom Papier ab (PSO Coated v3 vs. PSO Uncoated v3 FOGRA52); falsches Profil faellt evtl. nicht auf, aendert aber die Farbe.",
+  "RGB wird stillschweigend nach CMYK konvertiert - KI-Bilder (RGB) muessen selbst konvertiert werden, sonst Farbverschiebung ohne Fehlermeldung.",
+  "Konturschnitt braucht Volltonfarbe 'CutContour' als geschlossenen Vektorpfad mit >= 4 mm Eckenradius; Pixel-KI-Motive erfordern eine Vektorisierung der Kontur.",
+  "Fehlerhafte Daten fuehren zu E-Mail und Produktionsstopp bis zur Korrektur; der Datencheck kostet extra und kann die Lieferzeit verlaengern.",
+  "Weissdruck-Regel fuer transparente/metallische Folie und maximale Dateigroesse sind unbekannt."
+ ]
+}

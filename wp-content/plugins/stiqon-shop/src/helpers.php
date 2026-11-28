@@ -6,6 +6,7 @@
 use Stiqon\Shop\Catalog\Choice;
 use Stiqon\Shop\Catalog\Gallery;
 use Stiqon\Shop\Catalog\ProductView;
+use Stiqon\Shop\Content\Designs;
 use Stiqon\Shop\Content\References;
 use Stiqon\Shop\Mockup\Flyer;
 use Stiqon\Shop\Mockup\Stage;
@@ -172,6 +173,60 @@ function stiqon_references(int $limit = -1): array
 function stiqon_references_url(): ?string
 {
     return References::url();
+}
+
+/**
+ * What the list of designs offers and shows: the media and occasions that have
+ * a shown design (for the explore block and the filters), which of them the
+ * request asks for, the designs of this page of the list, and whether they are
+ * examples of a local site. See Content\Designs.
+ *
+ * @return array{media: list<array{slug: string, name: string}>, occasions: list<array{slug: string, name: string}>, selection: array{werbemittel: ?string, anlass: ?string}, designs: list<array>, any: bool, examples: bool}
+ */
+function stiqon_designs(): array
+{
+    global $wp_query;
+
+    // The list and the header both ask; the request's list is built once.
+    static $designs = null;
+
+    if ($designs !== null) {
+        return $designs;
+    }
+
+    $posts = $wp_query instanceof WP_Query && $wp_query->is_post_type_archive(Designs::TYPE) ? $wp_query->posts : [];
+    $posts = array_filter($posts, static fn (mixed $post): bool => $post instanceof WP_Post);
+
+    Designs::primeImages($posts);
+
+    return $designs = [
+        'media' => Designs::terms(Designs::MEDIUM),
+        'occasions' => Designs::terms(Designs::OCCASION),
+        'selection' => Designs::selection(),
+        'designs' => array_map([Designs::class, 'card'], array_values($posts)),
+        'any' => Designs::shownIds() !== [],
+        'examples' => Designs::examples(),
+    ];
+}
+
+/**
+ * Address of the list of designs, optionally filtered.
+ *
+ * @param  array{werbemittel?: ?string, anlass?: ?string}  $filters
+ */
+function stiqon_designs_url(array $filters = []): string
+{
+    return Designs::url($filters);
+}
+
+/**
+ * One design, as the theme shows it, and other shown designs for the same medium.
+ *
+ * @return array{design: array, beside: list<array>}
+ */
+function stiqon_design(WP_Post $post, int $beside = 3): array
+{
+    return ['design' => Designs::card($post), 'beside' => Designs::beside($post->ID, $beside)];
 }
 
 /**

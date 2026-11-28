@@ -13,7 +13,7 @@ const stylesheets = (page) => page.evaluate(() => [...document.querySelectorAll(
 const set = (option, value) => cli('option', 'update', option, value);
 
 test.describe('the theme\'s own pages', () => {
-    for (const path of ['/', '/sticker/', '/flyer/', '/?s=folie']) {
+    for (const path of ['/', '/sticker/', '/flyer/', '/?s=folie', '/design/', '/design/beispiel-neu-eroeffnet/']) {
         test(`${path} carries the theme's stylesheet and none for editor content or shop markup`, async ({ page }) => {
             await page.goto(path);
 
@@ -187,6 +187,9 @@ test.describe('"coming soon" for the shop pages only', () => {
             // Not to be found under the page's own name while the announcement stands in for it.
             await expect(page, path).toHaveTitle('Stiqon öffnet bald');
             await expect(page.locator('header nav[aria-label="Hauptnavigation"]').first(), path).toBeAttached();
+            // The announcement belongs to neither register.
+            await expect(page.locator('header nav[aria-label="Hauptnavigation"]').first().locator('a[aria-current]'), path).toHaveCount(0);
+            await expect(page.locator('header nav[aria-label="Register"] a[aria-current]'), path).toHaveCount(0);
             await expect(page.locator('footer nav[aria-labelledby="footer-legal"]'), path).toBeAttached();
             await expect(page.getByRole('button', { name: 'In den Warenkorb' }), path).toHaveCount(0);
             await expect(page.locator('main [data-mockup], main [data-card]'), path).toHaveCount(0);

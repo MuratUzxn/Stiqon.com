@@ -38,17 +38,29 @@ test.describe('home page', () => {
 
         await expect(page).toHaveURL(/\/sticker\/$/);
         await expect(page.getByRole('heading', { level: 1 })).toHaveText('Sticker');
-        await expect(page.getByRole('navigation', { name: 'Pfad' }).getByRole('link', { name: 'Start' })).toBeVisible();
+
+        // The area page marks itself in its switch between the areas …
+        const areas = page.getByRole('navigation', { name: 'Bereiche' });
+
+        await expect(areas.getByRole('link', { name: 'Sticker' })).toHaveAttribute('aria-current', 'page');
+        await expect(areas.getByRole('link', { name: 'Flyer' })).not.toHaveAttribute('aria-current');
 
         if (isMobile) {
             await page.locator('header summary').click();
         }
 
-        // Only one of the two header navigations (wide or small screens) is exposed at a time.
+        // … and the header its register. Only one of the two header navigations
+        // (wide or small screens) is exposed at a time.
         const navigation = page.getByRole('navigation', { name: 'Hauptnavigation' });
 
-        await expect(navigation.getByRole('link', { name: 'Sticker' })).toHaveAttribute('aria-current', 'page');
-        await expect(navigation.getByRole('link', { name: 'Flyer' })).not.toHaveAttribute('aria-current', 'page');
+        await expect(navigation.getByRole('link', { name: 'Produkte' })).toHaveAttribute('aria-current', 'true');
+        await expect(navigation.getByRole('link', { name: 'Design' })).not.toHaveAttribute('aria-current');
+
+        if (isMobile) {
+            // The menu lists the areas below the registers, and marks this one.
+            await expect(navigation.getByRole('link', { name: 'Sticker' })).toHaveAttribute('aria-current', 'page');
+            await expect(navigation.getByRole('link', { name: 'Flyer' })).not.toHaveAttribute('aria-current');
+        }
     });
 
     test('a question opens its answer', async ({ page }) => {
@@ -217,6 +229,9 @@ test.describe('mobile navigation', () => {
 
         await toggle.click();
         await expect(menu).toHaveAttribute('open');
+        // The registers first, then the areas.
+        await expect(navigation.getByRole('link').first()).toHaveText('Design');
+        await expect(navigation.getByRole('link').nth(1)).toHaveText('Produkte');
         await expect(navigation.getByRole('link', { name: 'Flyer' })).toBeVisible();
         await expect(navigation.getByRole('button', { name: 'Eigenes Motiv ausprobieren' })).toBeVisible();
 
@@ -246,12 +261,19 @@ test.describe('mobile navigation', () => {
 
         await page.goto('/');
 
-        const link = page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Flyer' });
+        const navigation = page.getByRole('navigation', { name: 'Hauptnavigation' });
+        const link = navigation.getByRole('link', { name: 'Produkte' });
 
         await expect(page.locator('header summary')).toBeHidden();
         await expect(link).toBeVisible();
-        // Links are set in the text colour. (A type style once shared its name with a colour and greyed them.)
+        await expect(navigation.getByRole('link', { name: 'Design' })).toBeVisible();
+        // The current register is set in the text colour. (A type style once shared its name with a colour and greyed links.)
         await expect(link).toHaveCSS('color', await page.evaluate(() => getComputedStyle(document.body).color));
+
+        // The areas are not in the bar; they are a click away on the page and in the footer.
+        await expect(navigation.getByRole('link', { name: 'Flyer' })).toHaveCount(0);
+        await expect(page.getByRole('main').getByRole('link', { name: 'Flyer ansehen' }).first()).toBeVisible();
+        await expect(page.getByRole('navigation', { name: 'Übersicht' }).getByRole('link', { name: 'Flyer' })).toBeVisible();
     });
 });
 

@@ -17,6 +17,7 @@ final class Plugin
 
         register_activation_hook($file, [Setup\Defaults::class, 'apply']);
         register_deactivation_hook($file, [Content\References::class, 'forgetAddresses']);
+        register_deactivation_hook($file, [Content\Designs::class, 'forgetAddresses']);
 
         Catalog\AddToCart::register();
         Catalog\Names::register();
@@ -24,6 +25,7 @@ final class Plugin
         Search\Index::register();
         Security\LoginMessages::register();
         Content\References::register();
+        Content\Designs::register();
 
         if (is_admin()) {
             Admin\ProductPreview::register();

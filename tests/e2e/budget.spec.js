@@ -28,7 +28,19 @@ const pages = {
     // home page loads come the gallery's own script and the serif face of the samples.
     // Every page carries about 0.3 kB for a header that knows when it is older than
     // the cart (the Back button, a cache in front of the shop) and asks again.
-    '/sticker/': { document: 11.3, total: 138, elements: 900 },
+    // The switch between the two areas at the top took the place of the path and the button to the other area.
+    '/sticker/': { document: 11.6, total: 138, elements: 900 },
+    // The designs: six example pictures, in the small sizes WordPress keeps of each (a card is
+    // half the phone wide). One request per picture on top of the shared ones. The examples are
+    // drawn and scaled on each site, so their bytes depend on the machine's image libraries
+    // (libgd, libpng, zlib): together 81 kB on CI, 68 kB on Ubuntu 24.04 – the same on PHP 8.1
+    // and 8.3. The limits follow CI, the run that decides.
+    // Measured on CI: document 6.9, images 122.8, all about 192 kB in 12 requests, 199 elements.
+    '/design/': { document: 7.3, total: 198, elements: 210, image: 128, requests: 12 },
+    // One design large, two more below it, and the small script that hands it to the motif.
+    // The pictures: 60 kB on CI, 51 kB on Ubuntu 24.04.
+    // Measured on CI: document 6.4, images 101.8, all about 171 kB in 10 requests, 164 elements.
+    '/design/beispiel-neu-eroeffnet/': { document: 6.8, total: 177, elements: 172, image: 107, requests: 10 },
     // A page of text from the editor – the legal pages. It carries the styles for
     // editor content in its document and nothing of WooCommerce: no stylesheet, no
     // script, no jQuery (it used to load 180 kB of each).
@@ -109,14 +121,16 @@ test.describe('weight of the first load on a phone', () => {
             expect(sum('image') / KB, 'images (kB)').toBeLessThanOrEqual(limits.image);
             expect(total / KB, 'everything (kB)').toBeLessThanOrEqual(limits.total);
 
-            expect(await page.evaluate(() => document.querySelectorAll('*').length), 'elements in the page').toBeLessThanOrEqual(limits.elements);
+            const elements = await page.evaluate(() => document.querySelectorAll('*').length);
+
+            expect(elements, 'elements in the page').toBeLessThanOrEqual(limits.elements);
             expect(await page.evaluate(() => window.layoutShift), 'cumulative layout shift').toBeLessThanOrEqual(limits.layoutShift);
 
             test.info().annotations.push({
                 type: 'weight',
                 description: `${path}: ${(total / KB).toFixed(1)} kB in ${responses.length} requests `
                     + `(document ${(sum('document') / KB).toFixed(1)}, css ${(sum('stylesheet') / KB).toFixed(1)}, js ${(sum('script') / KB).toFixed(1)}, `
-                    + `fonts ${(sum('font') / KB).toFixed(1)}, images ${(sum('image') / KB).toFixed(1)})`,
+                    + `fonts ${(sum('font') / KB).toFixed(1)}, images ${(sum('image') / KB).toFixed(1)}), ${elements} elements`,
             });
         });
     }
