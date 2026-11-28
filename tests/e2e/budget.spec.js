@@ -32,9 +32,11 @@ const pages = {
     '/sticker/': { document: 11.6, total: 138, elements: 900 },
     // The designs: six example pictures of together 68 kB, in the small sizes WordPress keeps of
     // each (a card is half the phone wide). One request per picture on top of the shared ones.
-    '/design/': { document: 7.5, total: 195, elements: 260, image: 125, requests: 13 },
+    // Measured: document 6.9, images 110.1, all 179.0 kB in 12 requests, 199 elements.
+    '/design/': { document: 7.3, total: 185, elements: 210, image: 115, requests: 12 },
     // One design large (51 kB), two more below it, and the small script that hands it to the motif.
-    '/design/beispiel-neu-eroeffnet/': { document: 7, total: 175, elements: 200, image: 105, requests: 11 },
+    // Measured: document 6.4, images 92.7, all 161.6 kB in 10 requests, 164 elements.
+    '/design/beispiel-neu-eroeffnet/': { document: 6.8, total: 167, elements: 172, image: 97, requests: 10 },
     // A page of text from the editor – the legal pages. It carries the styles for
     // editor content in its document and nothing of WooCommerce: no stylesheet, no
     // script, no jQuery (it used to load 180 kB of each).
@@ -115,14 +117,16 @@ test.describe('weight of the first load on a phone', () => {
             expect(sum('image') / KB, 'images (kB)').toBeLessThanOrEqual(limits.image);
             expect(total / KB, 'everything (kB)').toBeLessThanOrEqual(limits.total);
 
-            expect(await page.evaluate(() => document.querySelectorAll('*').length), 'elements in the page').toBeLessThanOrEqual(limits.elements);
+            const elements = await page.evaluate(() => document.querySelectorAll('*').length);
+
+            expect(elements, 'elements in the page').toBeLessThanOrEqual(limits.elements);
             expect(await page.evaluate(() => window.layoutShift), 'cumulative layout shift').toBeLessThanOrEqual(limits.layoutShift);
 
             test.info().annotations.push({
                 type: 'weight',
                 description: `${path}: ${(total / KB).toFixed(1)} kB in ${responses.length} requests `
                     + `(document ${(sum('document') / KB).toFixed(1)}, css ${(sum('stylesheet') / KB).toFixed(1)}, js ${(sum('script') / KB).toFixed(1)}, `
-                    + `fonts ${(sum('font') / KB).toFixed(1)}, images ${(sum('image') / KB).toFixed(1)})`,
+                    + `fonts ${(sum('font') / KB).toFixed(1)}, images ${(sum('image') / KB).toFixed(1)}), ${elements} elements`,
             });
         });
     }
