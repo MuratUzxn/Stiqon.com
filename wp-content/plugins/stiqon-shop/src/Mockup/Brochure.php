@@ -20,11 +20,16 @@ use Stiqon\Shop\Template;
  */
 final class Brochure implements Kind
 {
-    /** Cover sizes in the drawing's box: A5 and A4 share the DIN A proportion, as they do for flyers. */
+    /**
+     * Cover sizes in the drawing's box. A5 and A4 share the DIN A proportion, so
+     * A5 is drawn smaller – a product offered in both shows two cards, which
+     * must not look alike – though not to scale, or it would be lost in its
+     * card (as the posters' sizes). DIN lang is as high as A5, as in print.
+     */
     public const FORMATS = [
-        'a5' => ['label' => 'DIN A5', 'width' => 63.6, 'height' => 90.0],
+        'a5' => ['label' => 'DIN A5', 'width' => 56.6, 'height' => 80.0],
         'a4' => ['label' => 'DIN A4', 'width' => 63.6, 'height' => 90.0],
-        'lang' => ['label' => 'DIN lang', 'width' => 43.0, 'height' => 91.2],
+        'lang' => ['label' => 'DIN lang', 'width' => 37.7, 'height' => 80.0],
         'quadrat' => ['label' => 'Quadratisch', 'width' => 82.0, 'height' => 82.0],
     ];
 

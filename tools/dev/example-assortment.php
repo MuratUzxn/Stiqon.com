@@ -210,7 +210,7 @@ return [
 
             // --- Broschüren -------------------------------------------------------------
             ['area' => 'broschueren', 'slug' => 'broschueren-rueckstichheftung', 'name' => 'Broschüren mit Rückstichheftung', 'summary' => 'Mit zwei Klammern geheftet, von 8 bis 24 Seiten.', 'description' => 'Umschlag und Inhalt auf 135 g Bilderdruck, durchgehend farbig.',
-                'drawing' => ['type' => 'brochure', 'binding' => 'staple', 'motif' => 'kursplan'], 'offers' => ['format' => ['din-a5', 'din-a4', 'din-lang'], 'umfang' => ['8-seiten', '12-seiten', '16-seiten', '24-seiten'], 'auflage' => ['50', '100', '250', '500']],
+                'drawing' => ['type' => 'brochure', 'binding' => 'staple', 'motif' => 'karte'], 'offers' => ['format' => ['din-a5', 'din-a4', 'din-lang'], 'umfang' => ['8-seiten', '12-seiten', '16-seiten', '24-seiten'], 'auflage' => ['50', '100', '250', '500']],
                 'price' => ['base' => ['50' => 89.0, '100' => 129.0, '250' => 219.0, '500' => 349.0], 'by' => ['format' => ['din-a5' => 1.0, 'din-a4' => 1.6, 'din-lang' => 0.9], 'umfang' => ['8-seiten' => 1.0, '12-seiten' => 1.3, '16-seiten' => 1.6, '24-seiten' => 2.2]]]],
             ['area' => 'broschueren', 'slug' => 'broschueren-klebebindung', 'name' => 'Broschüren mit Klebebindung', 'summary' => 'Mit geradem Rücken, von 48 bis 96 Seiten – wie ein Buch.', 'description' => 'Umschlag 300 g Bilderdruck, Inhalt 115 g Bilderdruck, durchgehend farbig.',
                 'drawing' => ['type' => 'brochure', 'binding' => 'perfect', 'motif' => 'fest'], 'offers' => ['format' => ['din-a5', 'din-a4'], 'umfang' => ['48-seiten', '64-seiten', '96-seiten'], 'auflage' => ['25', '50', '100', '250']],
