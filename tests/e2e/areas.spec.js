@@ -24,6 +24,7 @@ const areas = {
 };
 
 const cards = (page) => page.locator('[data-cards] [data-card]');
+const shownView = (page) => page.locator('[data-product-stage] [data-view]:not([hidden])');
 
 test.describe('every area of the shop', () => {
     for (const [slug, [heading, product, kind]] of Object.entries(areas)) {
@@ -72,9 +73,14 @@ test.describe('products of the new kinds', () => {
     test('business cards switch their drawing with the paper, and a search finds them', async ({ page }) => {
         await page.goto('/produkt/visitenkarten/');
 
-        await expect(page.locator('main svg[data-mockup="card"]').first()).toBeVisible();
+        // Matt paper first, as the product preselects it: no band of light on the card.
+        await expect(shownView(page)).toHaveAttribute('data-view', '300-g-matt');
+        await expect(shownView(page).locator('svg[data-mockup="card"] linearGradient[id$="-gloss"]')).toHaveCount(0);
+
         await page.getByRole('radio', { name: '300 g Bilderdruck glänzend' }).check();
-        await expect(page).toHaveURL(/attribute_pa_papier=300-g-glaenzend/);
+        await expect(shownView(page)).toHaveAttribute('data-view', '300-g-glaenzend');
+        await expect(shownView(page).getByRole('img', { name: 'Visitenkarten, 300 g Bilderdruck glänzend' })).toBeVisible();
+        await expect(shownView(page).locator('svg[data-mockup="card"] linearGradient[id$="-gloss"]')).toHaveCount(1);
 
         await page.goto('/?s=visitenkarte');
         await expect(page.locator('[data-card]').filter({ hasText: 'Visitenkarten mit Goldprägung' }).first()).toBeVisible();
