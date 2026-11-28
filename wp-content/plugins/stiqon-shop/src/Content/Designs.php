@@ -2,8 +2,11 @@
 
 namespace Stiqon\Shop\Content;
 
+use WP_Error;
 use WP_Post;
 use WP_Query;
+use WP_REST_Request;
+use WP_REST_Response;
 use WP_Term;
 
 /**
@@ -64,17 +67,30 @@ final class Designs
     /** @var list<int>|null */
     private static ?array $shownIds = null;
 
+    /** @var array{designs: list<int>, images: list<int>}|null */
+    private static ?array $hidden = null;
+
     public static function register(): void
     {
         add_action('init', [self::class, 'types']);
         add_action('init', [self::class, 'learnAddresses'], 99);
         add_action('after_setup_theme', [self::class, 'imageSize']);
-        add_action('template_redirect', [self::class, 'onlyShown']);
+        add_filter('the_posts', [self::class, 'onlyShown'], 10, 2);
+        add_filter('redirect_canonical', [self::class, 'noWayToHidden']);
         add_action('pre_get_posts', [self::class, 'listed']);
         add_action('save_post_'.self::TYPE, [self::class, 'forgetShown']);
         add_action('deleted_post', [self::class, 'forgetShown']);
         add_filter('wp_sitemaps_post_types', [self::class, 'notInSitemap']);
         add_filter('rest_'.self::TYPE.'_query', [self::class, 'restQuery']);
+        add_filter('rest_post_search_query', [self::class, 'restSearch']);
+        add_filter('rest_attachment_query', [self::class, 'restMedia']);
+        add_filter('rest_request_before_callbacks', [self::class, 'restItem'], 10, 3);
+
+        foreach (self::FILTERS as $taxonomy) {
+            add_filter('rest_'.$taxonomy.'_query', [self::class, 'restTerms']);
+            add_filter('rest_prepare_'.$taxonomy, [self::class, 'restTermCount'], 10, 2);
+        }
+
         add_filter('oembed_request_post_id', [self::class, 'noEmbed']);
         add_filter('use_block_editor_for_post_type', [self::class, 'classicForm'], 10, 2);
         add_action('edit_form_after_title', [self::class, 'hint']);
@@ -257,6 +273,72 @@ final class Designs
     public static function forgetShown(): void
     {
         self::$shownIds = null;
+        self::$hidden = null;
+    }
+
+    /**
+     * What WordPress would hand out to anybody but the shop does not show:
+     * published designs that are not shown, and the pictures that belong to
+     * them alone – uploaded for one of them, or its preview image. A picture
+     * still waits for the checks as long as its design does.
+     *
+     * @return array{designs: list<int>, images: list<int>}
+     */
+    public static function hidden(): array
+    {
+        if (self::$hidden === null) {
+            $published = array_map('intval', get_posts([
+                'post_type' => self::TYPE,
+                'post_status' => 'publish',
+                'numberposts' => -1,
+                'fields' => 'ids',
+            ]));
+            $designs = array_values(array_diff($published, self::shownIds()));
+            $images = [];
+
+            if ($designs !== []) {
+                update_meta_cache('post', [...$designs, ...self::shownIds()]);
+
+                $uploaded = get_posts([
+                    'post_type' => 'attachment',
+                    'post_status' => 'inherit',
+                    'post_parent__in' => $designs,
+                    'numberposts' => -1,
+                    'fields' => 'ids',
+                ]);
+                $previews = array_map(static fn (int $id): int => (int) get_post_meta($id, '_thumbnail_id', true), $designs);
+                // A picture a shown design uses as well is out there already.
+                $used = array_map(static fn (int $id): int => (int) get_post_meta($id, '_thumbnail_id', true), self::shownIds());
+
+                $images = array_values(array_diff(array_filter(array_unique([...array_map('intval', $uploaded), ...$previews])), $used));
+            }
+
+            self::$hidden = ['designs' => $designs, 'images' => $images];
+        }
+
+        return self::$hidden;
+    }
+
+    /**
+     * Whether an object of the front end belongs to what the shop does not
+     * show: such a design, or a picture of one. Whoever may edit it may still
+     * look at its preview before releasing it.
+     */
+    private static function isHidden(WP_Post $post, ?WP_Query $query = null): bool
+    {
+        $hidden = match ($post->post_type) {
+            self::TYPE => ! in_array($post->ID, self::shownIds(), true),
+            'attachment' => in_array($post->ID, self::hidden()['images'], true),
+            default => false,
+        };
+
+        return $hidden && ! ($query !== null && $query->is_preview() && current_user_can('edit_post', $post->ID));
+    }
+
+    /** Whether the visitor may see what the shop keeps back, in WordPress' interface: those who edit. */
+    private static function seesAll(): bool
+    {
+        return current_user_can('edit_posts');
     }
 
     /**
@@ -392,35 +474,61 @@ final class Designs
     }
 
     /**
-     * A design that is not shown has no address. Whoever edits it may still
-     * look at its preview before releasing it.
+     * A design that is not shown has no address – in no form WordPress has for
+     * one: its page, ?p=<id>, its embed (/embed/), a feed, the page of its
+     * picture. They all come from the request's main query, so it is taken out
+     * of the results there. With nothing left, WordPress answers "not found"
+     * by itself, before anything else – a redirect to the design's address
+     * included.
+     *
+     * @param  array<int, mixed>  $posts
+     * @return array<int, mixed>
      */
-    public static function onlyShown(): void
+    public static function onlyShown(array $posts, WP_Query $query): array
     {
-        global $wp_query;
-
-        if (! is_singular(self::TYPE)) {
-            return;
+        if (is_admin() || ! $query->is_main_query()) {
+            return $posts;
         }
 
-        $id = get_queried_object_id();
+        return array_values(array_filter($posts, static fn (mixed $post): bool => ! ($post instanceof WP_Post && self::isHidden($post, $query))));
+    }
 
-        if (self::isShown($id) || (is_preview() && current_user_can('edit_post', $id))) {
-            return;
+    /**
+     * WordPress guesses where an address that leads nowhere was meant to go –
+     * ?p=<id> to a post's address, a misspelt name to a similar one. Such a
+     * guess must not name a design that is not shown.
+     */
+    public static function noWayToHidden(mixed $redirect): mixed
+    {
+        if (! is_string($redirect) || $redirect === '' || ! is_404()) {
+            return $redirect;
         }
 
-        $wp_query->set_404();
-        status_header(404);
-        nocache_headers();
+        $post = get_post(url_to_postid($redirect));
+
+        return $post instanceof WP_Post && self::isHidden($post) && ! current_user_can('edit_post', $post->ID) ? false : $redirect;
     }
 
     /**
      * The list: shown designs only, newest first, 24 to a page, narrowed by
-     * the filters the request asks for.
+     * the filters the request asks for. Any other list of designs alone (a
+     * feed of the type, ?post_type[]=…) holds the shown ones as well.
      */
     public static function listed(WP_Query $query): void
     {
-        if (is_admin() || ! $query->is_main_query() || ! $query->is_post_type_archive(self::TYPE)) {
+        if (is_admin() || ! $query->is_main_query() || $query->is_singular()) {
+            return;
+        }
+
+        $archive = $query->is_post_type_archive(self::TYPE);
+
+        if (! $archive && array_values((array) $query->get('post_type')) !== [self::TYPE]) {
+            return;
+        }
+
+        $query->set('post__in', self::shownIds() ?: [0]);
+
+        if (! $archive) {
             return;
         }
 
@@ -434,7 +542,6 @@ final class Designs
 
         $query->set('posts_per_page', self::PER_PAGE);
         $query->set('orderby', ['date' => 'DESC', 'ID' => 'DESC']);
-        $query->set('meta_query', self::shownQuery());
 
         if ($taxonomies !== []) {
             $query->set('tax_query', ['relation' => 'AND', ...$taxonomies]);
@@ -462,11 +569,108 @@ final class Designs
      */
     public static function restQuery(array $arguments): array
     {
-        if (! current_user_can('edit_posts')) {
-            $arguments['meta_query'] = self::shownQuery();
+        if (! self::seesAll()) {
+            $asked = array_map('intval', (array) ($arguments['post__in'] ?? []));
+            $arguments['post__in'] = ($asked === [] ? self::shownIds() : array_values(array_intersect($asked, self::shownIds()))) ?: [0];
         }
 
         return $arguments;
+    }
+
+    /**
+     * The interface's search (/wp/v2/search) looks through every public type
+     * itself, past the designs' own endpoint.
+     *
+     * @param  array<string, mixed>  $arguments
+     * @return array<string, mixed>
+     */
+    public static function restSearch(array $arguments): array
+    {
+        if (! self::seesAll() && self::hidden()['designs'] !== []) {
+            $arguments['post__not_in'] = [...array_map('intval', (array) ($arguments['post__not_in'] ?? [])), ...self::hidden()['designs']];
+        }
+
+        return $arguments;
+    }
+
+    /**
+     * The media library (/wp/v2/media) shows a picture to anybody whose post is
+     * published – a design waiting for its release included.
+     *
+     * @param  array<string, mixed>  $arguments
+     * @return array<string, mixed>
+     */
+    public static function restMedia(array $arguments): array
+    {
+        if (! self::seesAll() && self::hidden()['images'] !== []) {
+            $arguments['post__not_in'] = [...array_map('intval', (array) ($arguments['post__not_in'] ?? [])), ...self::hidden()['images']];
+        }
+
+        return $arguments;
+    }
+
+    /**
+     * Single items of the interface the lists above leave out: a picture of a
+     * design that is not shown, and a Werbemittel or Anlass no shown design
+     * carries. Unknown, as the design itself – not "forbidden".
+     *
+     * @param  mixed  $response
+     * @param  array<string, mixed>  $handler
+     * @param  WP_REST_Request  $request
+     * @return mixed
+     */
+    public static function restItem($response, $handler, $request)
+    {
+        if ($response !== null || ! in_array($request->get_method(), ['GET', 'HEAD'], true) || self::seesAll()) {
+            return $response;
+        }
+
+        $taxonomies = implode('|', array_map(static fn (string $taxonomy): string => preg_quote($taxonomy, '#'), self::FILTERS));
+
+        if (! preg_match('#^/wp/v2/(media|'.$taxonomies.')/(\d+)$#', $request->get_route(), $match)) {
+            return $response;
+        }
+
+        $id = (int) $match[2];
+        $hidden = $match[1] === 'media'
+            ? in_array($id, self::hidden()['images'], true)
+            : ! in_array($id, array_map('intval', get_terms(['taxonomy' => $match[1], 'object_ids' => self::shownIds() ?: [0], 'fields' => 'ids', 'hide_empty' => false]) ?: []), true);
+
+        return $hidden ? new WP_Error('rest_not_found', 'Nicht gefunden.', ['status' => 404]) : $response;
+    }
+
+    /**
+     * Werbemittel and Anlässe in the interface: to visitors those of shown
+     * designs only, as the list's filters offer them.
+     *
+     * @param  array<string, mixed>  $arguments
+     * @return array<string, mixed>
+     */
+    public static function restTerms(array $arguments): array
+    {
+        if (! self::seesAll()) {
+            $arguments['object_ids'] = self::shownIds() ?: [0];
+        }
+
+        return $arguments;
+    }
+
+    /**
+     * WordPress counts every published design of a term; visitors are told the
+     * shown ones.
+     *
+     * @param  WP_REST_Response  $response
+     */
+    public static function restTermCount($response, WP_Term $term)
+    {
+        if (! self::seesAll() && $response instanceof WP_REST_Response) {
+            $data = $response->get_data();
+            $objects = get_objects_in_term($term->term_id, $term->taxonomy);
+            $data['count'] = is_array($objects) ? count(array_intersect(array_map('intval', $objects), self::shownIds())) : 0;
+            $response->set_data($data);
+        }
+
+        return $response;
     }
 
     /**

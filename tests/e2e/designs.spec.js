@@ -286,6 +286,13 @@ test.describe('a term that only designs no one sees carry', () => {
         await expect(page.getByRole('navigation', { name: 'Designs entdecken' })).not.toContainText('Herbst');
         await expect(titles(page)).toHaveText(shown);
     });
+
+    test('is unknown to visitors in WordPress\' interface', async ({ page }) => {
+        const list = await (await page.request.get('/wp-json/wp/v2/stiqon_design_occasion?per_page=100')).json();
+
+        expect(list.map((item) => item.slug)).not.toContain('herbst');
+        expect((await page.request.get(`/wp-json/wp/v2/stiqon_design_occasion/${term}`)).status()).toBe(404);
+    });
 });
 
 test.describe('the list without designs to show', () => {
@@ -422,9 +429,53 @@ test.describe('designs the shop does not show', () => {
 
             expect((await list.json()).map((design) => design.title.rendered).sort()).toEqual([...shown].sort());
             expect((await page.request.get(`/wp-json/wp/v2/stiqon_design/${id}`)).status()).toBe(404);
-            expect((await page.request.get(`/?p=${id}`)).status()).toBe(404);
+
+            // No other way of WordPress' names it either: not by its number – no redirect
+            // to its address –, not as an embed, not in a feed of the type.
+            for (const path of [`/?p=${id}`, `/?p=${id}&post_type=stiqon_design`, `/?p=${id}&embed=true`, `/design/${name}/embed/`, `/design/${name.slice(0, -3)}/`]) {
+                const response = await page.request.get(path, { maxRedirects: 0 });
+
+                expect(response.status(), path).toBe(404);
+                expect(await response.text(), path).not.toContain(title);
+            }
+
+            for (const feed of ['/?post_type=stiqon_design&feed=rss2', '/?post_type[]=stiqon_design&feed=atom']) {
+                const response = await page.request.get(feed);
+
+                expect(await response.text(), feed).not.toContain(title);
+            }
+
+            // Nor the interface's search, which looks through all types itself.
+            const search = await page.request.get(`/wp-json/wp/v2/search?search=${encodeURIComponent(title)}`);
+
+            expect(await search.json()).toEqual([]);
+            expect(await (await page.request.get(`/wp-json/wp/v2/search?search=${encodeURIComponent(title)}&subtype=stiqon_design`)).json()).toEqual([]);
         });
     }
+
+    test('the picture under review is not in the media library', async ({ page }) => {
+        const id = designId('beispiel-herbstmarkt');
+        const picture = cli('post', 'meta', 'get', id, '_thumbnail_id');
+
+        expect(await (await page.request.get(`/wp-json/wp/v2/media?parent=${id}`)).json()).toEqual([]);
+        expect((await page.request.get(`/wp-json/wp/v2/media/${picture}`)).status()).toBe(404);
+
+        const library = await (await page.request.get('/wp-json/wp/v2/media?per_page=100')).json();
+        const names = library.map((item) => item.slug);
+
+        expect(names).not.toContain('herbstmarkt');
+        expect(names).toContain('konfetti');
+
+        // Its page would name it, and the redirect to its file as well.
+        expect((await page.request.get(`/?attachment_id=${picture}`, { maxRedirects: 0 })).status()).toBe(404);
+    });
+
+    test('the interface counts the occasions of shown designs only', async ({ page }) => {
+        const occasions = await (await page.request.get('/wp-json/wp/v2/stiqon_design_occasion')).json();
+
+        // Feier: "Konfetti" and "Gartenfest" – not "Herbstmarkt" and "Kaffeepause".
+        expect(occasions.map((term) => [term.slug, term.count])).toEqual([['eroeffnung', 2], ['feier', 2], ['rabattaktion', 2]]);
+    });
 
     test('a released design that loses its release goes', async ({ page }) => {
         const id = designId('beispiel-konfetti');
