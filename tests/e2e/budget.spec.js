@@ -30,13 +30,17 @@ const pages = {
     // the cart (the Back button, a cache in front of the shop) and asks again.
     // The switch between the two areas at the top took the place of the path and the button to the other area.
     '/sticker/': { document: 11.6, total: 138, elements: 900 },
-    // The designs: six example pictures of together 68 kB, in the small sizes WordPress keeps of
-    // each (a card is half the phone wide). One request per picture on top of the shared ones.
-    // Measured: document 6.9, images 110.1, all 179.0 kB in 12 requests, 199 elements.
-    '/design/': { document: 7.3, total: 185, elements: 210, image: 115, requests: 12 },
-    // One design large (51 kB), two more below it, and the small script that hands it to the motif.
-    // Measured: document 6.4, images 92.7, all 161.6 kB in 10 requests, 164 elements.
-    '/design/beispiel-neu-eroeffnet/': { document: 6.8, total: 167, elements: 172, image: 97, requests: 10 },
+    // The designs: six example pictures, in the small sizes WordPress keeps of each (a card is
+    // half the phone wide). One request per picture on top of the shared ones. The examples are
+    // drawn and scaled on each site, so their bytes depend on the machine's image libraries
+    // (libgd, libpng, zlib): together 81 kB on CI, 68 kB on Ubuntu 24.04 – the same on PHP 8.1
+    // and 8.3. The limits follow CI, the run that decides.
+    // Measured on CI: document 6.9, images 122.8, all about 192 kB in 12 requests, 199 elements.
+    '/design/': { document: 7.3, total: 198, elements: 210, image: 128, requests: 12 },
+    // One design large, two more below it, and the small script that hands it to the motif.
+    // The pictures: 60 kB on CI, 51 kB on Ubuntu 24.04.
+    // Measured on CI: document 6.4, images 101.8, all about 171 kB in 10 requests, 164 elements.
+    '/design/beispiel-neu-eroeffnet/': { document: 6.8, total: 177, elements: 172, image: 107, requests: 10 },
     // A page of text from the editor – the legal pages. It carries the styles for
     // editor content in its document and nothing of WooCommerce: no stylesheet, no
     // script, no jQuery (it used to load 180 kB of each).
