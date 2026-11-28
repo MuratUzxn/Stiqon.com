@@ -26,7 +26,14 @@ final class Sticker implements Kind
 
     public const FINISHES = ['gloss', 'matte'];
 
-    /** Silhouettes for contour-cut stickers, in the motif's 100 x 100 box. */
+    /**
+     * Sample motifs made for contour-cut stickers: their shape is the sticker's
+     * outline (see CONTOURS). Drawn on anything else they lose it – printed on
+     * paper, "stern" is white lettering only.
+     */
+    public const CONTOUR_MOTIFS = ['sprechblase', 'stern'];
+
+    /** Silhouettes for contour-cut stickers, in the motif's 100 x 100 box; one per motif in CONTOUR_MOTIFS. */
     private const CONTOURS = [
         'sprechblase' => 'M50 8C26 8 8 24 8 45c0 12 6 22 16 29l-4 18 19-11c4 1 7 1 11 1 24 0 42-16 42-37S74 8 50 8z',
         'stern' => 'M50 6l11 27 29 2-22 19 7 29-25-16-25 16 7-29L10 35l29-2z',

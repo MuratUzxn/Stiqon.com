@@ -20,9 +20,6 @@ use Stiqon\Shop\Mockup\Sticker;
  */
 final class Guess
 {
-    /** Sample motifs that bring a cut line of their own. */
-    private const CONTOUR_MOTIFS = ['sprechblase', 'stern'];
-
     /**
      * The kind of product ("sticker", "card", …), or null when none of the
      * texts says. Pass the product's name first, then the names of its
@@ -138,8 +135,8 @@ final class Guess
     {
         $motifs = match (true) {
             $type === 'flyer' => Flyer::motifs(),
-            $type === 'sticker' && $shape === 'contour' => self::CONTOUR_MOTIFS,
-            $type === 'sticker' => array_values(array_diff(Sticker::motifs(), self::CONTOUR_MOTIFS)),
+            $type === 'sticker' && $shape === 'contour' => Sticker::CONTOUR_MOTIFS,
+            $type === 'sticker' => array_values(array_diff(Sticker::motifs(), Sticker::CONTOUR_MOTIFS)),
             default => Kinds::of($type)::motifs(),
         };
 

@@ -26,12 +26,6 @@ final class Letter implements Kind
         'a5' => ['label' => 'DIN A5', 'scale' => 1.22],
     ];
 
-    /**
-     * Sample motifs made for contour-cut stickers: their shape is the sticker's
-     * outline, so printed on paper they lose it ("stern" is white lettering only).
-     */
-    private const CUT_OUT_MOTIFS = ['sprechblase', 'stern'];
-
     /** The sheet's height in the drawing; its width follows from the DIN A proportion. */
     private const HEIGHT = 96.0;
 
@@ -127,7 +121,7 @@ final class Letter implements Kind
      */
     public static function motifs(): array
     {
-        return array_values(array_diff(Template::names('motif'), self::CUT_OUT_MOTIFS));
+        return array_values(array_diff(Template::names('motif'), Sticker::CONTOUR_MOTIFS));
     }
 
     /**
