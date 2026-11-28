@@ -1,0 +1,239 @@
+{
+ "supplier": "gelato",
+ "name": "Gelato",
+ "checked_on": "2026-11-27",
+ "general": {
+  "file_formats": {
+   "value": "JPEG, PNG, SVG oder PDF; PDF/X am druckfreundlichsten",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996349-what-are-the-design-requirements-for-pdf-uploads"
+  },
+  "pdf_standard": {
+   "value": "PDF/X empfohlen (Version nicht genannt)",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996349-what-are-the-design-requirements-for-pdf-uploads"
+  },
+  "color_mode": {
+   "value": "CMYK empfohlen fuer Kleinformat-Digitaldruck (Broschueren, Geschaeftsausstattung); fuer andere Produkte unbekannt",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996349-what-are-the-design-requirements-for-pdf-uploads"
+  },
+  "icc_profiles": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "rgb_handling": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "min_dpi": {
+   "value": "mind. 150 dpi, max. 300 dpi in Endgroesse",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996349-what-are-the-design-requirements-for-pdf-uploads"
+  },
+  "bleed_mm": {
+   "value": "4 mm je Seite (Fotobuch-PDF 3 mm); Beispiel Poster 300x400 mm -> PDF 308x408 mm",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996583-document-page-dimensions-matched-the-product-size-but-did-not-include-bleeds"
+  },
+  "safe_mm": {
+   "value": "Sicherheitsabstand mind. 4 mm ab Schnittlinie",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996349-what-are-the-design-requirements-for-pdf-uploads"
+  },
+  "max_ink_pct": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "fonts": {
+   "value": "Schriften einbetten oder in Pfade wandeln",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996349-what-are-the-design-requirements-for-pdf-uploads"
+  },
+  "min_font_pt": {
+   "value": "7 pt empfohlen",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996349-what-are-the-design-requirements-for-pdf-uploads"
+  },
+  "min_line_pt": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "transparency": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "spot_colors": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "pages_and_sides": {
+   "value": "pro Auftragsposition files[] mit type (z. B. default) und url; mehrseitige Produkte: Seitenzahl inkl. Umschlag, Umschlagmasse per cover-dimensions-Endpoint",
+   "evidence": "W",
+   "source": "https://developers.gelato.com/docs/orders/v2/create"
+  },
+  "max_file_mb": {
+   "value": null,
+   "evidence": "unknown"
+  }
+ },
+ "products": [
+  {
+   "family": "sticker",
+   "product": "unbekannt (in Suchergebnissen kein Sticker-Produkt bestaetigt)",
+   "sizes": "",
+   "materials": "",
+   "bleed_mm": null,
+   "safe_mm": null,
+   "dpi": null,
+   "contour": "unbekannt",
+   "white": "",
+   "template": "Gelato-Katalog nach Login pruefen",
+   "notes": "Sortiment im Dashboard pruefen",
+   "evidence": "W",
+   "source": "https://www.gelato.com/products",
+   "quotes": []
+  },
+  {
+   "family": "flyer",
+   "product": "Flyer (laut eigener Kenntnis im Katalog, nicht bestaetigt)",
+   "sizes": "unbekannt",
+   "materials": "unbekannt",
+   "bleed_mm": 4,
+   "safe_mm": 4,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "Produkt-Templates im Gelato-Dashboard (Login)",
+   "notes": "4 mm Beschnitt/Sicherheitsabstand und CMYK aus allgemeiner PDF-Regel (W); Existenz des Produkts K",
+   "evidence": "K",
+   "source": "https://support.gelato.com/en/articles/8996349-what-are-the-design-requirements-for-pdf-uploads",
+   "quotes": [],
+   "review": "unsupported: dpi 300 stand in keiner Quelle; Support-Artikel (W) nennt nur 'mind. 150, max. 300 dpi' allgemein -> null"
+  },
+  {
+   "family": "visitenkarte",
+   "product": "Visitenkarten",
+   "sizes": "US-Standard 88.9x50.8 mm (Blog), EU-Formate unbekannt",
+   "materials": "unbekannt",
+   "bleed_mm": 4,
+   "safe_mm": 4,
+   "dpi": null,
+   "contour": "",
+   "white": "",
+   "template": "Dashboard",
+   "notes": "Widerspruch: Blog nennt 3 mm Beschnitt, Support-Artikel 4 mm; beim Support klaeren",
+   "evidence": "W",
+   "source": "https://www.gelato.com/uk/blog/business-card-size-guide",
+   "quotes": [],
+   "review": "unsupported: dpi 300 stand in keiner Quelle; Support-Artikel (W) nennt nur 'mind. 150, max. 300 dpi' allgemein -> null"
+  },
+  {
+   "family": "plakat",
+   "product": "Poster",
+   "sizes": "z. B. 300x400 mm",
+   "materials": "unbekannt",
+   "bleed_mm": 4,
+   "safe_mm": 4,
+   "dpi": 150,
+   "contour": "",
+   "white": "",
+   "template": "Dashboard",
+   "notes": "PDF 308x408 mm fuer 300x400 mm Poster",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996583-document-page-dimensions-matched-the-product-size-but-did-not-include-bleeds",
+   "quotes": [],
+   "review": "dpi 150 ist das allgemeine Minimum aus dem Support-Artikel (W), kein Poster-Wert; Beschnitt 4 mm nur W"
+  }
+ ],
+ "data_check": {
+  "automatic": {
+   "value": "Gelato prueft u. a., ob Seitenmasse Beschnitt enthalten (Fehlermeldung 'Document page dimensions matched the product size but did not include bleeds')",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996583-document-page-dimensions-matched-the-product-size-but-did-not-include-bleeds"
+  },
+  "auto_corrections": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "rejection_reasons": {
+   "value": "Seitenformat ohne Beschnitt; Datei-URL nicht oeffentlich/nicht direkt herunterladbar",
+   "evidence": "W",
+   "source": "https://support.gelato.com/en/articles/8996583-document-page-dimensions-matched-the-product-size-but-did-not-include-bleeds"
+  },
+  "paid_options": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "result_channel": {
+   "value": "Webhook order_status_updated mit fulfillmentStatus und Item-Status",
+   "evidence": "W",
+   "source": "https://developers.gelato.com/docs/webhooks"
+  }
+ },
+ "api": {
+  "exists": {
+   "value": "yes",
+   "evidence": "W",
+   "source": "https://developers.gelato.com/docs/orders/v2/create"
+  },
+  "docs_url": {
+   "value": "https://developers.gelato.com/docs/ bzw. dashboard.gelato.com/docs (beide hier gesperrt)",
+   "evidence": "W",
+   "source": "https://developers.gelato.com/docs/orders/v2/create"
+  },
+  "auth": {
+   "value": "API-Key im Header X-API-KEY",
+   "evidence": "W",
+   "source": "https://developers.gelato.com/docs/orders/v2/create"
+  },
+  "access": {
+   "value": "Self-Service-API-Key im Gelato-Dashboard (Login)",
+   "evidence": "W",
+   "source": "https://dashboard.gelato.com/docs/get-started/"
+  },
+  "catalog": {
+   "value": "Product Catalog API (productUid), u. a. GET /v3/products/{productUid}/cover-dimensions mit pageCount",
+   "evidence": "W",
+   "source": "https://developers.gelato.com/docs/products/product/cover-dimensions/"
+  },
+  "order": {
+   "value": "POST https://order.gelatoapis.com/v4/orders mit orderReferenceId, customerReferenceId, items[itemReferenceId, productUid, files]; orderType draft moeglich",
+   "evidence": "W",
+   "source": "https://developers.gelato.com/docs/orders/v2/create"
+  },
+  "artwork_handover": {
+   "value": "Je Item files[] mit type (z. B. default) und url; Gelato laedt die oeffentlich erreichbare Datei selbst; Dateien per PATCH aenderbar",
+   "evidence": "W",
+   "source": "https://connect-support.gelato.com/en/articles/11076814-working-with-order-api-endpoints"
+  },
+  "proof_or_preview": {
+   "value": null,
+   "evidence": "unknown"
+  },
+  "status_webhooks": {
+   "value": "Webhook order_status_updated; 3 Wiederholungen im 5-s-Abstand ohne 2xx; Einrichtung im Dashboard",
+   "evidence": "W",
+   "source": "https://developers.gelato.com/docs/webhooks"
+  },
+  "sandbox": {
+   "value": "Sandbox nur in Marketingtext erwaehnt, nicht bestaetigt; Draft-Auftraege moeglich",
+   "evidence": "W",
+   "source": "https://www.gelato.com/au/order-flow"
+  },
+  "white_label_shipping": {
+   "value": "White-Label-Druck und lokaler Versand in Deutschland; Produktion in 32 Laendern",
+   "evidence": "W",
+   "source": "https://www.gelato.com/print-on-demand/germany"
+  }
+ },
+ "automation_risks": [
+  "Gegenpruefung 27.11.2026: Fuer Gelato liegt KEIN einziger first-hand-Wert vor - alle Angaben stammen aus Suchergebnissen (W) oder eigener Kenntnis (K).",
+  "Alle Gelato-Seiten (www.gelato.com, Doku) waren hinter Bot-Schutz bzw. gesperrt; jede Angabe ist nur per Websuche belegt und vor dem Bau zu pruefen.",
+  "Datei-URL muss oeffentlich und direkt herunterladbar sein (keine Vorschau-/Login-Seite).",
+  "Fehlender Beschnitt (4 mm) fuehrt zu Fehlern; Exporter muss Endformat + 2x4 mm erzeugen.",
+  "Farbraum je Produktklasse unklar (CMYK fuer Kleinformat empfohlen, Textil/Wandbild vermutlich RGB): vor Export je productUid klaeren.",
+  "Ob Sticker und Flyer im Katalog sind, ist nicht bestaetigt; productUid-Liste per Catalog-API mit Key abrufen.",
+  "API-Versionen (v2 mit Promise-UID, v3, v4) unterscheiden sich; nur aktuelle v4-Doku verwenden."
+ ]
+}
