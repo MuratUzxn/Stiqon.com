@@ -404,6 +404,54 @@ test.describe('a design\'s page', () => {
         await expect(page.getByRole('group', { name: 'Ihr Motiv' })).toContainText('Neu eröffnet');
     });
 
+    test('where the browser keeps nothing, the page stays and says so', async ({ page }) => {
+        // Private windows and blocked site data look like this to a page (as in motif.spec.js).
+        await page.addInitScript(() => {
+            Object.defineProperty(window, 'indexedDB', { value: { open() { throw new DOMException('denied', 'SecurityError'); } } });
+        });
+
+        await page.goto('/design/beispiel-neu-eroeffnet/');
+
+        const button = page.getByRole('button', { name: 'Als Motiv ausprobieren' });
+
+        await button.click();
+
+        const told = 'Dieses Fenster erlaubt nicht, das Design als Motiv für die nächste Seite zu behalten.';
+
+        await expect(page.getByText(told).last()).toBeVisible();
+        await expect(page.getByRole('status')).toContainText(told);
+        await expect(page).toHaveURL(/\/design\/beispiel-neu-eroeffnet\/$/);
+        // Ready for another try.
+        await expect(button).not.toHaveAttribute('aria-disabled', 'true');
+        await expect(button).not.toHaveAttribute('aria-busy', 'true');
+    });
+
+    test.describe('when the picture does not come', () => {
+        test.use({ expectedStatuses: [500] });
+
+        for (const [what, answer] of [
+            ['the server fails', { status: 500, body: 'Fehler' }],
+            // A type the motif does not take: the visitor chose no file, so no word about formats.
+            ['it is of a kind the motif does not take', { status: 200, contentType: 'image/gif', body: 'GIF89a' }],
+        ]) {
+            test(`says so and stays, where ${what}`, async ({ page }) => {
+                await page.goto('/design/beispiel-neu-eroeffnet/');
+
+                const button = page.getByRole('button', { name: 'Als Motiv ausprobieren' });
+                const image = await page.locator('[x-data="designMotif"]').getAttribute('data-image');
+
+                await page.route(image, (route) => route.fulfill(answer));
+                await button.click();
+
+                await expect(page.getByText('Das Design lässt sich gerade nicht laden. Bitte versuchen Sie es noch einmal.').last()).toBeVisible();
+                await expect(page.getByText('Bitte ein Bild im Format PNG, JPEG oder WebP wählen.')).toHaveCount(0);
+                await expect(page).toHaveURL(/\/design\/beispiel-neu-eroeffnet\/$/);
+                await expect(button).not.toHaveAttribute('aria-disabled', 'true');
+                await expect(page.getByRole('group', { name: 'Ihr Motiv' })).toBeHidden();
+            });
+        }
+    });
+
     test('without JavaScript offers only what works', async ({ browser, baseURL }) => {
         const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
         const page = await context.newPage();

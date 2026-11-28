@@ -18,7 +18,11 @@ the_post();
 $data = stiqon_design(get_post());
 $design = $data['design'];
 $area = stiqon_design_area($design['medium']);
-$image = $design['image'] > 0 ? wp_get_attachment_image_url($design['image'], 'full') : false;
+// The motif is scaled to 1600 px in the browser anyway: a size the shop keeps of at most that, not the original.
+$image = $design['image'] > 0 ? wp_get_attachment_image_url($design['image'], '1536x1536') : false;
+// The kinds of picture a motif can be (as for a file the visitor chooses); others get no button.
+$type = $design['image'] > 0 ? (string) get_post_mime_type($design['image']) : '';
+$motif = $image !== false && in_array($type, ['image/png', 'image/jpeg', 'image/webp'], true);
 
 $terms = array_filter([
     'werbemittel' => $design['medium'],
@@ -37,7 +41,8 @@ get_header();
             <?php
             echo wp_get_attachment_image($design['image'], 'full', false, [
                 'class' => 'size-full object-contain',
-                'alt' => '',
+                // The picture is what the page is about; on the cards the title beside it says it.
+                'alt' => sprintf('Design „%s“', $design['title']),
                 'loading' => 'eager',
                 'fetchpriority' => 'high',
                 'sizes' => '(min-width: 64rem) 36rem, 100vw',
@@ -67,15 +72,18 @@ get_header();
             </div>
 
             <div class="mt-8 flex flex-wrap items-center gap-2">
-                <?php if ($image !== false) : ?>
+                <?php if ($motif) : ?>
                     <?php // Hands the picture to the visitor's motif, as if they had chosen it as a file (assets/src/js/design.js). ?>
-                    <span x-data="designMotif" data-needs-script class="inline-flex"<?php echo stiqon_attributes(['data-image' => $image, 'data-name' => $design['title'], 'data-target' => $area['url']]); ?>>
-                        <?php echo stiqon_button(stiqon_icon('image').'Als Motiv ausprobieren', ['attributes' => ['x-on:click' => 'tryOn', 'x-bind:aria-disabled' => 'busy', 'data-motif-button' => true]]); ?>
+                    <?php // While the picture comes, the label says so – a slow line would otherwise look like a dead button. ?>
+                    <span x-data="designMotif" data-needs-script class="inline-flex"<?php echo stiqon_attributes(['data-image' => $image, 'data-type' => $type, 'data-name' => $design['title'], 'data-target' => $area['url']]); ?>>
+                        <?php echo stiqon_button(stiqon_icon('image').'<span x-text="busy ? \'Wird geladen …\' : \'Als Motiv ausprobieren\'">Als Motiv ausprobieren</span>', ['attributes' => ['x-on:click' => 'tryOn', 'x-bind:aria-disabled' => 'busy', 'x-bind:aria-busy' => 'busy', 'data-motif-button' => true]]); ?>
                     </span>
                 <?php endif; ?>
                 <?php echo stiqon_button(esc_html($area['label']).stiqon_icon('arrow-right'), ['variant' => 'secondary', 'href' => $area['url']]); ?>
             </div>
-            <p class="text-label mt-3 text-muted" data-needs-script>Das Design erscheint auf den Ansichten der Produkte. Hochgeladen wird nichts.</p>
+            <?php if ($motif) : ?>
+                <p class="text-label mt-3 text-muted" data-needs-script>Das Design erscheint auf den Ansichten der Produkte. Hochgeladen wird nichts.</p>
+            <?php endif; ?>
         </div>
     </article>
 

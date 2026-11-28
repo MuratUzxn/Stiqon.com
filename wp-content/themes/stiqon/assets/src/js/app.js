@@ -70,17 +70,23 @@ document.addEventListener('alpine:init', () => {
             document.documentElement.removeAttribute('data-motif');
         },
 
+        /** Whether a file of this type can become the motif. */
+        accepts(type) {
+            return MOTIF_TYPES.includes(type);
+        },
+
         /**
          * Shows a chosen image on the mockups and keeps it for the next page.
          * Resolves to whether it is kept: false when it was refused, or is
-         * shown on this page only.
+         * shown on this page only. "unkept" is what to tell the visitor in that
+         * last case, where the page has no mockups to show it on.
          */
-        async choose(file) {
+        async choose(file, { unkept } = {}) {
             if (!file) {
                 return false;
             }
 
-            if (!MOTIF_TYPES.includes(file.type)) {
+            if (!this.accepts(file.type)) {
                 this.fail('Bitte ein Bild im Format PNG, JPEG oder WebP wählen.');
 
                 return false;
@@ -120,7 +126,7 @@ document.addEventListener('alpine:init', () => {
                 // not come back on the next page or in another tab.
                 await remove().catch(() => {});
                 hint(null);
-                this.notice = 'Ihr Motiv ist auf dieser Seite zu sehen. Dieses Fenster erlaubt nicht, es für die nächste Seite zu behalten.';
+                this.notice = unkept ?? 'Ihr Motiv ist auf dieser Seite zu sehen. Dieses Fenster erlaubt nicht, es für die nächste Seite zu behalten.';
                 this.announcement = `${this.announcement} ${this.notice}`;
 
                 return false;
